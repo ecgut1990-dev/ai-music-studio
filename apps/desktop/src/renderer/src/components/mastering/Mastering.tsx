@@ -12,6 +12,7 @@ import { MasterRack } from './MasterRack'
 import { MasterOutput, loadOutput, type OutputSettings } from './MasterOutput'
 import { MasterAssistant } from './MasterAssistant'
 import { MasterEdit } from './MasterEdit'
+import { MasterFader } from './MasterFader'
 import { applyEdits, type EditOp } from '../../audio/master/edit'
 
 // edits of each open song (this session): the original file is never changed
@@ -284,7 +285,7 @@ export function Mastering(): React.ReactElement {
             markers={useMasteringStore.getState().markers[current!] ?? []} />
           <MasterEdit buffer={buffer} stats={aBefore} ops={edits.ops} canRedo={edits.redo.length > 0} onEdit={pushEdit} onUndo={undoEdit} onRedo={redoEdit} path={current!} />
 
-          <MasterAssistant buffer={buffer} before={aBefore} chain={chain} onApply={setChain} onEdit={pushEdit}
+          <MasterAssistant buffer={buffer} after={after} before={aBefore} chain={chain} onApply={setChain} onEdit={pushEdit}
             onTarget={(t) => { setTarget(t); try { localStorage.setItem('ams-master-target', t) } catch { /* */ } }}
             onReach={(t) => void reachTarget(t)} reaching={reaching} />
 
@@ -295,7 +296,10 @@ export function Mastering(): React.ReactElement {
                 onReachTarget={() => void reachTarget()} reaching={reaching} view={active} />
               <ReferenceMatch open={refOpen} setOpen={setRefOpen} target={current!} onDone={(p) => open({ path: p, name: `${name} (reference match)` })} />
             </div>
-            <MasterMeters before={aBefore} after={aAfter} target={tgt.lufs} busy={measuring} active={active} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <MasterFader chain={chain} onChange={setChain} />
+              <MasterMeters before={aBefore} after={aAfter} target={tgt.lufs} busy={measuring} active={active} />
+            </div>
           </div>
         </>
       )}

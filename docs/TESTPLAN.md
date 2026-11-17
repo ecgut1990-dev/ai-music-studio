@@ -157,15 +157,15 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 
 | # | Test | Erwartet | A | B | Notiz |
 |---|---|---|---|---|---|
-| 7c.1 | Mastering: Song öffnen, Stil wählen (z. B. Techno / House), **✨ Analyse & suggest** | nach wenigen Sekunden: Balken der 8 Bänder (lila Song, grüne Linie Ziel) und Vorschläge mit Begründung | ✅ | | 0.31.0 ok; soll in der eingestellten Sprache sein → 0.31.1 |
-| 7c.2 | Vorschläge anhaken / abhaken, **Apply ticked** | Kette ändert sich (EQ, Kompressor …), danach Loudness ≈ Ziel des Stils (Techno −9, Pop −11 …), True Peak ≤ Ceiling | | | 0.31.0: „verändert sich nichts“ → 0.31.1: grüne Liste, Wechsel auf After, Fortschritt |
-| 7c.3 | **↶ Undo suggestions** | Kette wie vorher | | | 0.31.0 nicht testbar (7c.2) |
-| 7c.4 | Stil **Soul / R&B** und **Funk**; dann **Reference song…** wählen und neu analysieren | andere Ziellinie und andere Vorschläge; mit Referenz steht „above / below the reference“ | | | 0.31.0: nichts verändert → 0.31.1: misst sofort neu, zeigt „Verglichen mit“ |
-| 7c.5 | In der Wellenform einen Bereich ziehen → **✂ Cut** (oder Strg+X) | Bereich ist weg, Song kürzer, Zeit oben passt | ✅ | | Wellenform war kurz weg → 0.31.1 bleibt |
+| 7c.1 | Mastering: Song öffnen, Stil wählen (z. B. Techno / House), **✨ Analyse & suggest** | nach wenigen Sekunden: Balken der 8 Bänder (lila Song, grüne Linie Ziel) und Vorschläge mit Begründung | ✅ | | 0.31.1: Deutsch ✅ |
+| 7c.2 | Vorschläge anhaken / abhaken, **Apply ticked** | Kette ändert sich (EQ, Kompressor …), danach Loudness ≈ Ziel des Stils (Techno −9, Pop −11 …), True Peak ≤ Ceiling | | | 0.31.1: angeklickt = nur Haken; Balken blieben gleich → 0.31.2: eigener „Übernehmen“-Knopf, Balken zeigen den Master |
+| 7c.3 | **↶ Undo suggestions** | Kette wie vorher | | | 0.31.1: Knopf nicht gefunden → 0.31.2: „↶ Vorschläge rückgängig“ immer oben rechts |
+| 7c.4 | Stil **Soul / R&B** und **Funk**; dann **Reference song…** wählen und neu analysieren | andere Ziellinie und andere Vorschläge; mit Referenz steht „above / below the reference“ | ✅ | | 0.31.1 |
+| 7c.5 | In der Wellenform einen Bereich ziehen → **✂ Cut** (oder Strg+X) | Bereich ist weg, Song kürzer, Zeit oben passt | ✅ | | 0.31.1: Wellenform bleibt |
 | 7c.6 | Strg+Z, dann Strg+Y | Schnitt rückgängig, dann wieder da | ✅ | | |
 | 7c.7 | Bereich → **Copy**, Abspielposition woanders hin → **Paste** (Strg+V) | Stück an der Position eingefügt | ✅ | | |
 | 7c.8 | **Delete**, **Crop**, **Silence**, **Fade in / out** (S-curve, linear, log) | tut jeweils das Erwartete; Fades hörbar | ✅ | | |
-| 7c.9 | **Gain dB**, **Normalise** (Peak / LUFS), **Trim silence**, **DC** | Werte „vorher“ ändern sich passend | | | „wo sehe ich das“ → 0.31.1: Zeile „Song jetzt“ in der Bearbeitungsleiste |
+| 7c.9 | **Gain dB**, **Normalise** (Peak / LUFS), **Trim silence**, **DC** | Werte „vorher“ ändern sich passend | | | 0.31.1: Gain nicht gefunden → 0.31.2: „Lautstärke … dB · Übernehmen“ und Master-Fader |
 | 7c.10 | **+ Marker**, Namen ändern, auf die Zeit klicken | gelbe Linie mit Namen in der Wellenform; Klick springt dorthin | ✅ | | |
 | 7c.11 | Nach Schnitten **Export…** | exportierte Datei hat die Schnitte; Originaldatei unverändert | ✅ | | |
 | 7c.12 | **+ Add… → Dynamic EQ** (z. B. 3,5 kHz) und **Saturation / exciter** | beim Abspielen hörbar; Gain Reduction zeigt „Dynamic EQ“ | | | |
@@ -173,6 +173,9 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 | 7c.14 | Studio: Spur → **FX → + Effect…** → Dynamic EQ, Saturation, Stereo, Limiter | Effekte erscheinen mit Reglern, hörbar, auch im Export | | | |
 | 7c.15 | Stem Splitter: Stems erstellen → bei einem Stem **Mastering** | Stem öffnet sich im Mastering | | | |
 | 7c.16 | **File → New project** (oder Strg+N) | Fenster fragt nach dem Namen; der Name steht oben und beim Speichern | | | |
+| 7c.17 | neu (0.31.2): **Master-Gain-Fader** rechts oben: ziehen, Mausrad, Doppelklick, −1 / 0 / +1 | Master wird lauter / leiser ohne Übersteuern; TP bleibt ≤ Ceiling, GR (orange) zeigt die Arbeit des Limiters | | | |
+| 7c.18 | neu (0.31.2): Assistent → bei einem Vorschlag **Übernehmen**; dann **Master noch einmal analysieren** | Vorschlag grün „übernommen“; Balken zeigen den Master (lila) mit grauer Kontur fürs Original; Runde 2 schlägt weiter vor | | | |
+| 7c.19 | neu (0.31.2): Wellenform am Ende | nach dem Songende etwas dunkler Leerraum mit Endlinie; Zoom bleibt nach einem Schnitt | | | |
 
 ## 7b. AI Chat, Sonstiges
 

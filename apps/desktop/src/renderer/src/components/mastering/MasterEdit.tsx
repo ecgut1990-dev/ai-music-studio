@@ -70,37 +70,42 @@ export function MasterEdit({ buffer, stats, ops, canRedo, onEdit, onUndo, onRedo
   return (
     <div style={{ background: 'var(--bg-tertiary)', borderRadius: 8, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ display: 'flex', gap: 5, alignItems: 'center', flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, marginRight: 4 }}>Edit</span>
+        <span style={{ fontSize: 11, fontWeight: 600, marginRight: 4 }}>{tr('Edit')}</span>
         <span style={{ fontSize: 11, color: sel ? 'var(--accent-light)' : 'var(--text-muted)', minWidth: 150 }}>
-          {sel ? `Region ${fmt(sel.start)}–${fmt(sel.end)} (${(sel.end - sel.start).toFixed(2)} s)` : 'Drag in the waveform to mark a region'}
+          {sel ? `${tr('Region')} ${fmt(sel.start)}–${fmt(sel.end)} (${(sel.end - sel.start).toFixed(2)} s)` : tr('Drag in the waveform to mark a region')}
         </span>
-        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Cut (Ctrl+X): remove the region and keep it for Paste" onClick={cut}>✂ Cut</button>
-        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Copy (Ctrl+C)" onClick={copy}>Copy</button>
-        <button className="btn btn-ghost" style={btn} disabled={!clipboard} title="Paste at the play position (Ctrl+V)" onClick={paste}>Paste</button>
-        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Delete the region (Del)" onClick={del}>Delete</button>
-        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Keep only the region" onClick={crop}>Crop</button>
-        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Make the region silent" onClick={() => sel && onEdit({ type: 'silence', start: sel.start, end: sel.end })}>Silence</button>
+        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Cut (Ctrl+X): remove the region and keep it for Paste" onClick={cut}>✂ {tr('Cut')}</button>
+        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Copy (Ctrl+C)" onClick={copy}>{tr('Copy')}</button>
+        <button className="btn btn-ghost" style={btn} disabled={!clipboard} title="Paste at the play position (Ctrl+V)" onClick={paste}>{tr('Paste')}</button>
+        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Delete the region (Del)" onClick={del}>{tr('Delete')}</button>
+        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Keep only the region" onClick={crop}>{tr('Crop')}</button>
+        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Make the region silent" onClick={() => sel && onEdit({ type: 'silence', start: sel.start, end: sel.end })}>{tr('Silence')}</button>
         <span style={{ width: 1, height: 18, background: 'var(--border-mid)' }} />
-        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Fade in over the region" onClick={() => sel && onEdit({ type: 'fade', start: sel.start, end: sel.end, dir: 'in', curve })}>Fade in</button>
-        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Fade out over the region" onClick={() => sel && onEdit({ type: 'fade', start: sel.start, end: sel.end, dir: 'out', curve })}>Fade out</button>
+        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Fade in over the region" onClick={() => sel && onEdit({ type: 'fade', start: sel.start, end: sel.end, dir: 'in', curve })}>{tr('Fade in')}</button>
+        <button className="btn btn-ghost" style={btn} disabled={!sel} title="Fade out over the region" onClick={() => sel && onEdit({ type: 'fade', start: sel.start, end: sel.end, dir: 'out', curve })}>{tr('Fade out')}</button>
         <select value={curve} onChange={(e) => setCurve(e.target.value as FadeCurve)} style={{ fontSize: 11 }} title="Fade curve">
-          <option value="smooth">S-curve</option><option value="linear">Linear</option><option value="log">Logarithmic</option>
+          <option value="smooth">{tr('S-curve')}</option><option value="linear">{tr('Linear')}</option><option value="log">{tr('Logarithmic')}</option>
         </select>
         <span style={{ width: 1, height: 18, background: 'var(--border-mid)' }} />
-        <input type="number" value={gain} step={0.5} min={-24} max={24} onChange={(e) => setGain(Number(e.target.value))} style={{ width: 52, fontSize: 11 }} title="dB" />
-        <button className="btn btn-ghost" style={btn} title={sel ? 'Change the level of the region' : 'Change the level of the whole song'} onClick={() => onEdit({ type: 'gain', start: whole.start, end: whole.end, db: gain })}>Gain dB</button>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid var(--border-mid)', borderRadius: 6, padding: '1px 4px 1px 8px' }}
+          title={sel ? tr('Change the level of the marked region') : tr('Change the level of the whole song')}>
+          <span style={{ fontSize: 11 }}>{tr('Volume')}{sel ? ` (${tr('region')})` : ''}</span>
+          <input type="number" value={gain} step={0.5} min={-24} max={24} onChange={(e) => setGain(Number(e.target.value))} style={{ width: 52, fontSize: 11 }} />
+          <span style={{ fontSize: 11 }}>dB</span>
+          <button className="btn btn-ghost" style={btn} onClick={() => onEdit({ type: 'gain', start: whole.start, end: whole.end, db: gain })}>{tr('Apply')}</button>
+        </span>
         <select value={norm} onChange={(e) => setNorm(e.target.value as 'peak' | 'lufs')} style={{ fontSize: 11 }}>
-          <option value="peak">Peak −1 dBFS</option><option value="lufs">Loudness −14 LUFS</option>
+          <option value="peak">{tr('Peak')} −1 dBFS</option><option value="lufs">{tr('Loudness')} −14 LUFS</option>
         </select>
         <button className="btn btn-ghost" style={btn} title={sel ? 'Normalise the region' : 'Normalise the whole song'}
-          onClick={() => onEdit({ type: 'normalize', start: whole.start, end: whole.end, mode: norm, target: norm === 'peak' ? -1 : -14 })}>Normalise</button>
-        <button className="btn btn-ghost" style={btn} title="Remove silence at the start and the end" onClick={() => { onEdit({ type: 'trim', thresholdDb: -60 }); masterPlayer.seek(0) }}>Trim silence</button>
+          onClick={() => onEdit({ type: 'normalize', start: whole.start, end: whole.end, mode: norm, target: norm === 'peak' ? -1 : -14 })}>{tr('Normalise')}</button>
+        <button className="btn btn-ghost" style={btn} title="Remove silence at the start and the end" onClick={() => { onEdit({ type: 'trim', thresholdDb: -60 }); masterPlayer.seek(0) }}>{tr('Trim silence')}</button>
         <button className="btn btn-ghost" style={btn} title="Remove a DC offset (the waveform shifted up or down)" onClick={() => onEdit({ type: 'dc' })}>DC</button>
         <span style={{ flex: 1 }} />
-        <button className="btn btn-ghost" style={btn} title="Marker at the play position" onClick={() => setMarkers(path, [...markers, { t: masterPlayer.position(), name: `Marker ${markers.length + 1}` }].sort((a, b) => a.t - b.t))}>+ Marker</button>
+        <button className="btn btn-ghost" style={btn} title="Marker at the play position" onClick={() => setMarkers(path, [...markers, { t: masterPlayer.position(), name: `Marker ${markers.length + 1}` }].sort((a, b) => a.t - b.t))}>{tr('+ Marker')}</button>
         <button className="btn btn-ghost" style={btn} disabled={!ops.length} title="Undo (Ctrl+Z)" onClick={onUndo}>↶</button>
         <button className="btn btn-ghost" style={btn} disabled={!canRedo} title="Redo (Ctrl+Y)" onClick={onRedo}>↷</button>
-        <button className="btn btn-ghost" style={btn} disabled={!ops.length} onClick={() => setShowList((v) => !v)}>{ops.length} step{ops.length === 1 ? '' : 's'} {showList ? '▾' : '▸'}</button>
+        <button className="btn btn-ghost" style={btn} disabled={!ops.length} onClick={() => setShowList((v) => !v)}>{ops.length} {tr(ops.length === 1 ? 'step' : 'steps')} {showList ? '▾' : '▸'}</button>
       </div>
       {markers.length > 0 && (
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>

@@ -3,6 +3,13 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.31.2
+
+- **Master gain fader:** a big fader like on a mixing desk makes the master louder or quieter, through the limiter (no clipping), with live true peak, loudness and limiter meters next to it.
+- **Assistant easier to use:** every proposal has its own **Apply** button; **✓ Apply all ticked** and **↶ Undo** are at the top. After applying, the bars show the **master** (the original as a grey outline), so you see what changed. **Analyse the master again** makes a second round on the master; its EQ proposals add to the settings.
+- **Edit bar in German** (with the app in German); the volume change is now a clear "Volume … dB · Apply".
+- **Waveform:** the view reaches a little past the end of the song, so the end is easy to see and to mark; the zoom stays after an edit.
+
 ## 0.31.1
 
 - **Mastering assistant in your language:** its proposals, bands and buttons are in German when the app is set to German.

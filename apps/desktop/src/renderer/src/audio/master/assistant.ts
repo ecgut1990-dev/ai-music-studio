@@ -127,6 +127,8 @@ const withSlot = (c: Chain, type: Slot['type'], f: (s: Slot) => Slot): Chain => 
   return { ...c, slots: has ? c.slots.map((s) => (s.type === type ? next : s)) : [...c.slots, next] }
 }
 const r1 = (v: number): number => Math.round(v * 2) / 2
+// a further proposal adds to what is already set at that frequency (a second round on the master corrects the first)
+const add = (cur: number, sameFreq: boolean, g: number): number => Math.max(-12, Math.min(12, r1((sameFreq ? cur : 0) + g)))
 
 const BAND_DE: Record<BandId, string> = {
   sub: 'Sub-Bass', bass: 'Bass', lowmid: 'Untere Mitten', mid: 'Mitten', upmid: 'Obere Mitten', presence: 'Präsenz', brilliance: 'Brillanz', air: 'Luft',
@@ -158,7 +160,7 @@ export function suggest(a: Analysis, bal: Balance, width: number, profile: Profi
   const low = (diff('sub') + diff('bass')) / 2
   if (Math.abs(low) > 2) {
     const g = amount(low)
-    out.push({ id: 'low', area: 'tone', on: true, text: `${say('bass', low)}: ${T('low shelf at 100 Hz', 'Low Shelf bei 100 Hz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, lowF: 100, lowG: g })) })
+    out.push({ id: 'low', area: 'tone', on: true, text: `${say('bass', low)}: ${T('low shelf at 100 Hz', 'Low Shelf bei 100 Hz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, lowF: 100, lowG: add(p.lowG, p.lowF === 100, g) })) })
   }
   if (diff('sub') > 4 && bal.sub > bal.bass) {
     out.push({ id: 'rumble', area: 'tone', on: true, text: T(`Much energy below 60 Hz (${n1(diff('sub'))} dB above ${what}): low cut at 28 Hz removes rumble you cannot hear but that eats loudness.`,
@@ -166,24 +168,24 @@ export function suggest(a: Analysis, bal: Balance, width: number, profile: Profi
   }
   if (diff('lowmid') > 2) {
     const g = amount(diff('lowmid'))
-    out.push({ id: 'box', area: 'tone', on: true, text: `${say('lowmid', diff('lowmid'))} ${T('(sounds muddy or boxy): band 1 at 300 Hz', '(klingt mulmig oder pappig): Band 1 bei 300 Hz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p1F: 300, p1G: g, p1Q: 1.2 })) })
+    out.push({ id: 'box', area: 'tone', on: true, text: `${say('lowmid', diff('lowmid'))} ${T('(sounds muddy or boxy): band 1 at 300 Hz', '(klingt mulmig oder pappig): Band 1 bei 300 Hz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p1F: 300, p1G: add(p.p1G, p.p1F === 300, g), p1Q: 1.2 })) })
   }
   const mids = (diff('mid') + diff('upmid')) / 2
   if (Math.abs(mids) > 2) {
     const g = amount(mids)
-    out.push({ id: 'mids', area: 'tone', on: true, text: `${say('mid', mids)}: ${T('band 2 at 1.2 kHz', 'Band 2 bei 1,2 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p2F: 1200, p2G: g, p2Q: 0.8 })) })
+    out.push({ id: 'mids', area: 'tone', on: true, text: `${say('mid', mids)}: ${T('band 2 at 1.2 kHz', 'Band 2 bei 1,2 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p2F: 1200, p2G: add(p.p2G, p.p2F === 1200, g), p2Q: 0.8 })) })
   }
   if (diff('presence') > 2) {
     const range = Math.min(6, r1(diff('presence')))
     out.push({ id: 'harsh', area: 'tone', on: true, text: `${say('presence', diff('presence'))} ${T(`(can sound sharp): dynamic EQ at 3.5 kHz turns it down by up to ${range} dB only where it is loud.`, `(kann scharf klingen): Dynamischer EQ bei 3,5 kHz senkt nur dort, wo es laut wird, um bis zu ${n1(range)} dB.`)}`, apply: (c) => withSlot(c, 'dyneq', (x) => ({ ...x, p: { ...(slotDefaults('dyneq', x.id).p), freq: 3500, q: 1.2, thresholdDb: -30, ratio: 3, rangeDb: range } } as Slot)) })
   } else if (diff('presence') < -2) {
     const g = amount(diff('presence'))
-    out.push({ id: 'presence', area: 'tone', on: true, text: `${say('presence', diff('presence'))} ${T('(voice and snare lack presence): band 3 at 4 kHz', '(Stimme und Snare fehlt Präsenz): Band 3 bei 4 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p3F: 4000, p3G: g, p3Q: 1 })) })
+    out.push({ id: 'presence', area: 'tone', on: true, text: `${say('presence', diff('presence'))} ${T('(voice and snare lack presence): band 3 at 4 kHz', '(Stimme und Snare fehlt Präsenz): Band 3 bei 4 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p3F: 4000, p3G: add(p.p3G, p.p3F === 4000, g), p3Q: 1 })) })
   }
   const highs = (diff('brilliance') + diff('air')) / 2
   if (Math.abs(highs) > 2) {
     const g = amount(highs)
-    out.push({ id: 'air', area: 'tone', on: true, text: `${say('air', highs)}: ${T('high shelf at 10 kHz', 'High Shelf bei 10 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, highF: 10000, highG: g })) })
+    out.push({ id: 'air', area: 'tone', on: true, text: `${say('air', highs)}: ${T('high shelf at 10 kHz', 'High Shelf bei 10 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, highF: 10000, highG: add(p.highG, p.highF === 10000, g) })) })
   }
   if (highs < -4) {
     out.push({ id: 'excite', area: 'tone', on: false, text: T('The highs are very dull: a little exciter above 7 kHz adds air that a shelf alone cannot (try it, judge by ear).', 'Die Höhen sind sehr dumpf: etwas Exciter über 7 kHz bringt Luft, die ein Shelf allein nicht schafft (ausprobieren, nach Gehör entscheiden).'), apply: (c) => withSlot(c, 'saturation', (x) => ({ ...x, p: { ...(slotDefaults('saturation', x.id).p), mix: 0, driveDb: 0, exciteFreq: 7000, excite: 0.25 } } as Slot)) })
