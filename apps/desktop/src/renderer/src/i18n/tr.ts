@@ -13,10 +13,18 @@ import zh from './ui/zh.json'
 
 const TABLES: Record<string, Record<string, string>> = { de, es, fr, it, ja, ko, pt, zh }
 
+// keys are stored with their white space folded to single spaces (texts in JSX may run over several lines)
+const fold = (s: string): string => s.replace(/\s+/g, ' ')
+
 export function tr(en: string): string {
   const lang = (i18n.language || 'en').slice(0, 2)
   const table = TABLES[lang]
   if (!table) return en
-  const t = table[en]
+  const t = table[en] ?? table[fold(en)]
   return t === undefined || t === '' ? en : t
+}
+
+// A text with values in it: trf('Sync all to {bpm} BPM', { bpm: 124 }). The translation keeps the {names}.
+export function trf(en: string, vars: Record<string, string | number>): string {
+  return tr(en).replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m))
 }

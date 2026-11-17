@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 type Model = ModelsOverview['models'][number]
 
@@ -90,7 +90,7 @@ export function ModelsTab(): React.ReactElement {
   const clear = async (id: string): Promise<void> => {
     setConfirmDelete(null); setError(null); setNotice(null)
     const r = await window.api.models.clearCache(id)
-    if (r.ok) setNotice(`Freed ${fmt(r.freed)}.`)
+    if (r.ok) setNotice(trf('Freed {n}.', { n: fmt(r.freed) }))
     else setError(r.error)
     await refresh()
   }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { api, type ExportFormat } from '../../lib/api'
 import { exportSampleRate, setExportSampleRate } from '../../lib/sampleRate'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 // Export audio files (stems, loops, songs) into a folder of the user's choice: one file each, in the format
 // their DAW wants. Used by the Stem Splitter and the Library.
@@ -52,7 +52,7 @@ export function ExportDialog({ items, title, onClose }: {
         style={{ width: 'min(480px, 100%)', background: 'var(--bg-primary)', border: '1px solid var(--border-mid)', borderRadius: 10, padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('Export')} {title}</div>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-          {items.length === 1 ? tr('The file is') : `Each of the ${items.length} parts is`} {tr('saved as its own audio file in the folder you choose next.')}
+          {items.length === 1 ? tr('The file is') : trf('Each of the {n} parts is', { n: items.length })} {tr('saved as its own audio file in the folder you choose next.')}
         </div>
         {!done && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

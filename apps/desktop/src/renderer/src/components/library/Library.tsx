@@ -11,7 +11,7 @@ import { SamplesTab } from './SamplesTab'
 import { seedAnalysis } from '../../beatmatch/store'
 import { ExportDialog, parseTags } from '../common/ExportDialog'
 import { matchesQuery } from '../../lib/librarySearch'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 const muted: React.CSSProperties = { fontSize: 11, color: 'var(--text-muted)' }
 const mmss = (s: number | null): string => (s == null ? '?' : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`)
@@ -93,7 +93,7 @@ export function Library(): React.ReactElement {
     if (problems.length) { setError(problems.join(' ')); return }
     const tracks = useProjectStore.getState().project.tracks
     useProjectStore.getState().updateTrack(tracks[tracks.length - 1].id, { name: t.title })
-    setNotice(`"${t.title}" was added to the Studio.`)
+    setNotice(trf('"{name}" was added to the Studio.', { name: t.title }))
   }
 
   const act = async (fn: () => Promise<unknown>): Promise<void> => {
@@ -132,7 +132,7 @@ export function Library(): React.ReactElement {
       <div style={{ display: 'flex', gap: 6 }}>
         {(['tracks', 'stems', 'samples'] as const).map((t) => (
           <button key={t} className={`btn ${tab === t ? 'btn-primary' : 'btn-ghost'}`} onClick={() => { audio.current?.pause(); setPlaying(null); setTab(t) }}>
-            {t === 'tracks' ? tr('My tracks') : t === 'stems' ? `Stems (${tracks.filter((x) => x.source === 'stem').length})` : tr('Samples (Ableton and others)')}
+            {t === 'tracks' ? tr('My tracks') : t === 'stems' ? trf('Stems ({n})', { n: tracks.filter((x) => x.source === 'stem').length }) : tr('Samples (Ableton and others)')}
           </button>
         ))}
       </div>
@@ -157,7 +157,7 @@ export function Library(): React.ReactElement {
         ) : (
           <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={aligning !== null}
             title={tr('Songs made before version 0.11 may start with a little silence or lead-in. This cuts it, so that every song starts exactly on beat 1. Stems and imported files are not touched.')}
-            onClick={() => setConfirmAll(true)}>{aligning === 'all' ? tr('Cutting…') : `Start all on beat 1 (${unaligned})`}</button>
+            onClick={() => setConfirmAll(true)}>{aligning === 'all' ? tr('Cutting…') : trf('Start all on beat 1 ({n})', { n: unaligned })}</button>
         ))}
         <span style={{ flex: 1 }} />
         <label style={{ ...muted, display: 'flex', gap: 4, alignItems: 'center' }}>{tr('Insert at')}
@@ -242,7 +242,7 @@ export function Library(): React.ReactElement {
           <button className="btn btn-ghost" style={{ fontSize: 11 }} title={tr('Tags: genre, mood or anything you want to search for')} onClick={() => setEditTags(t.id)}>{tr('Tags')}</button>
           {t.original ? (
             <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={aligning !== null} title={tr('Undo the cut: put the untouched file back')}
-              onClick={() => { stopIfPlaying(t.id); void act(() => api.library.restore(t.id)).then(() => setNotice(`"${t.title}": the original is back.`)) }}>{tr('Restore original')}</button>
+              onClick={() => { stopIfPlaying(t.id); void act(() => api.library.restore(t.id)).then(() => setNotice(trf('"{name}": the original is back.', { name: t.title }))) }}>{tr('Restore original')}</button>
           ) : !t.aligned && t.exists && (t.source || 'generated') === 'generated' ? (
             <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={aligning !== null} title={tr('Cut the lead-in so that the song starts exactly on beat 1 (the original is kept)')}
               onClick={() => void alignOne(t)}>{aligning === t.id ? tr('Cutting…') : tr('Start on beat 1')}</button>

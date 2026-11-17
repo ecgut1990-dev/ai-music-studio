@@ -10,7 +10,7 @@ import { EnginesTab } from './EnginesTab'
 import { ShortcutsTab } from './ShortcutsTab'
 import { ModelsTab } from './ModelsTab'
 import { HardwareTab } from './HardwareTab'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -125,12 +125,12 @@ function UpdatesTab(): React.ReactElement {
 
   const statusColor = phase === 'ready' ? 'var(--green)' : phase === 'error' ? 'var(--red)' : phase === 'available' ? 'var(--accent-light)' : 'var(--text-muted)'
   const statusText = {
-    idle: 'Auf dem neuesten Stand',
-    checking: 'Suche nach Updates…',
-    available: `Update verfügbar — v${info.version}`,
-    downloading: `Lädt herunter… ${info.percent}%`,
-    ready: `v${info.version} bereit zum Installieren`,
-    error: `Fehler: ${info.message}`
+    idle: tr('Up to date'),
+    checking: tr('Checking for updates…'),
+    available: trf('Update available: v{v}', { v: info.version ?? '' }),
+    downloading: trf('Downloading… {p}%', { p: info.percent ?? 0 }),
+    ready: trf('v{v} is ready to install', { v: info.version ?? '' }),
+    error: trf('Error: {m}', { m: info.message ?? '' })
   }[phase]
 
   return (
@@ -140,7 +140,7 @@ function UpdatesTab(): React.ReactElement {
           {tr('AI Music Studio Updates')}
         </div>
         <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-          {tr('Updates werden automatisch gesucht und im Hintergrund geladen.')}
+          {tr('Updates are looked for automatically and downloaded in the background.')}
         </div>
       </div>
 
@@ -166,13 +166,13 @@ function UpdatesTab(): React.ReactElement {
         background: 'var(--bg-elevated)', border: '1px solid var(--border-mid)', borderRadius: 8,
         padding: '12px 16px', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '6px 16px', fontSize: 12
       }}>
-        <span style={{ color: 'var(--text-muted)' }}>{tr('Installierte Version')}</span>
+        <span style={{ color: 'var(--text-muted)' }}>{tr('Installed version')}</span>
         <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>v{__APP_VERSION__}</span>
-        <span style={{ color: 'var(--text-muted)' }}>{tr('Verfügbares Update')}</span>
+        <span style={{ color: 'var(--text-muted)' }}>{tr('Available update')}</span>
         <span style={{ color: info.version ? 'var(--accent-light)' : 'var(--text-secondary)', fontWeight: 600 }}>
           {info.version
             ? `v${info.version}${phase === 'ready' ? ' (heruntergeladen)' : ''}`
-            : phase === 'checking' ? tr('wird gesucht…') : tr('keins gefunden')}
+            : phase === 'checking' ? tr('checking…') : tr('none found')}
         </span>
       </div>
 
@@ -180,23 +180,23 @@ function UpdatesTab(): React.ReactElement {
       <div style={{ display: 'flex', gap: 10 }}>
         {(phase === 'idle' || phase === 'error') && (
           <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={checkNow}>
-            {tr('Jetzt suchen')}
+            {tr('Check now')}
           </button>
         )}
         {phase === 'available' && (
           <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={download}>
-            {tr('Herunterladen')}
+            {tr('Download')}
           </button>
         )}
         {phase === 'ready' && (
           <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={install}>
-            {tr('Neu starten & Installieren')}
+            {tr('Restart and install')}
           </button>
         )}
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text-disabled)' }}>
-        {tr('Updates kommen von github.com/pierrecinema/ai-music-studio')}
+        {tr('Updates come from github.com/pierrecinema/ai-music-studio')}
       </div>
     </div>
   )

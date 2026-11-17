@@ -5,7 +5,7 @@ import { useAudioStore } from '../../stores/audio.store'
 import { previewSample, stopPreview, previewPosition, seekPreview } from '../../audio/engine'
 import { WaveformSeek } from '../common/WaveformSeek'
 import { importAudioFiles } from '../timeline/Timeline'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 const muted: React.CSSProperties = { fontSize: 11, color: 'var(--text-muted)' }
 const chip: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '2px 8px', borderRadius: 12, background: 'var(--bg-elevated)', fontSize: 11, color: 'var(--text-primary)' }
@@ -106,7 +106,7 @@ export function SamplesTab(): React.ReactElement {
   const add = async (e: SampleEntry, sync: boolean): Promise<void> => {
     setError(null)
     const bpm = sync ? await tempoOf(e) : null
-    if (sync && !bpm) { setNotice(`No tempo found for “${e.name}”: it was added without syncing.`) }
+    if (sync && !bpm) { setNotice(trf('No tempo found for “{name}”: it was added without syncing.', { name: e.name })) }
     const problems = await importAudioFiles([e.path], {
       // always a track of its own (the selected one kept collecting every sample before)
       startBeat: useAudioStore.getState().currentBeat,
@@ -190,7 +190,7 @@ export function SamplesTab(): React.ReactElement {
               <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => void detect(e)} title={tr('Measure the tempo')}>{tr('BPM?')}</button>
             )}
             <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={() => void add(e, true)}
-              title={`Into the Studio at the playhead, stretched to the project tempo (${projectBpm} BPM) without changing the pitch`}>{tr('Studio: synced')}</button>
+              title={trf('Into the Studio at the playhead, stretched to the project tempo ({bpm} BPM) without changing the pitch', { bpm: projectBpm })}>{tr('Studio: synced')}</button>
             <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void add(e, false)}
               title={tr('Into the Studio at the playhead, exactly as the file is (no stretching)')}>{tr('Studio: as is')}</button>
             <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void toLibrary(e)}

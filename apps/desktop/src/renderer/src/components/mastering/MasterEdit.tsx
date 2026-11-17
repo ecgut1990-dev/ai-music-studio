@@ -1,16 +1,33 @@
 import React, { useEffect, useState } from 'react'
 import { masterPlayer } from '../../audio/master/player'
-import { copyPart, OP_LABEL, type EditOp, type FadeCurve } from '../../audio/master/edit'
+import { copyPart, type EditOp, type FadeCurve } from '../../audio/master/edit'
 import { useMasteringStore } from '../../stores/mastering.store'
 import { useUIStore } from '../../stores/ui.store'
 import type { Analysis } from '../../audio/master/dsp'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 // Editing bar under the waveform. The marked region (drag in the waveform) is what Cut, Copy, Delete, Crop, Silence,
 // Fade, Gain and Normalise work on; Paste inserts at the play position. Ctrl+X / C / V, Delete, Ctrl+Z / Y work too.
 // The original file is never changed: the steps are listed and can be undone; they are applied on export.
 
 let clipboard: Float32Array[] | null = null
+
+// one step of the list, in the language chosen in Settings
+function opLabel(op: EditOp): string {
+  const t = (s: number): string => `${Math.floor(s / 60)}:${(s % 60).toFixed(2).padStart(5, '0')}`
+  switch (op.type) {
+    case 'delete': return trf('Cut {a}–{b}', { a: t(op.start), b: t(op.end) })
+    case 'crop': return trf('Crop to {a}–{b}', { a: t(op.start), b: t(op.end) })
+    case 'paste': return trf('Paste {s} s at {a}', { s: (op.clip[0].length / 48000).toFixed(2), a: t(op.at) })
+    case 'silence': return trf('Silence {a}–{b}', { a: t(op.start), b: t(op.end) })
+    case 'insertSilence': return trf('Insert {s} s silence at {a}', { s: op.seconds.toFixed(2), a: t(op.at) })
+    case 'fade': return trf(op.dir === 'in' ? 'Fade in {a}–{b}' : 'Fade out {a}–{b}', { a: t(op.start), b: t(op.end) })
+    case 'gain': return trf('Gain {db} dB {a}–{b}', { db: `${op.db > 0 ? '+' : ''}${op.db}`, a: t(op.start), b: t(op.end) })
+    case 'normalize': return trf('Normalise to {n}', { n: `${op.target} ${op.mode === 'peak' ? 'dBFS' : 'LUFS'}` })
+    case 'dc': return tr('Remove DC offset')
+    case 'trim': return tr('Trim silence at start and end')
+  }
+}
 
 const btn: React.CSSProperties = { fontSize: 11, padding: '3px 8px' }
 const fmt = (s: number): string => `${Math.floor(s / 60)}:${(s % 60).toFixed(2).padStart(5, '0')}`
@@ -102,7 +119,7 @@ export function MasterEdit({ buffer, stats, ops, canRedo, onEdit, onUndo, onRedo
         <button className="btn btn-ghost" style={btn} title={tr('Remove silence at the start and the end')} onClick={() => { onEdit({ type: 'trim', thresholdDb: -60 }); masterPlayer.seek(0) }}>{tr('Trim silence')}</button>
         <button className="btn btn-ghost" style={btn} title={tr('Remove a DC offset (the waveform shifted up or down)')} onClick={() => onEdit({ type: 'dc' })}>{tr('DC')}</button>
         <span style={{ flex: 1 }} />
-        <button className="btn btn-ghost" style={btn} title={tr('Marker at the play position')} onClick={() => setMarkers(path, [...markers, { t: masterPlayer.position(), name: `Marker ${markers.length + 1}` }].sort((a, b) => a.t - b.t))}>{tr('+ Marker')}</button>
+        <button className="btn btn-ghost" style={btn} title={tr('Marker at the play position')} onClick={() => setMarkers(path, [...markers, { t: masterPlayer.position(), name: trf('Marker {n}', { n: markers.length + 1 }) }].sort((a, b) => a.t - b.t))}>{tr('+ Marker')}</button>
         <button className="btn btn-ghost" style={btn} disabled={!ops.length} title={tr('Undo (Ctrl+Z)')} onClick={onUndo}>↶</button>
         <button className="btn btn-ghost" style={btn} disabled={!canRedo} title={tr('Redo (Ctrl+Y)')} onClick={onRedo}>↷</button>
         <button className="btn btn-ghost" style={btn} disabled={!ops.length} onClick={() => setShowList((v) => !v)}>{ops.length} {tr(ops.length === 1 ? 'step' : 'steps')} {showList ? '▾' : '▸'}</button>
@@ -120,14 +137,14 @@ export function MasterEdit({ buffer, stats, ops, canRedo, onEdit, onUndo, onRedo
       )}
       {showList && ops.length > 0 && (
         <ol style={{ margin: 0, paddingLeft: 18, fontSize: 11, color: 'var(--text-secondary)' }}>
-          {ops.map((o, i) => <li key={i}>{OP_LABEL(o)}</li>)}
+          {ops.map((o, i) => <li key={i}>{opLabel(o)}</li>)}
         </ol>
       )}
       <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}
         title={tr('The values of the edited song before the chain; the table "Whole song" on the right shows them next to the master.')}>
         {tr('Song now')}: <b>{fmt(buffer.duration)}</b>
         {stats ? <> · <b>{Number.isFinite(stats.integrated) ? stats.integrated.toFixed(1) : '–'}</b> {tr('LUFS ·')} {tr('peak')} <b>{Number.isFinite(stats.samplePeak) ? stats.samplePeak.toFixed(1) : '–'}</b> {tr('dBFS · RMS')} {Number.isFinite(stats.rms) ? stats.rms.toFixed(1) : '–'} dB</> : ` · ${tr('measuring…')}`}
-        {ops.length > 0 && <span style={{ color: 'var(--text-muted)' }}> · {tr('Last step')}: {OP_LABEL(ops[ops.length - 1])} · {tr('the original file is not changed; the steps are applied when you export.')}</span>}
+        {ops.length > 0 && <span style={{ color: 'var(--text-muted)' }}> · {tr('Last step')}: {opLabel(ops[ops.length - 1])} · {tr('the original file is not changed; the steps are applied when you export.')}</span>}
       </div>
     </div>
   )

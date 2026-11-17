@@ -9,7 +9,7 @@ import { bars } from '../../audio/timemap'
 import { snapBeat } from '../../edit/grid'
 import { LOOP_H, MARKER_H, NUM_H, trackPointer } from './studioLayout'
 import type { PopoverSpec } from './Popover'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 const EDGE = 6
 
@@ -101,7 +101,7 @@ export function Ruler({ beatWidth, totalBeats, popover }: { beatWidth: number; t
     if (!bar) return
     const existing = (project.signatures ?? []).find((s) => s.bar === bar.index)
     popover({
-      x: e.clientX, y: e.clientY, title: `Time signature from bar ${bar.index + 1}`,
+      x: e.clientX, y: e.clientY, title: trf('Time signature from bar {n}', { n: bar.index + 1 }),
       fields: [{ key: 'num', label: 'Beats per bar', value: String(bar.num), type: 'number' }, { key: 'den', label: 'Note value', value: String(bar.den), options: ['2', '4', '8', '16'] }],
       onOk: (v) => {
         const num = Math.max(1, Math.min(32, Math.round(Number(v.num) || bar.num)))

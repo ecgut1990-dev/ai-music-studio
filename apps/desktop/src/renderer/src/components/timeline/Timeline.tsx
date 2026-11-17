@@ -20,7 +20,7 @@ import { Ruler } from './Ruler'
 import { Popover, type PopoverSpec } from './Popover'
 import { AutomationHeader, AutomationLane, FxHeader, FxLane, MiniMeter, ReturnRow, TakeHeader, TempoLane } from './StudioLanes'
 import { ChannelTab } from './ChannelTab'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 import {
   AUTO_HEIGHT, BEAT_WIDTH, buildRows, HANDLE, HEADER_WIDTH, RULER_HEIGHT, rowHeight, rowTops, TAKE_HEIGHT, TEMPO_HEIGHT, TRACK_MAX_HEIGHT, TRACK_MIN_HEIGHT, trackHeight, trackPointer, openLanes, toggleAutomationLanes, type Row
 } from './studioLayout'
@@ -607,7 +607,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
   }
 
   const toolbarBtn = (label: string, title: string, onClick: () => void, active = false, disabled = false): React.ReactElement => (
-    <button className={`btn ${active ? 'btn-primary' : 'btn-ghost'}`} style={tb} title={title} disabled={disabled} onClick={onClick}>{label}</button>
+    <button className={`btn ${active ? 'btn-primary' : 'btn-ghost'}`} style={tb} title={tr(title)} disabled={disabled} onClick={onClick}>{tr(label)}</button>
   )
 
   return (
@@ -630,7 +630,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
         <button className="btn btn-ghost" style={tb} disabled={syncing || !project.tracks.some((t) => t.clips.some((c) => c.audioFile))}
           title={selAudio.length > 1 ? tr('The selected clips: stretch each to the master BPM and start them together, beat 1 of each on the same bar') : tr('Measure all audio clips and bring every one in time with the master BPM')}
           onClick={async () => { setSyncing(true); setMessage(null); await (selAudio.length > 1 ? runSyncSelected(selAudio) : runSyncAll()); setSyncing(false) }}>
-          {syncing ? tr('Syncing…') : selAudio.length > 1 ? `Sync ${selAudio.length} selected to ${project.bpm} BPM` : `Sync all to ${project.bpm} BPM`}
+          {syncing ? tr('Syncing…') : selAudio.length > 1 ? trf('Sync {n} selected to {bpm} BPM', { n: selAudio.length, bpm: project.bpm }) : trf('Sync all to {bpm} BPM', { bpm: project.bpm })}
         </button>
         <button className="btn btn-ghost" style={tb} disabled={!selectedAudioClip}
           title={selectedAudioClip ? tr('Measure the tempo of the selected audio and bring it in time with the project') : tr('Select an audio clip first')}
@@ -669,7 +669,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
             <button className="btn btn-primary" style={{ fontSize: 10, padding: '1px 8px' }} disabled={syncing}
               title={tr('Stretch every selected song, loop or stem to the master BPM and start them together: beat 1 of each on the same bar')}
               onClick={async () => { setSyncing(true); setMessage(null); await runSyncSelected(selAudio); setSyncing(false) }}>
-              {syncing ? tr('Syncing…') : `Sync together (${selAudio.length})`}
+              {syncing ? tr('Syncing…') : trf('Sync together ({n})', { n: selAudio.length })}
             </button>
           )}
           <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => void run('Consolidating', consolidate)} title={tr('Join into one clip (Ableton Ctrl+J)')}>{tr('Consolidate')}</button>

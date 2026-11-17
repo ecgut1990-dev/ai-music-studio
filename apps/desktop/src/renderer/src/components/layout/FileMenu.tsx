@@ -5,14 +5,14 @@ import { newProject, openProject, recentProjects, saveProject, saveProjectAs } f
 import { useProjectStore } from '../../stores/project.store'
 import { useUIStore } from '../../stores/ui.store'
 import { ExportDialog } from './ExportDialog'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 export const EXPORT_EVENT = 'ams:export-audio'
 
 export function reportOpen(r: { ok: boolean; message?: string; missing?: string[] }): void {
   if (r.message) window.alert(r.message)
   else if (r.ok && r.missing?.length) {
-    window.alert(`The project opened, but ${r.missing.length} audio file(s) are missing and will be silent:\n\n` +
+    window.alert(trf('The project opened, but {n} audio file(s) are missing and will be silent:', { n: r.missing.length }) + '\n\n' +
       r.missing.slice(0, 6).join('\n') + (r.missing.length > 6 ? '\n…' : ''))
   }
 }
@@ -38,7 +38,7 @@ export function FileMenu(): React.ReactElement {
     return () => window.removeEventListener('mousedown', close)
   }, [open])
 
-  const run = (fn: () => unknown): void => { setOpen(false); void Promise.resolve(fn()).catch((e) => window.alert(`That did not work: ${(e as Error).message}`)) }
+  const run = (fn: () => unknown): void => { setOpen(false); void Promise.resolve(fn()).catch((e) => window.alert(trf('That did not work: {m}', { m: (e as Error).message }))) }
   const recent = recentProjects()
 
   return (

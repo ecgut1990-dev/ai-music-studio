@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { SLOT_LABEL, TARGETS, defaultChain, slotDefaults, type BandParams, type Chain, type Slot, type SlotType } from '../../audio/master/chain'
 import { useMasteringStore } from '../../stores/mastering.store'
 import { EqCurve } from './EqCurve'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 // The processing chain: slots that can be switched off, moved and removed, each with its controls; the limiter with
 // the "Louder" control and the loudness target at the end; presets.
@@ -62,7 +62,7 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
           </div>
           {([1, 2, 3] as const).map((n) => (
             <div key={n} style={grp}>
-              <Knob name={`Band ${n}`} refv={d[`p${n}F`]} value={p[`p${n}F`]} min={40} max={16000} step={1} unit="Hz" log onChange={(v) => u(`p${n}F`, v)} />
+              <Knob name={trf('Band {n}', { n })} refv={d[`p${n}F`]} value={p[`p${n}F`]} min={40} max={16000} step={1} unit="Hz" log onChange={(v) => u(`p${n}F`, v)} />
               <Knob name={tr('  gain')} refv={d[`p${n}G`]} value={p[`p${n}G`]} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => u(`p${n}G`, v)} />
               <Knob name={tr('  width (Q)')} refv={d[`p${n}Q`]} value={p[`p${n}Q`]} min={0.3} max={8} step={0.1} onChange={(v) => u(`p${n}Q`, v)} />
             </div>
@@ -263,8 +263,8 @@ export function MasterRack({ chain, onChange, target, onTarget, onReachTarget, r
             {TARGETS.map((x) => <option key={x.id} value={x.id}>{tr(x.label)}</option>)}
           </select>
           <button className="btn btn-primary" style={{ fontSize: 11 }} disabled={reaching} onClick={onReachTarget}
-            title={`Sets "Louder" (and the ceiling to ${t.ceiling} dBTP) so the song reaches ${t.lufs} LUFS`}>
-            {reaching ? tr('Measuring…') : `Reach ${t.lufs} LUFS`}
+            title={trf('Sets "Louder" (and the ceiling to {c} dBTP) so the song reaches {l} LUFS', { c: t.ceiling, l: t.lufs })}>
+            {reaching ? tr('Measuring…') : trf('Reach {l} LUFS', { l: t.lufs })}
           </button>
         </div>
       </div>

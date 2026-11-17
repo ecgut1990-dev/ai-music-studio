@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { masterPlayer } from '../../audio/master/player'
 import type { Analysis } from '../../audio/master/dsp'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 // Meters: numbers for the whole file (before → after) and live while playing, gain reduction, stereo correlation,
 // goniometer, spectrum (before and after on top of each other) and the loudness over time.
@@ -85,9 +85,9 @@ export function MasterMeters({ before, after, target, busy, active }: { before: 
         <Bar value={live ? r!.rms : -Infinity} min={-40} max={0} color="var(--teal)" text={`RMS ${fmt(live ? r!.rms : undefined)} dB`} />
         <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{tr('Integrated since play:')} <b>{fmt(r?.integrated)}</b> LUFS</div>
         <div style={label}>{tr('Gain reduction')}</div>
-        <Bar value={-limDb} min={0} max={12} color="var(--orange)" text={`Limiter ${fmt(limDb)} dB`} />
-        <Bar value={red.comp} min={0} max={12} color="var(--yellow)" text={`Compressor −${fmt(red.comp)} dB`} />
-        {red.dyneq > 0.05 && <Bar value={red.dyneq} min={0} max={12} color="var(--teal)" text={`Dynamic EQ −${fmt(red.dyneq)} dB`} />}
+        <Bar value={-limDb} min={0} max={12} color="var(--orange)" text={trf('Limiter {n} dB', { n: fmt(limDb) })} />
+        <Bar value={red.comp} min={0} max={12} color="var(--yellow)" text={trf('Compressor −{n} dB', { n: fmt(red.comp) })} />
+        {red.dyneq > 0.05 && <Bar value={red.dyneq} min={0} max={12} color="var(--teal)" text={trf('Dynamic EQ −{n} dB', { n: fmt(red.dyneq) })} />}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
           {red.bands.map((b, i) => <Bar key={i} value={b} min={0} max={12} color="var(--yellow)" text={`${['Low', 'Mid', 'High'][i]} −${fmt(b)}`} />)}
         </div>

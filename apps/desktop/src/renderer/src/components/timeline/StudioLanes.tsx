@@ -11,7 +11,7 @@ import { AUTO_HEIGHT, AUTO_MIN_HEIGHT, FX_HEIGHT, HEADER_WIDTH, openLanes, RETUR
 import { INSERT_LABEL, INSERT_PARAMS, insertDefaults } from '../../audio/fx'
 import { nanoid } from 'nanoid'
 import type { PopoverSpec } from './Popover'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 const small: React.CSSProperties = { fontSize: 10, padding: '1px 6px' }
 
@@ -198,7 +198,7 @@ export function TempoLane({ beatWidth, popover }: { beatWidth: number; popover: 
   const edit = (e: React.MouseEvent, beat: number, bpm: number, isFirst: boolean): void => {
     e.preventDefault(); e.stopPropagation()
     popover({
-      x: e.clientX, y: e.clientY, title: isFirst ? 'Tempo at the start' : `Tempo from beat ${beat.toFixed(2)}`,
+      x: e.clientX, y: e.clientY, title: isFirst ? tr('Tempo at the start') : trf('Tempo from beat {n}', { n: beat.toFixed(2) }),
       fields: [{ key: 'bpm', label: 'BPM', value: String(bpm), type: 'number' }],
       onOk: (v) => {
         const n = Math.max(20, Math.min(400, Number(v.bpm) || bpm))

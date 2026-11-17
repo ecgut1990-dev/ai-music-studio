@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { renderMix, projectEndBeat, beatsToSec } from '../../audio/engine'
 import { useProjectStore } from '../../stores/project.store'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => void }): React.ReactElement | null {
   const project = useProjectStore((s) => s.project)
@@ -40,7 +40,7 @@ export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => 
       }
       const db = mix.peak > 0 ? (20 * Math.log10(mix.peak)).toFixed(1) : '-inf'
       if (mix.peak >= 0.999) note = ' Warning: the mix clips (peak at 0 dBFS). Lower the track faders or tick Normalize.'
-      setResult({ ok: true, text: `Saved ${out}. Length ${Math.round(mix.seconds)} s, peak ${db} dBFS.${note}` })
+      setResult({ ok: true, text: trf('Saved {file}. Length {s} s, peak {db} dBFS.', { file: out, s: Math.round(mix.seconds), db }) + note })
     } catch (e) {
       setResult({ ok: false, text: (e as Error).message })
     }

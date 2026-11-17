@@ -26,7 +26,7 @@ import { AskTextDialog } from './components/common/AskText'
 import { FeedbackButton } from './components/common/Feedback'
 import { Mastering } from './components/mastering/Mastering'
 import { KaraokeExport } from './components/karaoke/KaraokeExport'
-import { tr } from './i18n/tr'
+import { tr, trf } from './i18n/tr'
 
 // Hardware info fetched from backend
 interface HardwareInfo {
@@ -51,7 +51,7 @@ function GeneratingBadge(): React.ReactElement | null {
         style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700,
           color: job.status === 'error' ? 'var(--red)' : 'var(--accent-light)' }}
       >
-        {job.status === 'error' ? tr('Music generation failed: open') : `Generating music${pct !== null ? ` ${pct}%` : '…'}${job.stage_text ? ` · ${job.stage_text.slice(0, 40)}` : ''}`}
+        {job.status === 'error' ? tr('Music generation failed: open') : `${tr('Generating music')}${pct !== null ? ` ${pct}%` : '…'}${job.stage_text ? ` · ${job.stage_text.slice(0, 40)}` : ''}`}
       </button>
       {busy && !job.cancel && (
         <button onClick={() => void useMusicJob.getState().cancel()} title={tr('Cancel music generation')}
