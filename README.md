@@ -93,6 +93,10 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 
 All changes of every version: [CHANGELOG.md](CHANGELOG.md)
 
+### New in 0.30.9
+
+- **ACE-Step 1.5 says whether it downloads or only loads its model.** The model (about 10 GB) is downloaded only once and kept; every song then loads it from the disk, which takes a minute or two. The progress text used to say "the first time it downloads the model" on every song, which looked like a new download each time. Now it says "Loading … from the disk (already downloaded)", or, if a part of the model is really missing, "Downloading … missing: <part>" (also in the backend log).
+
 ### New in 0.30.8
 
 - **Fix: ACE-Step 1.5 LoRAs from 0.30.6 failed to load** ("module name can't contain '.'"): the adapter now gets a fixed name.

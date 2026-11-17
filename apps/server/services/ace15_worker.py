@@ -39,7 +39,22 @@ def main() -> int:
     os.environ.setdefault("ACESTEP_INIT_LLM", "false")          # DiT only: no language model, less memory
     if req.get("checkpoints"):
         os.environ.setdefault("ACESTEP_CHECKPOINTS_DIR", req["checkpoints"])
-    say(stage="load", text="Loading ACE-Step 1.5. The first time it downloads the model (about 10 GB).")
+    # the model is downloaded only once (about 10 GB, kept in the checkpoints folder); say which of the two happens
+    missing = []
+    try:
+        from acestep.model_downloader import MAIN_MODEL_COMPONENTS, _contains_model_weights, get_checkpoints_dir
+        ckpt = get_checkpoints_dir()
+        missing = [c for c in MAIN_MODEL_COMPONENTS if not _contains_model_weights(ckpt / c)]
+        print(f"[models] checkpoints: {ckpt}; missing: {', '.join(missing) or 'none'}", flush=True)
+    except Exception as e:  # noqa: BLE001 - older ACE-Step: no check, say both
+        print(f"[models] could not check the checkpoints folder: {e}", flush=True)
+        missing = ["?"]
+    if missing and missing != ["?"]:
+        say(stage="load", text=f"Downloading the ACE-Step 1.5 model (about 10 GB, only this once; missing: {', '.join(missing)}).")
+    elif missing:
+        say(stage="load", text="Loading ACE-Step 1.5 (the first time it downloads the model, about 10 GB).")
+    else:
+        say(stage="load", text="Loading ACE-Step 1.5 from the disk (already downloaded; this takes a minute or two).")
     try:
         import torch
         from acestep.handler import AceStepHandler
