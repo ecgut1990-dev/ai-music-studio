@@ -169,16 +169,16 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 | 7c.10 | **+ Marker**, Namen ändern, auf die Zeit klicken | gelbe Linie mit Namen in der Wellenform; Klick springt dorthin | ✅ | | |
 | 7c.11 | Nach Schnitten **Export…** | exportierte Datei hat die Schnitte; Originaldatei unverändert | ✅ | | |
 | 7c.12 | **+ Add… → Dynamic EQ** (z. B. 3,5 kHz) und **Saturation / exciter** | beim Abspielen hörbar; Gain Reduction zeigt „Dynamic EQ“ | ✅ | | |
-| 7c.13 | Zwei Songs öffnen, bei jedem andere Kette, zwischen den Tabs wechseln | jeder Song behält seine Kette | | | Erklärung: zwei Songs als Tabs, verschiedene Ketten, Tabs wechseln |
+| 7c.13 | Zwei Songs öffnen, bei jedem andere Kette, zwischen den Tabs wechseln | jeder Song behält seine Kette | – | | vom Owner nicht benötigt (ein Song im Mastering reicht); funktioniert in der Vorschau |
 | 7c.14 | Studio: Spur → **FX → + Effect…** → Dynamic EQ, Saturation, Stereo, Limiter | Effekte erscheinen mit Reglern, hörbar, auch im Export | ✅ | | |
-| 7c.15 | Stem Splitter: Stems erstellen → bei einem Stem **Mastering** | Stem öffnet sich im Mastering | | | Ort: Stem-Trenner → nach „Split Stems“ in jeder Stem-Zeile rechts; oder Bibliothek → Tab „Stems“ → bei jedem Stem |
+| 7c.15 | Stem Splitter: Stems erstellen → bei einem Stem **Mastering** | Stem öffnet sich im Mastering | ✅ | | Bibliothek → Stems → Mastering |
 | 7c.16 | **File → New project** (oder Strg+N) | Fenster fragt nach dem Namen; der Name steht oben und beim Speichern | ✅ | | |
 | 7c.17 | neu (0.31.2): **Master-Gain-Fader** rechts oben: ziehen, Mausrad, Doppelklick, −1 / 0 / +1 | Master wird lauter / leiser ohne Übersteuern; TP bleibt ≤ Ceiling, GR (orange) zeigt die Arbeit des Limiters | ✅ | | |
 | 7c.18 | neu (0.31.2): Assistent → bei einem Vorschlag **Übernehmen**; dann **Master noch einmal analysieren** | Vorschlag grün „übernommen“; Balken zeigen den Master (lila) mit grauer Kontur fürs Original; Runde 2 schlägt weiter vor | ✅ | | |
-| 7c.19 | neu (0.31.2): Wellenform am Ende | nach dem Songende etwas dunkler Leerraum mit Endlinie; Zoom bleibt nach einem Schnitt | ✅ | | 0.31.5/0.31.6 |
+| 7c.19 | neu (0.31.2): Wellenform am Ende | nach dem Songende etwas dunkler Leerraum mit Endlinie; Zoom bleibt nach einem Schnitt | ✅ | | 0.31.6 |
 | 7c.20 | neu (0.31.3): Mastering, KI-Leiste rechts schließen (×), dann wieder öffnen | zu: Fader und Anzeigen rechts in eigener Spalte, immer sichtbar; offen: Layout wie bisher; nach Neustart bleibt die Leiste so | ✅ | | 0.31.5 |
 | 7c.21 | neu (0.31.4): KI-Leiste zu → oben rechts **✦ KI-Assistent**; Reihenfolge rechts | Knopf öffnet die Leiste wieder; rechts: Goniometer + Spektrum, Lautheitsverlauf, Whole song, Live, Master-Gain unten | ✅ | | 0.31.5 |
-| 7c.22 | neu (0.31.6): Mastering: weiße Abspiellinie am ▼ oben ziehen; auf der Zeitleiste unter der Wellenform ziehen (auch beim Abspielen) | Position fährt mit der Maus vor und zurück; Klick springt; Ziehen in der Wellenform markiert weiterhin einen Bereich | | | |
+| 7c.22 | neu (0.31.6): Mastering: weiße Abspiellinie am ▼ oben ziehen; auf der Zeitleiste unter der Wellenform ziehen (auch beim Abspielen) | Position fährt mit der Maus vor und zurück; Klick springt; Ziehen in der Wellenform markiert weiterhin einen Bereich | ✅ | | 0.31.6 |
 
 ## 7b. AI Chat, Sonstiges
 
