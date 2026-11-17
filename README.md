@@ -93,6 +93,11 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 
 All changes of every version: [CHANGELOG.md](CHANGELOG.md)
 
+### New in 0.30.8
+
+- **Fix: ACE-Step 1.5 LoRAs from 0.30.6 failed to load** ("module name can't contain '.'"): the adapter now gets a fixed name.
+- **Fix: "not enough memory" with a LoRA on PCs with 12–16 GB:** before loading a LoRA, ACE-Step kept a full copy of the model (several GB) so the LoRA could be removed again later. The app makes each song in its own run and never removes a LoRA, so this copy is no longer made.
+
 ### New in 0.30.7
 
 - **Finished songs go to the Stem Splitter with one click:** next to *Add to project* and *Mastering*, the results in Create music and every song in the Library now have a **Stem Splitter** button. The song opens there with its name, ready to split.
