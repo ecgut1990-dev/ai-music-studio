@@ -201,9 +201,9 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 | 8.6 | Bei der Frage **Abbrechen** | App bleibt offen, nichts geht verloren | ✅ | | 0.40.1 |
 | 8.7 | Nochmal schließen, **Speichern** (neues Projekt: Speicherort wählen) | Projekt wird gespeichert, dann schließt die App. Beim Speichern-Dialog auf Abbrechen: App bleibt offen | ✅ | | 0.40.1 |
 | 8.8 | Nochmal ändern, schließen, **Nicht speichern** | App schließt sofort | ✅ | | 0.40.1 |
-| 8.9 | Ohne Änderungen schließen | Keine Frage, App schließt sofort |  | |  |
+| 8.9 | Ohne Änderungen schließen | Keine Frage, App schließt sofort | ✅ | | 0.40.1 |
 | 8.10 | Bibliothek mit geschlossenem KI-Fenster | Liste nutzt die ganze Breite, voller Songname sichtbar, Knöpfe in eigener Zeile darunter | ✅ | | 0.40.1 |
-| 8.11 | neu (0.40.1): Feedback-Fenster (unten rechts) | Kein „Beta“ mehr; dort heißt es „Ausführliches Log“. Das Willkommensfenster erscheint nur beim allerersten Start (oder nach einem Absturz mit Sicherung), darum war es nicht zu sehen: so gewollt | | Willkommensfenster nicht erschienen (so gewollt); Feedback-Fenster noch prüfen | |
+| 8.11 | neu (0.40.1): Feedback-Fenster (unten rechts) | Kein „Beta“ mehr; dort heißt es „Ausführliches Log“. Das Willkommensfenster erscheint nur beim allerersten Start (oder nach einem Absturz mit Sicherung), darum war es nicht zu sehen: so gewollt | ✅ | Willkommensfenster nicht erschienen (so gewollt) | 0.40.1 |
 
 ## Ergebnisse
 
