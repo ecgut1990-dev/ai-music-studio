@@ -184,10 +184,10 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
         <span>{tr('Click: play from there · drag: mark a region · drag the white line or the time ruler: move through the song · Ctrl + wheel: zoom, wheel: scroll')}</span>
         <span style={{ flex: 1 }} />
         {zoom > 1 && <input type="range" min={0} max={Math.max(0, total - span)} step={0.01} value={scroll} style={{ width: 160 }}
-          onChange={(e) => setScroll(Number(e.target.value))} title="Scroll" />}
-        Zoom <input type="range" min={0} max={1} step={0.01} value={Math.log(zoom / ZMIN) / Math.log(200 / ZMIN)} style={{ width: 110 }}
+          onChange={(e) => setScroll(Number(e.target.value))} title={tr('Scroll')} />}
+        {tr('Zoom')} <input type="range" min={0} max={1} step={0.01} value={Math.log(zoom / ZMIN) / Math.log(200 / ZMIN)} style={{ width: 110 }}
           onChange={(e) => { const z = ZMIN * Math.pow(200 / ZMIN, Number(e.target.value)); setZoom(z); setScroll((s) => Math.max(0, Math.min(total - total / z, s))) }} />
-        <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title="Whole song" onClick={() => { setZoom(1); setScroll(0) }}>⤢</button>
+        <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title={tr('Whole song')} onClick={() => { setZoom(1); setScroll(0) }}>⤢</button>
       </div>
     </div>
   )

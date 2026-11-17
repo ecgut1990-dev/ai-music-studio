@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { api, type KaraokeWord } from '../../lib/api'
+import { tr } from '../../i18n/tr'
 
 export function KaraokeExport(): React.ReactElement {
   const [audio, setAudio] = useState('')
@@ -35,39 +36,38 @@ export function KaraokeExport(): React.ReactElement {
 
   return (
     <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12, overflow: 'auto', height: '100%' }}>
-      <div className="panel-header" style={{ padding: 0, border: 'none' }}>Karaoke export</div>
+      <div className="panel-header" style={{ padding: 0, border: 'none' }}>{tr('Karaoke export')}</div>
       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-        Detects word timings in a song (Whisper), writes an enhanced .lrc and renders an MP4 with highlighted lyrics (needs ffmpeg).
-        Works best on an isolated vocal stem.
+        {tr('Detects word timings in a song (Whisper), writes an enhanced .lrc and renders an MP4 with highlighted lyrics (needs ffmpeg).\n        Works best on an isolated vocal stem.')}
       </div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <button className="btn btn-ghost" onClick={browse}>Choose song…</button>
-        <span className="truncate" style={{ fontSize: 11, maxWidth: 420 }}>{audio || 'nothing selected'}</span>
+        <button className="btn btn-ghost" onClick={browse}>{tr('Choose song…')}</button>
+        <span className="truncate" style={{ fontSize: 11, maxWidth: 420 }}>{audio || tr('nothing selected')}</span>
       </div>
       <div>
         <button className="btn btn-primary" disabled={!audio || !!busy} onClick={align}>
-          {busy === 'align' ? 'Detecting words…' : 'Detect lyrics & timing'}
+          {busy === 'align' ? tr('Detecting words…') : tr('Detect lyrics & timing')}
         </button>
       </div>
 
       {words.length > 0 && (
         <>
-          <div style={{ fontSize: 11, color: 'var(--green)' }}>{words.length} words aligned</div>
+          <div style={{ fontSize: 11, color: 'var(--green)' }}>{words.length} {tr('words aligned')}</div>
           <textarea readOnly value={lrc} rows={8} style={{ fontFamily: 'monospace', fontSize: 11 }} />
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <button className="btn btn-ghost" onClick={() => window.api.shell.openPath(lrcFile)}>Open .lrc</button>
+            <button className="btn btn-ghost" onClick={() => window.api.shell.openPath(lrcFile)}>{tr('Open .lrc')}</button>
             {(['16:9', '9:16', '1:1'] as const).map(a => (
               <button key={a} className={`btn ${aspect === a ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setAspect(a)}>{a}</button>
             ))}
             <button className="btn btn-primary" disabled={!!busy} onClick={makeVideo}>
-              {busy === 'video' ? 'Rendering…' : 'Render MP4'}
+              {busy === 'video' ? tr('Rendering…') : tr('Render MP4')}
             </button>
           </div>
         </>
       )}
       {videoFile && (
         <button className="btn btn-ghost" style={{ alignSelf: 'flex-start' }} onClick={() => window.api.shell.openPath(videoFile)}>
-          Open video
+          {tr('Open video')}
         </button>
       )}
       {error && <div style={{ color: 'var(--red)', fontSize: 11 }}>{error}</div>}

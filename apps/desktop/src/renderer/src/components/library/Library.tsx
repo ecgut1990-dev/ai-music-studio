@@ -11,6 +11,7 @@ import { SamplesTab } from './SamplesTab'
 import { seedAnalysis } from '../../beatmatch/store'
 import { ExportDialog, parseTags } from '../common/ExportDialog'
 import { matchesQuery } from '../../lib/librarySearch'
+import { tr } from '../../i18n/tr'
 
 const muted: React.CSSProperties = { fontSize: 11, color: 'var(--text-muted)' }
 const mmss = (s: number | null): string => (s == null ? '?' : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`)
@@ -118,20 +119,20 @@ export function Library(): React.ReactElement {
   const unaligned = tracks.filter((t) => t.exists && !t.aligned && (t.source || 'generated') === 'generated').length
 
   return (
-    <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 980 }}>
+    <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div>
-        <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)' }}>Library</div>
+        <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('Library')}</div>
         <div style={muted}>
-          Every song you create is kept here for good, so nothing is lost when you close the app.
-          {dir && <> Folder: <span style={{ fontFamily: 'monospace' }}>{dir}</span>{' '}
-            <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => tracks[0] ? void window.api.files.showItem(tracks[0].path) : void window.api.shell.openPath(dir)}>Open folder</button></>}
+          {tr('Every song you create is kept here for good, so nothing is lost when you close the app.')}
+          {dir && <> {tr('Folder:')} <span style={{ fontFamily: 'monospace' }}>{dir}</span>{' '}
+            <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => tracks[0] ? void window.api.files.showItem(tracks[0].path) : void window.api.shell.openPath(dir)}>{tr('Open folder')}</button></>}
         </div>
       </div>
 
       <div style={{ display: 'flex', gap: 6 }}>
         {(['tracks', 'stems', 'samples'] as const).map((t) => (
           <button key={t} className={`btn ${tab === t ? 'btn-primary' : 'btn-ghost'}`} onClick={() => { audio.current?.pause(); setPlaying(null); setTab(t) }}>
-            {t === 'tracks' ? 'My tracks' : t === 'stems' ? `Stems (${tracks.filter((x) => x.source === 'stem').length})` : 'Samples (Ableton and others)'}
+            {t === 'tracks' ? tr('My tracks') : t === 'stems' ? `Stems (${tracks.filter((x) => x.source === 'stem').length})` : tr('Samples (Ableton and others)')}
           </button>
         ))}
       </div>
@@ -139,40 +140,40 @@ export function Library(): React.ReactElement {
       {tab === 'samples' && <SamplesTab />}
 
       {tab !== 'samples' && <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search name, tag or BPM (e.g. house, 124, 120-130)…" style={{ width: 320 }} />
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tr('Search name, tag or BPM (e.g. house, 124, 120-130)…')} style={{ width: 320 }} />
         <label style={{ ...muted, display: 'flex', gap: 4, alignItems: 'center' }}>
-          <input type="checkbox" checked={onlyFav} onChange={(e) => setOnlyFav(e.target.checked)} /> Favourites only
+          <input type="checkbox" checked={onlyFav} onChange={(e) => setOnlyFav(e.target.checked)} /> {tr('Favourites only')}
         </label>
         <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={async () => {
           const paths = await window.api.dialog.openAudio()
           for (const p of paths) await act(() => api.library.importFile(p))
-        }}>Add files to the library…</button>
+        }}>{tr('Add files to the library…')}</button>
         {unaligned > 0 && (confirmAll ? (
           <span style={{ ...muted, display: 'flex', gap: 4, alignItems: 'center' }}>
-            Cut the lead-in of {unaligned} older songs? The originals are kept.
-            <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={() => void alignEverything()}>Yes, cut</button>
-            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setConfirmAll(false)}>No</button>
+            {tr('Cut the lead-in of')} {unaligned} {tr('older songs? The originals are kept.')}
+            <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={() => void alignEverything()}>{tr('Yes, cut')}</button>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setConfirmAll(false)}>{tr('No')}</button>
           </span>
         ) : (
           <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={aligning !== null}
-            title="Songs made before version 0.11 may start with a little silence or lead-in. This cuts it, so that every song starts exactly on beat 1. Stems and imported files are not touched."
-            onClick={() => setConfirmAll(true)}>{aligning === 'all' ? 'Cutting…' : `Start all on beat 1 (${unaligned})`}</button>
+            title={tr('Songs made before version 0.11 may start with a little silence or lead-in. This cuts it, so that every song starts exactly on beat 1. Stems and imported files are not touched.')}
+            onClick={() => setConfirmAll(true)}>{aligning === 'all' ? tr('Cutting…') : `Start all on beat 1 (${unaligned})`}</button>
         ))}
         <span style={{ flex: 1 }} />
-        <label style={{ ...muted, display: 'flex', gap: 4, alignItems: 'center' }}>Insert at
+        <label style={{ ...muted, display: 'flex', gap: 4, alignItems: 'center' }}>{tr('Insert at')}
           <select value={insertAt} onChange={(e) => { chooseInsert(e.target.value as 'bar1' | 'playhead'); e.target.blur() }} style={{ fontSize: 11 }}>
-            <option value="bar1">bar 1</option><option value="playhead">the playhead</option>
+            <option value="bar1">{tr('bar 1')}</option><option value="playhead">{tr('the playhead')}</option>
           </select>
         </label>
-        <span style={muted}>{shown.length} of {inTab.length} {tab === 'stems' ? 'stems' : 'tracks'}</span>
+        <span style={muted}>{shown.length} {tr('of')} {inTab.length} {tab === 'stems' ? tr('stems') : tr('tracks')}</span>
       </div>}
 
       {tab !== 'samples' && error && <div style={{ color: 'var(--red)', fontSize: 12 }}>{error}</div>}
-      {tab !== 'samples' && notice && <div style={{ color: 'var(--green)', fontSize: 12 }}>{notice} <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => setActiveView('timeline')}>Show Studio</button></div>}
+      {tab !== 'samples' && notice && <div style={{ color: 'var(--green)', fontSize: 12 }}>{notice} <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => setActiveView('timeline')}>{tr('Show Studio')}</button></div>}
 
       {tab === 'stems' && inTab.length === 0 && !error && (
         <div style={{ ...muted, border: '1px dashed var(--border-mid)', borderRadius: 10, padding: 24, lineHeight: 1.7 }}>
-          No stems yet. Split a song in the <b>Stem Splitter</b> and press <b>Save to library</b>: its stems are kept here together, with tags, and can be exported for any DAW later.
+          {tr('No stems yet. Split a song in the')} <b>{tr('Stem Splitter')}</b> {tr('and press')} <b>{tr('Save to library')}</b>{tr(': its stems are kept here together, with tags, and can be exported for any DAW later.')}
         </div>
       )}
 
@@ -180,21 +181,21 @@ export function Library(): React.ReactElement {
         <div key={set[0].stem_set ?? set[0].id} style={{ border: '1px solid var(--border-mid)', borderRadius: 12, padding: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <b style={{ fontSize: 13, color: 'var(--text-primary)' }}>{set[0].song ?? set[0].title}</b>
-            <span style={muted}>{set.length} stems{set[0].bpm ? ` · ${Math.round(set[0].bpm)} BPM` : ''} · {new Date(set[0].created * 1000).toLocaleDateString()}</span>
+            <span style={muted}>{set.length} {tr('stems')}{set[0].bpm ? ` · ${Math.round(set[0].bpm)} BPM` : ''} · {new Date(set[0].created * 1000).toLocaleDateString()}</span>
             <span style={{ flex: 1 }} />
             <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!set.some((t) => t.exists)}
-              onClick={() => setExporting({ title: `${set[0].song ?? 'stems'} (${set.length} stems)`, items: set.filter((t) => t.exists).map((t) => ({ path: t.path, name: t.title })) })}>Export all…</button>
+              onClick={() => setExporting({ title: `${set[0].song ?? 'stems'} (${set.length} stems)`, items: set.filter((t) => t.exists).map((t) => ({ path: t.path, name: t.title })) })}>{tr('Export all…')}</button>
           </div>
           {set.map((t) => row(t))}
         </div>
       ))}
 
       {tab === 'tracks' && inTab.length > 0 && tracks.some((x) => x.source === 'stem') && (
-        <div style={muted}>Saved stems are kept in the <button className="btn btn-ghost" style={{ fontSize: 11, padding: '1px 8px' }} onClick={() => setTab('stems')}>Stems</button> tab, grouped by song.</div>
+        <div style={muted}>{tr('Saved stems are kept in the')} <button className="btn btn-ghost" style={{ fontSize: 11, padding: '1px 8px' }} onClick={() => setTab('stems')}>{tr('Stems')}</button> {tr('tab, grouped by song.')}</div>
       )}
       {tab === 'tracks' && inTab.length === 0 && !error && (
         <div style={{ ...muted, border: '1px dashed var(--border-mid)', borderRadius: 10, padding: 24, lineHeight: 1.7 }}>
-          No tracks yet. Songs made in <b>Create music</b> appear here automatically.{tracks.some((x) => x.source === 'stem') && <> Your saved stems are in the <b>Stems</b> tab.</>}
+          {tr('No tracks yet. Songs made in')} <b>{tr('Create music')}</b> {tr('appear here automatically.')}{tracks.some((x) => x.source === 'stem') && <> {tr('Your saved stems are in the')} <b>{tr('Stems')}</b> {tr('tab.')}</>}
         </div>
       )}
 
@@ -208,7 +209,7 @@ export function Library(): React.ReactElement {
       <div key={t.id} style={{ background: 'var(--bg-panel)', border: `1px solid ${playing === t.id ? 'var(--accent)' : 'var(--border-mid)'}`, borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 10, opacity: t.exists ? 1 : 0.55 }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button className="btn btn-primary" style={{ width: 38, height: 38, borderRadius: 19, padding: 0, justifyContent: 'center' }} disabled={!t.exists}
-            title={playing === t.id ? 'Stop' : 'Play'} onClick={() => void play(t)}>{playing === t.id ? '■' : '▶'}</button>
+            title={playing === t.id ? tr('Stop') : tr('Play')} onClick={() => void play(t)}>{playing === t.id ? '■' : '▶'}</button>
 
           <div style={{ flex: 1, minWidth: 0 }}>
             {renaming === t.id ? (
@@ -216,49 +217,51 @@ export function Library(): React.ReactElement {
                 onBlur={(e) => { const v = e.target.value.trim(); setRenaming(null); if (v && v !== t.title) void act(() => api.library.patch(t.id, { title: v })) }}
                 onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') setRenaming(null) }} />
             ) : (
-              <div onDoubleClick={() => setRenaming(t.id)} title="Double-click to rename" style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {t.title}{!t.exists && ' (file missing)'}
+              <div onDoubleClick={() => setRenaming(t.id)} title={tr('Double-click to rename')} style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', overflowWrap: 'anywhere' }}>
+                {t.title}{!t.exists && tr(' (file missing)')}
               </div>
             )}
             <div style={{ ...muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={t.prompt}>{t.prompt || '—'}</div>
             {editTags === t.id ? (
-              <input autoFocus defaultValue={(t.tags ?? []).join(', ')} placeholder="tags, separated by commas" style={{ width: '100%', fontSize: 11, marginTop: 2 }}
+              <input autoFocus defaultValue={(t.tags ?? []).join(', ')} placeholder={tr('tags, separated by commas')} style={{ width: '100%', fontSize: 11, marginTop: 2 }}
                 onBlur={(e) => { setEditTags(null); void act(() => api.library.patch(t.id, { tags: parseTags(e.target.value) })) }}
                 onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') setEditTags(null) }} />
             ) : (t.tags?.length ?? 0) > 0 && (
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
-                {t.tags!.map((g) => <span key={g} style={chip} title="Show everything with this tag" onClick={() => setQuery(g)}>{g}</span>)}
+                {t.tags!.map((g) => <span key={g} style={chip} title={tr('Show everything with this tag')} onClick={() => setQuery(g)}>{g}</span>)}
               </div>
             )}
             <div style={muted}>
               {t.loop_bars ? `loop ${t.loop_bars} bars · ` : ''}{mmss(t.duration)} · {t.bpm ? `${Math.round(t.bpm)} BPM · ` : ''}{t.trimmed ? `cut ${t.trimmed.toFixed(2)} s to beat 1 · ` : ''}{ENGINE[t.engine] ?? (t.engine || t.source)} · {new Date(t.created * 1000).toLocaleString()}{t.seed ? ` · seed ${t.seed}` : ''}
             </div>
           </div>
-
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} title="Rename this song" onClick={() => setRenaming(t.id)}>Rename</button>
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} title="Tags: genre, mood or anything you want to search for" onClick={() => setEditTags(t.id)}>Tags</button>
+        </div>
+        {/* the buttons in their own row, so the name and the details get the whole width */}
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', paddingLeft: 50 }}>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} title={tr('Rename this song')} onClick={() => setRenaming(t.id)}>{tr('Rename')}</button>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} title={tr('Tags: genre, mood or anything you want to search for')} onClick={() => setEditTags(t.id)}>{tr('Tags')}</button>
           {t.original ? (
-            <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={aligning !== null} title="Undo the cut: put the untouched file back"
-              onClick={() => { stopIfPlaying(t.id); void act(() => api.library.restore(t.id)).then(() => setNotice(`"${t.title}": the original is back.`)) }}>Restore original</button>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={aligning !== null} title={tr('Undo the cut: put the untouched file back')}
+              onClick={() => { stopIfPlaying(t.id); void act(() => api.library.restore(t.id)).then(() => setNotice(`"${t.title}": the original is back.`)) }}>{tr('Restore original')}</button>
           ) : !t.aligned && t.exists && (t.source || 'generated') === 'generated' ? (
-            <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={aligning !== null} title="Cut the lead-in so that the song starts exactly on beat 1 (the original is kept)"
-              onClick={() => void alignOne(t)}>{aligning === t.id ? 'Cutting…' : 'Start on beat 1'}</button>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={aligning !== null} title={tr('Cut the lead-in so that the song starts exactly on beat 1 (the original is kept)')}
+              onClick={() => void alignOne(t)}>{aligning === t.id ? tr('Cutting…') : tr('Start on beat 1')}</button>
           ) : null}
-          <button className="btn btn-ghost" style={{ fontSize: 16, color: t.favorite ? 'var(--yellow)' : 'var(--text-muted)' }} title="Favourite"
+          <button className="btn btn-ghost" style={{ fontSize: 16, color: t.favorite ? 'var(--yellow)' : 'var(--text-muted)' }} title={tr('Favourite')}
             onClick={() => void act(() => api.library.patch(t.id, { favorite: !t.favorite }))}>{t.favorite ? '★' : '☆'}</button>
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} onClick={() => void toProject(t)}>Add to project</button>
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} title="Open this song in Mastering" onClick={() => sendToMastering(t.path, t.title)}>Mastering</button>
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} title="Split this song into vocals, drums, bass and more" onClick={() => sendToStemSplitter(t.path, t.title)}>Stem Splitter</button>
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} title="Save a copy as WAV, AIFF, FLAC or MP3"
-            onClick={() => setExporting({ title: `"${t.title}"`, items: [{ path: t.path, name: t.title }] })}>Export…</button>
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} onClick={() => void window.api.files.showItem(t.path)}>Show file</button>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} onClick={() => void toProject(t)}>{tr('Add to project')}</button>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} title={tr('Open this song in Mastering')} onClick={() => sendToMastering(t.path, t.title)}>{tr('Mastering')}</button>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} title={tr('Split this song into vocals, drums, bass and more')} onClick={() => sendToStemSplitter(t.path, t.title)}>{tr('Stem Splitter')}</button>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} title={tr('Save a copy as WAV, AIFF, FLAC or MP3')}
+            onClick={() => setExporting({ title: `"${t.title}"`, items: [{ path: t.path, name: t.title }] })}>{tr('Export…')}</button>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={!t.exists} onClick={() => void window.api.files.showItem(t.path)}>{tr('Show file')}</button>
           {confirmId === t.id ? (
             <>
-              <button className="btn btn-primary" style={{ background: 'var(--red)', fontSize: 11 }} onClick={() => { setConfirmId(null); if (playing === t.id) { audio.current?.pause(); setPlaying(null) } void act(() => api.library.remove(t.id, true)) }}>Delete file</button>
-              <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setConfirmId(null)}>No</button>
+              <button className="btn btn-primary" style={{ background: 'var(--red)', fontSize: 11 }} onClick={() => { setConfirmId(null); if (playing === t.id) { audio.current?.pause(); setPlaying(null) } void act(() => api.library.remove(t.id, true)) }}>{tr('Delete file')}</button>
+              <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setConfirmId(null)}>{tr('No')}</button>
             </>
           ) : (
-            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setConfirmId(t.id)}>Delete</button>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setConfirmId(t.id)}>{tr('Delete')}</button>
           )}
         </div>
         {/* while it plays: the real waveform, click or drag to jump */}

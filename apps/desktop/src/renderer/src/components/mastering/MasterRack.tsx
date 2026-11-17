@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { SLOT_LABEL, TARGETS, defaultChain, slotDefaults, type BandParams, type Chain, type Slot, type SlotType } from '../../audio/master/chain'
 import { useMasteringStore } from '../../stores/mastering.store'
 import { EqCurve } from './EqCurve'
+import { tr } from '../../i18n/tr'
 
 // The processing chain: slots that can be switched off, moved and removed, each with its controls; the limiter with
 // the "Louder" control and the loudness target at the end; presets.
@@ -32,7 +33,7 @@ function Knob({ name, value: setValue, min, max, step, unit, onChange, log, titl
       <span style={changed ? { color: 'var(--accent-light)', fontWeight: 600 } : undefined}>{name}{changed ? ' •' : ''}</span>
       <input type="range" min={0} max={1} step={0.001} value={toPos(value)} disabled={before} style={{ accentColor: before ? '#6b7280' : 'var(--accent)', minWidth: 0 }}
         onChange={(e) => { const v = fromPos(Number(e.target.value)); onChange(log ? Math.round(v) : Math.round(v / step) * step) }} />
-      <span style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{off ? 'off' : `${shown}${unit ? ` ${unit}` : ''}`}</span>
+      <span style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{off ? tr('off') : `${shown}${unit ? ` ${unit}` : ''}`}</span>
     </label>
   )
 }
@@ -52,23 +53,23 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', columnGap: 14, rowGap: 8 }}>
           {/* each filter's controls stay together */}
           <div style={grp}>
-            <Knob name="Low cut" off={!p.lowCut} refv={d.lowCut || 10} value={p.lowCut || 10} min={10} max={300} step={1} unit="Hz" log onChange={(v) => u('lowCut', v <= 10 ? 0 : v)} title="High-pass: removes rumble below this frequency (all the way left: off)" />
-            <Knob name="High cut" off={!p.highCut} refv={d.highCut || 22000} value={p.highCut || 22000} min={5000} max={22000} step={1} unit="Hz" log onChange={(v) => u('highCut', v >= 21900 ? 0 : v)} title="Low-pass (all the way right: off)" />
+            <Knob name={tr('Low cut')} off={!p.lowCut} refv={d.lowCut || 10} value={p.lowCut || 10} min={10} max={300} step={1} unit="Hz" log onChange={(v) => u('lowCut', v <= 10 ? 0 : v)} title={tr('High-pass: removes rumble below this frequency (all the way left: off)')} />
+            <Knob name={tr('High cut')} off={!p.highCut} refv={d.highCut || 22000} value={p.highCut || 22000} min={5000} max={22000} step={1} unit="Hz" log onChange={(v) => u('highCut', v >= 21900 ? 0 : v)} title={tr('Low-pass (all the way right: off)')} />
           </div>
           <div style={grp}>
-            <Knob name="Low shelf" refv={d.lowF} value={p.lowF} min={30} max={500} step={1} unit="Hz" log onChange={(v) => u('lowF', v)} />
-            <Knob name="  gain" refv={d.lowG} value={p.lowG} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => u('lowG', v)} />
+            <Knob name={tr('Low shelf')} refv={d.lowF} value={p.lowF} min={30} max={500} step={1} unit="Hz" log onChange={(v) => u('lowF', v)} />
+            <Knob name={tr('  gain')} refv={d.lowG} value={p.lowG} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => u('lowG', v)} />
           </div>
           {([1, 2, 3] as const).map((n) => (
             <div key={n} style={grp}>
               <Knob name={`Band ${n}`} refv={d[`p${n}F`]} value={p[`p${n}F`]} min={40} max={16000} step={1} unit="Hz" log onChange={(v) => u(`p${n}F`, v)} />
-              <Knob name="  gain" refv={d[`p${n}G`]} value={p[`p${n}G`]} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => u(`p${n}G`, v)} />
-              <Knob name="  width (Q)" refv={d[`p${n}Q`]} value={p[`p${n}Q`]} min={0.3} max={8} step={0.1} onChange={(v) => u(`p${n}Q`, v)} />
+              <Knob name={tr('  gain')} refv={d[`p${n}G`]} value={p[`p${n}G`]} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => u(`p${n}G`, v)} />
+              <Knob name={tr('  width (Q)')} refv={d[`p${n}Q`]} value={p[`p${n}Q`]} min={0.3} max={8} step={0.1} onChange={(v) => u(`p${n}Q`, v)} />
             </div>
           ))}
           <div style={grp}>
-            <Knob name="High shelf" refv={d.highF} value={p.highF} min={2000} max={18000} step={1} unit="Hz" log onChange={(v) => u('highF', v)} />
-            <Knob name="  gain" refv={d.highG} value={p.highG} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => u('highG', v)} />
+            <Knob name={tr('High shelf')} refv={d.highF} value={p.highF} min={2000} max={18000} step={1} unit="Hz" log onChange={(v) => u('highF', v)} />
+            <Knob name={tr('  gain')} refv={d.highG} value={p.highG} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => u('highG', v)} />
           </div>
         </div>
       </div>
@@ -79,12 +80,12 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
     const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <Knob name="Threshold" refv={d.thresholdDb} value={p.thresholdDb} min={-40} max={0} step={0.5} unit="dB" onChange={(v) => u('thresholdDb', v)} />
-        <Knob name="Ratio" refv={d.ratio} value={p.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => u('ratio', v)} />
-        <Knob name="Attack" refv={d.attackMs} value={p.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => u('attackMs', v)} />
-        <Knob name="Release" refv={d.releaseMs} value={p.releaseMs} min={20} max={1000} step={5} unit="ms" onChange={(v) => u('releaseMs', v)} />
-        <Knob name="Knee" refv={d.kneeDb} value={p.kneeDb} min={0} max={18} step={0.5} unit="dB" onChange={(v) => u('kneeDb', v)} />
-        <Knob name="Make-up" refv={d.makeupDb} value={p.makeupDb} min={0} max={12} step={0.5} unit="dB" onChange={(v) => u('makeupDb', v)} />
+        <Knob name={tr('Threshold')} refv={d.thresholdDb} value={p.thresholdDb} min={-40} max={0} step={0.5} unit="dB" onChange={(v) => u('thresholdDb', v)} />
+        <Knob name={tr('Ratio')} refv={d.ratio} value={p.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => u('ratio', v)} />
+        <Knob name={tr('Attack')} refv={d.attackMs} value={p.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => u('attackMs', v)} />
+        <Knob name={tr('Release')} refv={d.releaseMs} value={p.releaseMs} min={20} max={1000} step={5} unit="ms" onChange={(v) => u('releaseMs', v)} />
+        <Knob name={tr('Knee')} refv={d.kneeDb} value={p.kneeDb} min={0} max={18} step={0.5} unit="dB" onChange={(v) => u('kneeDb', v)} />
+        <Knob name={tr('Make-up')} refv={d.makeupDb} value={p.makeupDb} min={0} max={12} step={0.5} unit="dB" onChange={(v) => u('makeupDb', v)} />
       </div>
     )
   }
@@ -96,16 +97,16 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
     }
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <Knob name="Split low/mid" refv={d.xo1} value={p.xo1} min={60} max={600} step={1} unit="Hz" log onChange={(v) => set({ ...slot, p: { ...p, xo1: v } })} />
-        <Knob name="Split mid/high" refv={d.xo2} value={p.xo2} min={1000} max={10000} step={1} unit="Hz" log onChange={(v) => set({ ...slot, p: { ...p, xo2: v } })} />
+        <Knob name={tr('Split low/mid')} refv={d.xo1} value={p.xo1} min={60} max={600} step={1} unit="Hz" log onChange={(v) => set({ ...slot, p: { ...p, xo1: v } })} />
+        <Knob name={tr('Split mid/high')} refv={d.xo2} value={p.xo2} min={1000} max={10000} step={1} unit="Hz" log onChange={(v) => set({ ...slot, p: { ...p, xo2: v } })} />
         {p.bands.map((b, i) => (
           <div key={i} style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
             <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{['Low', 'Mid', 'High'][i]}</span>
-            <Knob name="Threshold" refv={db.thresholdDb} value={b.thresholdDb} min={-40} max={0} step={0.5} unit="dB" onChange={(v) => band(i, 'thresholdDb', v)} />
-            <Knob name="Ratio" refv={db.ratio} value={b.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => band(i, 'ratio', v)} />
-            <Knob name="Attack" refv={db.attackMs} value={b.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => band(i, 'attackMs', v)} />
-            <Knob name="Release" refv={db.releaseMs} value={b.releaseMs} min={20} max={1000} step={5} unit="ms" onChange={(v) => band(i, 'releaseMs', v)} />
-            <Knob name="Level" refv={db.levelDb} value={b.levelDb} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => band(i, 'levelDb', v)} />
+            <Knob name={tr('Threshold')} refv={db.thresholdDb} value={b.thresholdDb} min={-40} max={0} step={0.5} unit="dB" onChange={(v) => band(i, 'thresholdDb', v)} />
+            <Knob name={tr('Ratio')} refv={db.ratio} value={b.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => band(i, 'ratio', v)} />
+            <Knob name={tr('Attack')} refv={db.attackMs} value={b.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => band(i, 'attackMs', v)} />
+            <Knob name={tr('Release')} refv={db.releaseMs} value={b.releaseMs} min={20} max={1000} step={5} unit="ms" onChange={(v) => band(i, 'releaseMs', v)} />
+            <Knob name={tr('Level')} refv={db.levelDb} value={b.levelDb} min={-12} max={12} step={0.5} unit="dB" onChange={(v) => band(i, 'levelDb', v)} />
           </div>
         ))}
       </div>
@@ -116,14 +117,14 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
     const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Turns this frequency down only while it is too loud (sharp highs, booming bass). Add it twice for two bands.</span>
-        <Knob name="Frequency" refv={d.freq} value={p.freq} min={30} max={16000} step={1} unit="Hz" log onChange={(v) => u('freq', v)} />
-        <Knob name="Width (Q)" refv={d.q} value={p.q} min={0.3} max={8} step={0.1} onChange={(v) => u('q', v)} />
-        <Knob name="Threshold" refv={d.thresholdDb} value={p.thresholdDb} min={-50} max={0} step={0.5} unit="dB" onChange={(v) => u('thresholdDb', v)} />
-        <Knob name="Ratio" refv={d.ratio} value={p.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => u('ratio', v)} />
-        <Knob name="Max. cut" refv={d.rangeDb} value={p.rangeDb} min={0} max={18} step={0.5} unit="dB" onChange={(v) => u('rangeDb', v)} />
-        <Knob name="Attack" refv={d.attackMs} value={p.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => u('attackMs', v)} />
-        <Knob name="Release" refv={d.releaseMs} value={p.releaseMs} min={20} max={1000} step={5} unit="ms" onChange={(v) => u('releaseMs', v)} />
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('Turns this frequency down only while it is too loud (sharp highs, booming bass). Add it twice for two bands.')}</span>
+        <Knob name={tr('Frequency')} refv={d.freq} value={p.freq} min={30} max={16000} step={1} unit="Hz" log onChange={(v) => u('freq', v)} />
+        <Knob name={tr('Width (Q)')} refv={d.q} value={p.q} min={0.3} max={8} step={0.1} onChange={(v) => u('q', v)} />
+        <Knob name={tr('Threshold')} refv={d.thresholdDb} value={p.thresholdDb} min={-50} max={0} step={0.5} unit="dB" onChange={(v) => u('thresholdDb', v)} />
+        <Knob name={tr('Ratio')} refv={d.ratio} value={p.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => u('ratio', v)} />
+        <Knob name={tr('Max. cut')} refv={d.rangeDb} value={p.rangeDb} min={0} max={18} step={0.5} unit="dB" onChange={(v) => u('rangeDb', v)} />
+        <Knob name={tr('Attack')} refv={d.attackMs} value={p.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => u('attackMs', v)} />
+        <Knob name={tr('Release')} refv={d.releaseMs} value={p.releaseMs} min={20} max={1000} step={5} unit="ms" onChange={(v) => u('releaseMs', v)} />
       </div>
     )
   }
@@ -132,12 +133,12 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
     const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Warmth (soft tape-like saturation) and air (new harmonics above a frequency).</span>
-        <Knob name="Drive" refv={d.driveDb} value={p.driveDb} min={0} max={24} step={0.5} unit="dB" onChange={(v) => u('driveDb', v)} />
-        <Knob name="Mix" refv={d.mix * 100} value={p.mix * 100} min={0} max={100} step={1} unit="%" onChange={(v) => u('mix', v / 100)} />
-        <Knob name="Exciter from" refv={d.exciteFreq} value={p.exciteFreq} min={1000} max={16000} step={1} unit="Hz" log onChange={(v) => u('exciteFreq', v)} />
-        <Knob name="Exciter amount" refv={d.excite * 100} value={p.excite * 100} min={0} max={100} step={1} unit="%" onChange={(v) => u('excite', v / 100)} />
-        <Knob name="Output" refv={d.outDb} value={p.outDb} min={-12} max={6} step={0.5} unit="dB" onChange={(v) => u('outDb', v)} />
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('Warmth (soft tape-like saturation) and air (new harmonics above a frequency).')}</span>
+        <Knob name={tr('Drive')} refv={d.driveDb} value={p.driveDb} min={0} max={24} step={0.5} unit="dB" onChange={(v) => u('driveDb', v)} />
+        <Knob name={tr('Mix')} refv={d.mix * 100} value={p.mix * 100} min={0} max={100} step={1} unit="%" onChange={(v) => u('mix', v / 100)} />
+        <Knob name={tr('Exciter from')} refv={d.exciteFreq} value={p.exciteFreq} min={1000} max={16000} step={1} unit="Hz" log onChange={(v) => u('exciteFreq', v)} />
+        <Knob name={tr('Exciter amount')} refv={d.excite * 100} value={p.excite * 100} min={0} max={100} step={1} unit="%" onChange={(v) => u('excite', v / 100)} />
+        <Knob name={tr('Output')} refv={d.outDb} value={p.outDb} min={-12} max={6} step={0.5} unit="dB" onChange={(v) => u('outDb', v)} />
       </div>
     )
   }
@@ -145,9 +146,9 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
   const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Knob name="Width" refv={d.width * 100} value={p.width * 100} min={0} max={200} step={1} unit="%" onChange={(v) => u('width', v / 100)} title="0 % = mono, 100 % = unchanged, 200 % = twice as wide" />
-      <Knob name="Mono below" off={!p.monoBelow} refv={d.monoBelow || 20} value={p.monoBelow || 20} min={20} max={300} step={1} unit="Hz" log onChange={(v) => u('monoBelow', v <= 20 ? 0 : v)} title="Bass below this frequency in mono (all the way left: off)" />
-      <Knob name="Balance" refv={d.balance * 100} value={p.balance * 100} min={-100} max={100} step={1} unit="" onChange={(v) => u('balance', v / 100)} />
+      <Knob name={tr('Width')} refv={d.width * 100} value={p.width * 100} min={0} max={200} step={1} unit="%" onChange={(v) => u('width', v / 100)} title={tr('0 % = mono, 100 % = unchanged, 200 % = twice as wide')} />
+      <Knob name={tr('Mono below')} off={!p.monoBelow} refv={d.monoBelow || 20} value={p.monoBelow || 20} min={20} max={300} step={1} unit="Hz" log onChange={(v) => u('monoBelow', v <= 20 ? 0 : v)} title={tr('Bass below this frequency in mono (all the way left: off)')} />
+      <Knob name={tr('Balance')} refv={d.balance * 100} value={p.balance * 100} min={-100} max={100} step={1} unit="" onChange={(v) => u('balance', v / 100)} />
     </div>
   )
 }
@@ -204,42 +205,42 @@ export function MasterRack({ chain, onChange, target, onTarget, onReachTarget, r
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {before && (
         <div style={{ fontSize: 11, color: 'var(--text-secondary)', background: 'var(--bg-tertiary)', borderLeft: '3px solid #9ca3af', borderRadius: 6, padding: '6px 10px' }}>
-          <b>Before: the original, without processing.</b> The controls show their starting values. Press <b>After</b> to see your settings again: every control you moved is marked <span style={{ color: 'var(--accent-light)' }}>•</span>.
+          <b>{tr('Before: the original, without processing.')}</b> {tr('The controls show their starting values. Press')} <b>{tr('After')}</b> {tr('to see your settings again: every control you moved is marked')} <span style={{ color: 'var(--accent-light)' }}>•</span>.
         </div>
       )}
       <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 12, fontWeight: 600 }}>Chain</span>
+        <span style={{ fontSize: 12, fontWeight: 600 }}>{tr('Chain')}</span>
         <select value="" onChange={(e) => {
           const v = e.target.value
           if (BUILT_IN[v]) onChange(BUILT_IN[v]())
           else if (presets[v]) onChange(presets[v])
         }} style={{ fontSize: 11 }}>
-          <option value="">Load preset…</option>
-          <optgroup label="Built in">{Object.keys(BUILT_IN).map((k) => <option key={k} value={k}>{k}</option>)}</optgroup>
-          {Object.keys(presets).length > 0 && <optgroup label="Yours">{Object.keys(presets).map((k) => <option key={k} value={k}>{k}</option>)}</optgroup>}
+          <option value="">{tr('Load preset…')}</option>
+          <optgroup label={tr('Built in')}>{Object.keys(BUILT_IN).map((k) => <option key={k} value={k}>{k}</option>)}</optgroup>
+          {Object.keys(presets).length > 0 && <optgroup label={tr('Yours')}>{Object.keys(presets).map((k) => <option key={k} value={k}>{k}</option>)}</optgroup>}
         </select>
-        <input value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder="Preset name" style={{ fontSize: 11, width: 110 }} />
-        <button className="btn btn-ghost" style={small} disabled={!presetName.trim()} onClick={() => { savePreset(presetName.trim()); setPresetName('') }}>Save</button>
-        {presets[presetName.trim()] && <button className="btn btn-ghost" style={small} onClick={() => deletePreset(presetName.trim())}>Delete</button>}
+        <input value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={tr('Preset name')} style={{ fontSize: 11, width: 110 }} />
+        <button className="btn btn-ghost" style={small} disabled={!presetName.trim()} onClick={() => { savePreset(presetName.trim()); setPresetName('') }}>{tr('Save')}</button>
+        {presets[presetName.trim()] && <button className="btn btn-ghost" style={small} onClick={() => deletePreset(presetName.trim())}>{tr('Delete')}</button>}
         <span style={{ flex: 1 }} />
         <select value="" onChange={(e) => { if (e.target.value) add(e.target.value as SlotType) }} style={{ fontSize: 11 }}>
-          <option value="">+ Add…</option>
-          {(Object.keys(SLOT_LABEL) as SlotType[]).map((k) => <option key={k} value={k}>{SLOT_LABEL[k]}</option>)}
+          <option value="">{tr('+ Add…')}</option>
+          {(Object.keys(SLOT_LABEL) as SlotType[]).map((k) => <option key={k} value={k}>{tr(SLOT_LABEL[k])}</option>)}
         </select>
       </div>
 
       {chain.slots.map((s, i) => (
         <div key={s.id} style={{ ...card, opacity: s.on && !before ? 1 : 0.6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <button className="btn btn-ghost" disabled={before} style={{ ...small, color: s.on && !before ? 'var(--green)' : 'var(--text-muted)' }} title={s.on ? 'On: click to bypass' : 'Bypassed: click to switch on'}
+            <button className="btn btn-ghost" disabled={before} style={{ ...small, color: s.on && !before ? 'var(--green)' : 'var(--text-muted)' }} title={s.on ? tr('On: click to bypass') : tr('Bypassed: click to switch on')}
               onClick={() => setSlot(i, { ...s, on: !s.on } as Slot)}>⏻</button>
             <span style={{ fontSize: 12, fontWeight: 600, cursor: 'pointer', flex: 1 }} onClick={() => setOpen((o) => ({ ...o, [s.id]: !o[s.id] }))}>
-              {open[s.id] ? '▾' : '▸'} {i + 1}. {SLOT_LABEL[s.type]}
+              {open[s.id] ? '▾' : '▸'} {i + 1}. {tr(SLOT_LABEL[s.type])}
             </span>
-            <button className="btn btn-ghost" style={small} disabled={i === 0} title="Earlier in the chain" onClick={() => move(i, -1)}>↑</button>
-            <button className="btn btn-ghost" style={small} disabled={i === chain.slots.length - 1} title="Later in the chain" onClick={() => move(i, 1)}>↓</button>
-            <button className="btn btn-ghost" style={small} title="Reset" onClick={() => setSlot(i, { ...slotDefaults(s.type, s.id), on: s.on } as Slot)}>↺</button>
-            <button className="btn btn-ghost" style={small} title="Remove" onClick={() => onChange({ ...chain, slots: chain.slots.filter((_, j) => j !== i) })}>×</button>
+            <button className="btn btn-ghost" style={small} disabled={i === 0} title={tr('Earlier in the chain')} onClick={() => move(i, -1)}>↑</button>
+            <button className="btn btn-ghost" style={small} disabled={i === chain.slots.length - 1} title={tr('Later in the chain')} onClick={() => move(i, 1)}>↓</button>
+            <button className="btn btn-ghost" style={small} title={tr('Reset')} onClick={() => setSlot(i, { ...slotDefaults(s.type, s.id), on: s.on } as Slot)}>↺</button>
+            <button className="btn btn-ghost" style={small} title={tr('Remove')} onClick={() => onChange({ ...chain, slots: chain.slots.filter((_, j) => j !== i) })}>×</button>
           </div>
           {open[s.id] && <div style={{ marginTop: 8 }}><SlotBody slot={s} set={(n) => setSlot(i, n)} /></div>}
         </div>
@@ -249,21 +250,21 @@ export function MasterRack({ chain, onChange, target, onTarget, onReachTarget, r
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
           <button className="btn btn-ghost" disabled={before} style={{ ...small, color: chain.limiter.on && !before ? 'var(--green)' : 'var(--text-muted)' }}
             onClick={() => onChange({ ...chain, limiter: { ...chain.limiter, on: !chain.limiter.on } })}>⏻</button>
-          <span style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>Loudness: limiter / maximizer (true peak, 4x oversampled)</span>
+          <span style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>{tr('Loudness: limiter / maximizer (true peak, 4x oversampled)')}</span>
         </div>
-        <Knob name="Louder" refv={0} value={chain.louderDb} min={-12} max={24} step={0.1} unit="dB" onChange={(v) => onChange({ ...chain, louderDb: v })}
-          title="Drives the song into the limiter: louder, without going over the ceiling" />
-        <Knob name="Ceiling" refv={-1} value={chain.limiter.ceilingDb} min={-3} max={0} step={0.1} unit="dBTP" onChange={(v) => onChange({ ...chain, limiter: { ...chain.limiter, ceilingDb: v } })}
-          title="The highest peak allowed (true peak). −1 dBTP is safe for MP3 and AAC." />
-        <Knob name="Release" refv={120} value={chain.limiter.releaseMs} min={10} max={500} step={5} unit="ms" onChange={(v) => onChange({ ...chain, limiter: { ...chain.limiter, releaseMs: v } })} />
+        <Knob name={tr('Louder')} refv={0} value={chain.louderDb} min={-12} max={24} step={0.1} unit="dB" onChange={(v) => onChange({ ...chain, louderDb: v })}
+          title={tr('Drives the song into the limiter: louder, without going over the ceiling')} />
+        <Knob name={tr('Ceiling')} refv={-1} value={chain.limiter.ceilingDb} min={-3} max={0} step={0.1} unit="dBTP" onChange={(v) => onChange({ ...chain, limiter: { ...chain.limiter, ceilingDb: v } })}
+          title={tr('The highest peak allowed (true peak). −1 dBTP is safe for MP3 and AAC.')} />
+        <Knob name={tr('Release')} refv={120} value={chain.limiter.releaseMs} min={10} max={500} step={5} unit="ms" onChange={(v) => onChange({ ...chain, limiter: { ...chain.limiter, releaseMs: v } })} />
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Target</span>
+          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{tr('Target')}</span>
           <select value={target} onChange={(e) => onTarget(e.target.value)} style={{ fontSize: 11 }}>
-            {TARGETS.map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}
+            {TARGETS.map((x) => <option key={x.id} value={x.id}>{tr(x.label)}</option>)}
           </select>
           <button className="btn btn-primary" style={{ fontSize: 11 }} disabled={reaching} onClick={onReachTarget}
             title={`Sets "Louder" (and the ceiling to ${t.ceiling} dBTP) so the song reaches ${t.lufs} LUFS`}>
-            {reaching ? 'Measuring…' : `Reach ${t.lufs} LUFS`}
+            {reaching ? tr('Measuring…') : `Reach ${t.lufs} LUFS`}
           </button>
         </div>
       </div>

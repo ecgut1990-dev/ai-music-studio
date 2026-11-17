@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { create } from 'zustand'
+import { tr } from '../../i18n/tr'
 
 // A small dialog that asks for a text (window.prompt does not work in Electron): askText(...) resolves to the text,
 // or null when the dialog is cancelled. <AskTextDialog /> is mounted once in App.
@@ -30,7 +31,7 @@ export function AskTextDialog(): React.ReactElement | null {
             onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); done(null) } }} />
         </label>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button type="button" className="btn btn-ghost" onClick={() => done(null)}>Cancel</button>
+          <button type="button" className="btn btn-ghost" onClick={() => done(null)}>{tr('Cancel')}</button>
           <button type="submit" className="btn btn-primary" disabled={!text.trim()}>{ask.ok}</button>
         </div>
       </form>

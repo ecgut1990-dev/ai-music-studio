@@ -1,6 +1,7 @@
 import React from 'react'
 import { useUIStore } from '../../stores/ui.store'
 import { ACTIONS, PRESETS, formatCombo, type Group, type PresetId } from '../../shortcuts/registry'
+import { tr } from '../../i18n/tr'
 
 const GROUPS: Group[] = ['Transport', 'Edit', 'Tracks', 'Tools', 'Zoom', 'Views', 'App']
 
@@ -33,10 +34,10 @@ export function ShortcutsTab(): React.ReactElement {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: 10 }}>
-        Keyboard shortcuts
+        {tr('Keyboard shortcuts')}
       </div>
       <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-        Many keys are the same in both DAWs. Where they differ, pick the layout you are used to. Shortcuts do not fire while you type in a text field (function keys and Esc excepted).
+        {tr('Many keys are the same in both DAWs. Where they differ, pick the layout you are used to. Shortcuts do not fire while you type in a text field (function keys and Esc excepted).')}
       </div>
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -67,7 +68,7 @@ export function ShortcutsTab(): React.ReactElement {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
             <tr style={{ background: 'var(--bg-secondary)', textAlign: 'left' }}>
-              <th style={{ padding: '8px 12px', color: 'var(--text-muted)', fontSize: 10, textTransform: 'uppercase' }}>Action</th>
+              <th style={{ padding: '8px 12px', color: 'var(--text-muted)', fontSize: 10, textTransform: 'uppercase' }}>{tr('Action')}</th>
               {ids.map((id) => (
                 <th key={id} style={{
                   padding: '8px 12px', fontSize: 10, textTransform: 'uppercase',
@@ -84,7 +85,7 @@ export function ShortcutsTab(): React.ReactElement {
                 </tr>
                 {ACTIONS.filter((a) => a.group === g).map((a) => (
                   <tr key={a.id} style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                    <td style={{ padding: '6px 12px', color: 'var(--text-primary)' }}>{a.label}</td>
+                    <td style={{ padding: '6px 12px', color: 'var(--text-primary)' }}>{tr(a.label)}</td>
                     {ids.map((id) => (
                       <td key={id} style={{ padding: '6px 12px' }}>
                         <Keys combos={PRESETS[id].keys[a.id]} active={preset === id} />
@@ -99,9 +100,7 @@ export function ShortcutsTab(): React.ReactElement {
       </div>
 
       <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
-        Only shortcuts for features this app has are included (no loop, quantize or comping yet). “—” means that DAW has no default key for the action.
-        Ableton keys follow the Live 12 manual; Cubase keys are the default key commands (Cubase 11 list, newer versions may differ).
-        Undo and redo cover project changes (tracks, clips, notes, tempo).
+        {tr('Only shortcuts for features this app has are included (no loop, quantize or comping yet). “—” means that DAW has no default key for the action.\n        Ableton keys follow the Live 12 manual; Cubase keys are the default key commands (Cubase 11 list, newer versions may differ).\n        Undo and redo cover project changes (tracks, clips, notes, tempo).')}
       </div>
     </div>
   )

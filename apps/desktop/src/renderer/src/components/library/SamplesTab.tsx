@@ -5,6 +5,7 @@ import { useAudioStore } from '../../stores/audio.store'
 import { previewSample, stopPreview, previewPosition, seekPreview } from '../../audio/engine'
 import { WaveformSeek } from '../common/WaveformSeek'
 import { importAudioFiles } from '../timeline/Timeline'
+import { tr } from '../../i18n/tr'
 
 const muted: React.CSSProperties = { fontSize: 11, color: 'var(--text-muted)' }
 const chip: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '2px 8px', borderRadius: 12, background: 'var(--bg-elevated)', fontSize: 11, color: 'var(--text-primary)' }
@@ -85,7 +86,7 @@ export function SamplesTab(): React.ReactElement {
     try {
       const bpm = synced ? await tempoOf(e) : null
       const r = await previewSample(e.path, bpm ?? undefined)
-      if (!r) { setError('This file cannot be played.'); return }
+      if (!r) { setError(tr('This file cannot be played.')); return }
       setPlaying(e.path)
       setPlayBuf({ key: `${e.path}|${bpm ?? 'as-is'}`, buf: r.buffer })
       void r.ended.then(() => setPlaying((p) => (p === e.path ? null : p)))
@@ -122,27 +123,27 @@ export function SamplesTab(): React.ReactElement {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={muted}>
-        Point the app at any sample folders, for example your <b>Ableton Live library</b>. Nothing is copied: the files stay where they are.
-        <b> Add synced</b> stretches a loop to the project tempo without changing its pitch; one-shots are inserted unchanged.
+        {tr('Point the app at any sample folders, for example your')} <b>{tr('Ableton Live library')}</b>{tr('. Nothing is copied: the files stay where they are.')}
+        <b> {tr('Add synced')}</b> {tr('stretches a loop to the project tempo without changing its pitch; one-shots are inserted unchanged.')}
       </div>
 
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
         {folders.map((f) => (
           <span key={f} style={{ ...chip, outline: root === f ? '1px solid var(--accent)' : 'none', cursor: 'pointer' }} title={f} onClick={() => setRoot(root === f ? '' : f)}>
             {base(f)}
-            <span style={{ color: 'var(--text-muted)' }} title="Remove this folder from the list (files stay)" onClick={(e) => { e.stopPropagation(); void removeFolder(f) }}>×</span>
+            <span style={{ color: 'var(--text-muted)' }} title={tr('Remove this folder from the list (files stay)')} onClick={(e) => { e.stopPropagation(); void removeFolder(f) }}>×</span>
           </span>
         ))}
-        <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void addFolder()}>Add folder…</button>
+        <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void addFolder()}>{tr('Add folder…')}</button>
       </div>
 
       {ableton.length > 0 && (
         <div style={{ border: '1px solid var(--border-mid)', borderRadius: 8, padding: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Ableton Live found on this computer</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{tr('Ableton Live found on this computer')}</div>
           {ableton.map((a) => (
             <div key={a} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <span style={{ ...muted, fontFamily: 'monospace', flex: 1, wordBreak: 'break-all' }}>{a}</span>
-              <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={() => void addFolder(a)}>Use this library</button>
+              <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={() => void addFolder(a)}>{tr('Use this library')}</button>
             </div>
           ))}
         </div>
@@ -150,22 +151,21 @@ export function SamplesTab(): React.ReactElement {
 
       {folders.length === 0 && ableton.length === 0 && (
         <div style={{ ...muted, border: '1px dashed var(--border-mid)', borderRadius: 10, padding: 20, lineHeight: 1.7 }}>
-          No sample folder yet. Press <b>Add folder…</b> and choose, for example, the <i>Samples</i> folder of your Ableton User Library
-          (usually in Documents\Ableton\User Library\Samples) or of a pack.
+          {tr('No sample folder yet. Press')} <b>{tr('Add folder…')}</b> {tr('and choose, for example, the')} <i>{tr('Samples')}</i> {tr('folder of your Ableton User Library\n          (usually in Documents\\Ableton\\User Library\\Samples) or of a pack.')}
         </div>
       )}
 
       {folders.length > 0 && (
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search name or folder, e.g. kick, bass loop, 128…" style={{ width: 300 }} />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tr('Search name or folder, e.g. kick, bass loop, 128…')} style={{ width: 300 }} />
           <label style={{ ...muted, display: 'flex', gap: 4, alignItems: 'center' }}>
-            <input type="checkbox" checked={nearTempo} onChange={(e) => setNearTempo(e.target.checked)} /> Only near {projectBpm} BPM
+            <input type="checkbox" checked={nearTempo} onChange={(e) => setNearTempo(e.target.checked)} /> {tr('Only near')} {projectBpm} BPM
           </label>
           <label style={{ ...muted, display: 'flex', gap: 4, alignItems: 'center' }}>
-            <input type="checkbox" checked={synced} onChange={(e) => setSynced(e.target.checked)} /> Preview at project tempo
+            <input type="checkbox" checked={synced} onChange={(e) => setSynced(e.target.checked)} /> {tr('Preview at project tempo')}
           </label>
           <span style={{ flex: 1 }} />
-          <span style={muted}>{busy ? 'Searching…' : `${counts.count} of ${counts.total} files${counts.count > items.length ? ` (first ${items.length})` : ''}`}</span>
+          <span style={muted}>{busy ? tr('Searching…') : `${counts.count} of ${counts.total} files${counts.count > items.length ? ` (first ${items.length})` : ''}`}</span>
         </div>
       )}
 
@@ -177,7 +177,7 @@ export function SamplesTab(): React.ReactElement {
         return (
           <div key={e.path} style={{ background: 'var(--bg-panel)', border: `1px solid ${playing === e.path ? 'var(--accent)' : 'var(--border-mid)'}`, borderRadius: 8, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <button className="btn btn-primary" style={{ width: 30, height: 30, borderRadius: 15, padding: 0, justifyContent: 'center' }} onClick={() => void play(e)} title={playing === e.path ? 'Stop' : 'Play'}>
+            <button className="btn btn-primary" style={{ width: 30, height: 30, borderRadius: 15, padding: 0, justifyContent: 'center' }} onClick={() => void play(e)} title={playing === e.path ? tr('Stop') : tr('Play')}>
               {playing === e.path ? '■' : '▶'}
             </button>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -185,16 +185,16 @@ export function SamplesTab(): React.ReactElement {
               <div style={{ ...muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={e.path}>{e.folder || base(e.root)}</div>
             </div>
             {tempo ? (
-              <span style={chip} title={e.bpm ? 'Tempo from the name' : 'Tempo measured'}>{Math.round(tempo)} BPM</span>
+              <span style={chip} title={e.bpm ? tr('Tempo from the name') : tr('Tempo measured')}>{Math.round(tempo)} BPM</span>
             ) : (
-              <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => void detect(e)} title="Measure the tempo">BPM?</button>
+              <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => void detect(e)} title={tr('Measure the tempo')}>{tr('BPM?')}</button>
             )}
             <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={() => void add(e, true)}
-              title={`Into the Studio at the playhead, stretched to the project tempo (${projectBpm} BPM) without changing the pitch`}>Studio: synced</button>
+              title={`Into the Studio at the playhead, stretched to the project tempo (${projectBpm} BPM) without changing the pitch`}>{tr('Studio: synced')}</button>
             <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void add(e, false)}
-              title="Into the Studio at the playhead, exactly as the file is (no stretching)">Studio: as is</button>
+              title={tr('Into the Studio at the playhead, exactly as the file is (no stretching)')}>{tr('Studio: as is')}</button>
             <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void toLibrary(e)}
-              title="Copy into the Library (My tracks): searchable, with tags, exportable">+ Library</button>
+              title={tr('Copy into the Library (My tracks): searchable, with tags, exportable')}>{tr('+ Library')}</button>
           </div>
           {playing === e.path && playBuf && (
             <WaveformSeek fileKey={playBuf.key} buffers={[playBuf.buf]} position={previewPosition} onSeek={seekPreview} />

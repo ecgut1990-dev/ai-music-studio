@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useProjectStore } from '../../stores/project.store'
 import { api } from '../../lib/api'
+import { tr } from '../../i18n/tr'
 
 const VOICES = [
   { id: 'v001', name: 'Aria', language: 'en', gender: 'female', category: 'Pop' },
@@ -64,11 +65,11 @@ export function VocalEditor(): React.ReactElement {
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>{t('vocal.selectVoice')}</div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             <select value={filterLang} onChange={e => setFilterLang(e.target.value)} style={selectStyle}>
-              <option value="all">{t('vocal.language')}: All</option>
+              <option value="all">{t('vocal.language')}{tr(': All')}</option>
               {Object.entries(LANG_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>
             <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} style={selectStyle}>
-              <option value="all">Category: All</option>
+              <option value="all">{tr('Category: All')}</option>
               {categories.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -107,7 +108,7 @@ export function VocalEditor(): React.ReactElement {
           <textarea
             value={lyrics}
             onChange={(e) => setLyrics(e.target.value)}
-            placeholder="Enter lyrics here, one line per note group..."
+            placeholder={tr('Enter lyrics here, one line per note group...')}
             style={{
               width: '100%',
               height: 80,
@@ -166,7 +167,7 @@ export function VocalEditor(): React.ReactElement {
           </button>
           {!track && (
             <span style={{ fontSize: 12, color: 'var(--text-muted)', alignSelf: 'center' }}>
-              Select a vocal track in the Studio first
+              {tr('Select a vocal track in the Studio first')}
             </span>
           )}
         </div>

@@ -6,6 +6,7 @@ import type { StemResult } from '../../types'
 import { ExportDialog, parseTags } from '../common/ExportDialog'
 import { useUIStore } from '../../stores/ui.store'
 import { StemMixer } from './StemMixer'
+import { tr } from '../../i18n/tr'
 
 const STEM_COLORS: Record<string, string> = {
   vocals: '#7c3aed',
@@ -81,7 +82,7 @@ export function StemSplitter(): React.ReactElement {
         setProgress(j.progress); setStage(j.text); setElapsed(j.elapsed)
         if (j.status === 'done') { setResult(j.result as StemResult); break }
         if (j.status === 'error') throw new Error(j.error ?? 'unknown error')
-        if (j.status === 'cancelled') { setError('Splitting was cancelled.'); break }
+        if (j.status === 'cancelled') { setError(tr('Splitting was cancelled.')); break }
       }
     } catch (err) {
       setError(`Splitting failed: ${(err as Error).message}`)
@@ -124,7 +125,7 @@ export function StemSplitter(): React.ReactElement {
           ? <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 600 }}>{fileName}</span>
           : <>
               <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{t('stemSplitter.dropAudio')}</span>
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>MP3, WAV, FLAC, AIFF, M4A</span>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{tr('MP3, WAV, FLAC, AIFF, M4A')}</span>
             </>
         }
       </div>
@@ -146,21 +147,21 @@ export function StemSplitter(): React.ReactElement {
                 }}
                 style={{ padding: '4px 10px', borderRadius: 4, border: '1px solid var(--border)', background: model === m ? 'var(--accent)' : 'var(--bg-secondary)', color: model === m ? 'white' : 'var(--text-secondary)', cursor: 'pointer', fontSize: 11 }}
               >
-                {m === 'mdx_vocals' ? 'Vocals + Instrumental (fastest)' : m === 'mdx_4stems' ? '4 Stems on the graphics card' : m === 'htdemucs' ? 'Fast' : m === 'htdemucs_ft' ? 'Balanced' : m === 'mdx_extra' ? 'Quality' : '6 Stems'}
+                {m === 'mdx_vocals' ? tr('Vocals + Instrumental (fastest)') : m === 'mdx_4stems' ? tr('4 Stems on the graphics card') : m === 'htdemucs' ? tr('Fast') : m === 'htdemucs_ft' ? tr('Balanced') : m === 'mdx_extra' ? tr('Quality') : tr('6 Stems')}
               </button>
             ))}
           </div>
           <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4, maxWidth: 320 }}>
             {model === 'mdx_vocals'
-              ? 'Only vocals and instrumental, but much faster; uses the graphics card on AMD, Intel and NVIDIA. Needs "Fast vocal separation" in Settings → AI Engines.'
+              ? tr('Only vocals and instrumental, but much faster; uses the graphics card on AMD, Intel and NVIDIA. Needs "Fast vocal separation" in Settings → AI Engines.')
               : model === 'mdx_4stems'
-              ? 'Vocals, drums, bass and other with four small models on the graphics card (AMD, Intel, NVIDIA): much faster than Fast on these cards, a little less clean than Balanced. Needs "Fast vocal separation" in Settings → AI Engines; the four models (a few dozen MB each) download on the first split.'
-              : 'Balanced runs 4 models one after the other: on the processor (AMD / Intel graphics too) Fast is about 4 times quicker.'}
+              ? tr('Vocals, drums, bass and other with four small models on the graphics card (AMD, Intel, NVIDIA): much faster than Fast on these cards, a little less clean than Balanced. Needs "Fast vocal separation" in Settings → AI Engines; the four models (a few dozen MB each) download on the first split.')
+              : tr('Balanced runs 4 models one after the other: on the processor (AMD / Intel graphics too) Fast is about 4 times quicker.')}
           </div>
         </div>
 
         <div>
-          <div style={labelStyle}>Stems to extract</div>
+          <div style={labelStyle}>{tr('Stems to extract')}</div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {Object.keys(STEM_COLORS).filter((s) => (model === 'mdx_vocals' ? s === 'vocals' || s === 'instrumental' : model === 'mdx_4stems' ? ['vocals', 'drums', 'bass', 'other'].includes(s) : s !== 'instrumental')).map(stem => (
               <button
@@ -208,8 +209,8 @@ export function StemSplitter(): React.ReactElement {
               <span>{stage}</span>
               <span style={{ flex: 1 }} />
               <span>{mmss(elapsed)}{left !== null ? ` · about ${mmss(left)} left` : ''}</span>
-              <button className="btn btn-ghost" style={{ fontSize: 11, padding: '1px 10px' }} title="Stop this split"
-                onClick={() => { if (jobId.current) void api.stems.cancel(jobId.current).catch(() => undefined) }}>✕ Cancel</button>
+              <button className="btn btn-ghost" style={{ fontSize: 11, padding: '1px 10px' }} title={tr('Stop this split')}
+                onClick={() => { if (jobId.current) void api.stems.cancel(jobId.current).catch(() => undefined) }}>{tr('✕ Cancel')}</button>
             </div>
           </div>
         )
@@ -218,19 +219,19 @@ export function StemSplitter(): React.ReactElement {
       {/* Results */}
       {result && (
         <div>
-          <div style={labelStyle}>Results: listen, mix and export</div>
+          <div style={labelStyle}>{tr('Results: listen, mix and export')}</div>
           <StemMixer stems={result as Record<string, string>} colors={STEM_COLORS} title={title.trim() || baseName(fileName)}
             labels={Object.fromEntries(Object.keys(result).map((s) => [s, t(`stemSplitter.${s}`, { defaultValue: s.charAt(0).toUpperCase() + s.slice(1) })]))} />
           {/* keep them: the library (folder "Stems") or files for a DAW */}
           <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 560 }}>
             <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={labelStyle}>Name</span>
-              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Name of the song" />
+              <span style={labelStyle}>{tr('Name')}</span>
+              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={tr('Name of the song')} />
             </label>
             <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={labelStyle}>Tags (optional)</span>
-              <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="e.g. house, 124, female vocals, remix" />
-              <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Separate with commas: genre, mood or anything you want to find the stems by later.</span>
+              <span style={labelStyle}>{tr('Tags (optional)')}</span>
+              <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder={tr('e.g. house, 124, female vocals, remix')} />
+              <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('Separate with commas: genre, mood or anything you want to find the stems by later.')}</span>
             </label>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
               <button className="btn btn-primary" disabled={saving || saved !== null} onClick={async () => {
@@ -240,10 +241,10 @@ export function StemSplitter(): React.ReactElement {
                   setSaved(r.tracks.length)
                 } catch (e) { setError((e as Error).message) }
                 setSaving(false)
-              }}>{saving ? 'Saving…' : saved !== null ? `✓ ${saved} stems saved` : 'Save to library'}</button>
+              }}>{saving ? tr('Saving…') : saved !== null ? `✓ ${saved} stems saved` : tr('Save to library')}</button>
               <button className="btn btn-ghost" onClick={() => setExporting(true)}>{t('stemSplitter.export')}…</button>
               {saved !== null && (
-                <button className="btn btn-ghost" onClick={() => { useUIStore.getState().setLibraryTab('stems'); useUIStore.getState().setActiveView('library') }}>Open Library → Stems</button>
+                <button className="btn btn-ghost" onClick={() => { useUIStore.getState().setLibraryTab('stems'); useUIStore.getState().setActiveView('library') }}>{tr('Open Library → Stems')}</button>
               )}
             </div>
           </div>
@@ -251,7 +252,7 @@ export function StemSplitter(): React.ReactElement {
       )}
       {error && <div style={{ color: 'var(--red)', fontSize: 12 }}>{error}</div>}
       {exporting && result && (
-        <ExportDialog title="stems" onClose={() => setExporting(false)}
+        <ExportDialog title={tr('stems')} onClose={() => setExporting(false)}
           items={Object.entries(result).filter(([, p]) => p).map(([stem, p]) => ({ path: p as string, name: `${title.trim() || baseName(fileName)} – ${stem}` }))} />
       )}
     </div>

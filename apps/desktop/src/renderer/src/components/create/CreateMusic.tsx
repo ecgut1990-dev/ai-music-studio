@@ -160,7 +160,7 @@ function Segmented<T extends string>({ value, onChange, options }: {
             background: value === o.value ? 'var(--accent-dim)' : 'var(--bg-tertiary)',
             color: value === o.value ? 'var(--accent-light)' : 'var(--text-secondary)',
           }}
-        >{o.label}</button>
+        >{tr(o.label)}</button>
       ))}
     </div>
   )
@@ -282,8 +282,8 @@ function ProgressPanel({ job }: { job: MusicJob }): React.ReactElement {
       {job.device && <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{job.device}</div>}
       {usage && (
         <div style={{ display: 'flex', gap: 14, fontSize: 11, color: 'var(--text-secondary)', flexWrap: 'wrap' }}>
-          <span>CPU {Math.round(usage.cpu_percent)}% (engine {Math.round(usage.engine_cpu_percent)}%)</span>
-          <span>RAM {usage.ram_used_gb} of {usage.ram_total_gb} GB ({Math.round(usage.ram_percent)}%)</span>
+          <span>CPU {Math.round(usage.cpu_percent)}{tr('% (engine')} {Math.round(usage.engine_cpu_percent)}%)</span>
+          <span>{tr('RAM')} {usage.ram_used_gb} {tr('of')} {usage.ram_total_gb} {tr('GB (')}{Math.round(usage.ram_percent)}%)</span>
           {usage.swap_percent > 30 && <span style={{ color: 'var(--orange)' }}>{tr('Memory is full: the PC is swapping to disk, expect it to crawl.')}</span>}
         </div>
       )}
@@ -611,7 +611,7 @@ export function CreateMusic(): React.ReactElement {
               placeholder={tr("e.g. deep house, warm bass, dreamy pads, 122 bpm")} />
           </Field>
           <Field name={tr("Tags (optional)")} hintText={tr("Genre, mood or anything you want to find this song or loop by in the Library. Separate with commas.")}>
-            <input value={p.tags} onChange={(e) => set('tags', e.target.value)} style={full} placeholder="e.g. house, chill, my project" />
+            <input value={p.tags} onChange={(e) => set('tags', e.target.value)} style={full} placeholder={tr('e.g. house, chill, my project')} />
           </Field>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
             {chips.map((g) => (
@@ -684,7 +684,7 @@ export function CreateMusic(): React.ReactElement {
                   onClick={() => set('lyrics', autoStructure(p.lyrics))}>✦ {tr('Auto structure')}</button>
               </div>
               <textarea ref={lyricsRef} value={p.lyrics} onChange={(e) => set('lyrics', e.target.value)} rows={studio ? 9 : 5}
-                style={{ ...full, fontFamily: 'monospace' }} placeholder={'[Verse]\n…\n\n[Chorus]\n…'} />
+                style={{ ...full, fontFamily: 'monospace' }} placeholder={tr('[Verse]\n…\n\n[Chorus]\n…')} />
               <span style={hint}>{tr("Click a section to insert it, or write stanzas separated by an empty line and press Auto structure. Lyrics without sections are structured automatically when the song is made. Empty lyrics are written by the model.")}</span>
               {canPreview && (
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -756,7 +756,7 @@ export function CreateMusic(): React.ReactElement {
                     const n = { ...p.selectedLoras }; delete n[id]; set('selectedLoras', n)
                   }}>×</IconBtn>
                 </div>
-                <SliderRow name={l?.kind ?? 'sound'} value={strength} min={0} max={2} step={0.05}
+                <SliderRow name={l?.kind ?? tr('sound')} value={strength} min={0} max={2} step={0.05}
                   onChange={(v) => set('selectedLoras', { ...p.selectedLoras, [id]: v })} />
                 {l && !loraFit(p.engine, l.family).ok && (
                   <span style={{ ...hint, color: 'var(--orange)' }}>{tr('Not used with this model')}: {loraFit(p.engine, l.family).why}.</span>
@@ -865,7 +865,7 @@ export function CreateMusic(): React.ReactElement {
                 <span style={hint}>{tr("Strength of every LoRA in each part of the DiT (used when the engine supports it).")}</span>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   {LAYERS.map((l) => (
-                    <SliderRow key={l.key} name={l.label} value={p.loraLayers[l.key]} min={0} max={2} step={0.05}
+                    <SliderRow key={l.key} name={tr(l.label)} value={p.loraLayers[l.key]} min={0} max={2} step={0.05}
                       onChange={(v) => set('loraLayers', { ...p.loraLayers, [l.key]: v })} />
                   ))}
                 </div>
@@ -957,7 +957,7 @@ export function CreateMusic(): React.ReactElement {
           <div key={r.audio_file} style={{ ...card, padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--text-secondary)' }}>
               <ResultName result={r} fallback={`${p.title || tr('Untitled')} · take ${i + 1}`} />
-              <span style={{ flexShrink: 0 }}>seed {r.seed} · {r.duration}s</span>
+              <span style={{ flexShrink: 0 }}>{tr('seed')} {r.seed} · {r.duration}s</span>
             </div>
             <AudioFile path={r.audio_file} />
             <div>

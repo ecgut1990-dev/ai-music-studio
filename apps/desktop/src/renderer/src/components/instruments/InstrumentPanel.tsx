@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import { useProjectStore } from '../../stores/project.store'
+import { tr } from '../../i18n/tr'
 
 const INSTRUMENTS = [
   { id: 'strings-violin', name: 'Violin', category: 'Strings', description: 'Solo violin with expressive articulations' },
@@ -52,7 +53,7 @@ export function InstrumentPanel(): React.ReactElement {
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>{t('instruments.select')}</div>
           <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)}
             style={{ width: '100%', background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-secondary)', borderRadius: 4, padding: '4px 6px', fontSize: 12 }}>
-            <option value="all">All Categories</option>
+            <option value="all">{tr('All Categories')}</option>
             {categories.map(c => <option key={c} value={c}>{t(`instruments.${c.toLowerCase()}`) || c}</option>)}
           </select>
         </div>
@@ -89,11 +90,11 @@ export function InstrumentPanel(): React.ReactElement {
         </div>
 
         <div style={{ background: 'var(--bg-secondary)', borderRadius: 8, padding: 16, border: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>AI Model Info</div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{tr('AI Model Info')}</div>
           <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-            Backend: DDSP-based neural synthesis<br />
-            Articulations: auto-detected from MIDI velocity and pitch<br />
-            Latency: ~2-5s generation (local GPU)
+            {tr('Backend: DDSP-based neural synthesis')}<br />
+            {tr('Articulations: auto-detected from MIDI velocity and pitch')}<br />
+            {tr('Latency: ~2-5s generation (local GPU)')}
           </div>
         </div>
 
@@ -112,10 +113,10 @@ export function InstrumentPanel(): React.ReactElement {
             fontWeight: 600
           }}
         >
-          {isGenerating ? 'Generating...' : t('instruments.generate')}
+          {isGenerating ? tr('Generating...') : t('instruments.generate')}
         </button>
         {!track && (
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Select an instrument track first</span>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{tr('Select an instrument track first')}</span>
         )}
       </div>
     </div>

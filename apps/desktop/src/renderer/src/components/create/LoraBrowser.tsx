@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { tr } from '../../i18n/tr'
 
 type RepoInfo = HfRepoInfo
 interface FileInfo { name: string; size: number }
@@ -85,10 +86,10 @@ export function LoraBrowser({ open, onClose, onImported }: {
       >
         <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid var(--border-mid)' }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>LoRA from Hugging Face</div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Search is sorted by likes. Paste a huggingface.co link or owner/name to open a repo directly.</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('LoRA from Hugging Face')}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tr('Search is sorted by likes. Paste a huggingface.co link or owner/name to open a repo directly.')}</div>
           </div>
-          <button className="btn btn-ghost" onClick={onClose} disabled={!!busyFile} aria-label="Close" style={{ padding: '2px 10px' }}>✕</button>
+          <button className="btn btn-ghost" onClick={onClose} disabled={!!busyFile} aria-label={tr('Close')} style={{ padding: '2px 10px' }}>✕</button>
         </header>
 
         <form
@@ -97,10 +98,10 @@ export function LoraBrowser({ open, onClose, onImported }: {
         >
           <input
             value={query} onChange={(e) => setQuery(e.target.value)} autoFocus
-            placeholder="e.g. synthwave, jazz, rap, or tarn59/super_eurobeats_ACE_STEP-1.5-lora"
+            placeholder={tr('e.g. synthwave, jazz, rap, or tarn59/super_eurobeats_ACE_STEP-1.5-lora')}
             style={{ flex: 1 }}
           />
-          <button className="btn btn-primary" type="submit" disabled={loading || !!busyFile}>{loading ? 'Searching…' : 'Search'}</button>
+          <button className="btn btn-primary" type="submit" disabled={loading || !!busyFile}>{loading ? tr('Searching…') : tr('Search')}</button>
         </form>
 
         {error && <div style={{ color: 'var(--red)', fontSize: 12, padding: '0 16px 8px' }}>{error}</div>}
@@ -110,7 +111,7 @@ export function LoraBrowser({ open, onClose, onImported }: {
           {/* results */}
           <div style={{ ...box, flex: '1 1 50%', overflowY: 'auto', minHeight: 200 }}>
             {!loading && repos.length === 0 && !error && (
-              <div style={{ padding: 14, fontSize: 12, color: 'var(--text-muted)' }}>No LoRA found. Try another word.</div>
+              <div style={{ padding: 14, fontSize: 12, color: 'var(--text-muted)' }}>{tr('No LoRA found. Try another word.')}</div>
             )}
             {repos.map((r) => (
               <button
@@ -123,7 +124,7 @@ export function LoraBrowser({ open, onClose, onImported }: {
               >
                 <div style={{ fontSize: 12, fontWeight: 600, wordBreak: 'break-all' }}>{r.id}</div>
                 <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-                  ♥ {fmtCount(r.likes)} · ↓ {fmtCount(r.downloads)}{r.license ? ` · ${r.license}` : ''}{r.gated ? ' · gated' : ''}
+                  ♥ {fmtCount(r.likes)} · ↓ {fmtCount(r.downloads)}{r.license ? ` · ${r.license}` : ''}{r.gated ? tr(' · gated') : ''}
                 </div>
               </button>
             ))}
@@ -131,31 +132,31 @@ export function LoraBrowser({ open, onClose, onImported }: {
 
           {/* details */}
           <div style={{ ...box, flex: '1 1 50%', overflowY: 'auto', minHeight: 200, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {!repo && <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Pick a LoRA on the left to see its files.</div>}
+            {!repo && <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{tr('Pick a LoRA on the left to see its files.')}</div>}
             {repo && (
               <>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', wordBreak: 'break-all' }}>{repo.id}</div>
                 <div style={{ fontSize: 11, color: fit(repo).color }}>{fit(repo).text}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                  Licence: <strong>{repo.license || 'not stated'}</strong>. Check it before you use the music commercially.
+                  {tr('Licence:')} <strong>{repo.license || tr('not stated')}</strong>{tr('. Check it before you use the music commercially.')}
                 </div>
                 <button className="btn btn-ghost" style={{ alignSelf: 'flex-start', fontSize: 11 }} onClick={() => void window.api.huggingface.openPage(repo.id)}>
-                  Open model card in the browser
+                  {tr('Open model card in the browser')}
                 </button>
                 {repo.gated && (
-                  <div style={{ fontSize: 11, color: 'var(--orange)' }}>This repo is gated: you have to accept its terms on huggingface.co. Downloading gated files is not supported yet.</div>
+                  <div style={{ fontSize: 11, color: 'var(--orange)' }}>{tr('This repo is gated: you have to accept its terms on huggingface.co. Downloading gated files is not supported yet.')}</div>
                 )}
-                {filesLoading && <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Loading files…</div>}
-                {!filesLoading && files.length === 0 && <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>No LoRA weight files (.safetensors, .pt, .bin) in this repo.</div>}
+                {filesLoading && <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{tr('Loading files…')}</div>}
+                {!filesLoading && files.length === 0 && <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{tr('No LoRA weight files (.safetensors, .pt, .bin) in this repo.')}</div>}
                 {files.map((f) => (
                   <div key={f.name} style={{ border: '1px solid var(--border-mid)', borderRadius: 8, padding: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
                     <div style={{ fontSize: 12, wordBreak: 'break-all', color: 'var(--text-primary)' }}>{f.name}</div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{f.size ? fmtSize(f.size) : 'size unknown'}</span>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{f.size ? fmtSize(f.size) : tr('size unknown')}</span>
                       {busyFile === f.name ? (
-                        <button className="btn btn-ghost" onClick={() => void window.api.huggingface.cancel()}>Cancel</button>
+                        <button className="btn btn-ghost" onClick={() => void window.api.huggingface.cancel()}>{tr('Cancel')}</button>
                       ) : (
-                        <button className="btn btn-primary" disabled={!!busyFile || repo.gated} onClick={() => void download(f)}>Download</button>
+                        <button className="btn btn-primary" disabled={!!busyFile || repo.gated} onClick={() => void download(f)}>{tr('Download')}</button>
                       )}
                     </div>
                     {busyFile === f.name && (
@@ -163,7 +164,7 @@ export function LoraBrowser({ open, onClose, onImported }: {
                         <div style={{ height: 5, background: 'var(--bg-tertiary)', borderRadius: 3, overflow: 'hidden' }}>
                           <div style={{ height: '100%', width: `${pct}%`, background: 'var(--accent)', transition: 'width 200ms' }} />
                         </div>
-                        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{fmtSize(progress.received)} of {progress.total ? fmtSize(progress.total) : '?'} ({pct}%)</span>
+                        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{fmtSize(progress.received)} {tr('of')} {progress.total ? fmtSize(progress.total) : '?'} ({pct}%)</span>
                       </>
                     )}
                   </div>

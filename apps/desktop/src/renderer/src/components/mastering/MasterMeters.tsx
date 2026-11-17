@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { masterPlayer } from '../../audio/master/player'
 import type { Analysis } from '../../audio/master/dsp'
+import { tr } from '../../i18n/tr'
 
 // Meters: numbers for the whole file (before → after) and live while playing, gain reduction, stereo correlation,
 // goniometer, spectrum (before and after on top of each other) and the loudness over time.
@@ -49,48 +50,48 @@ export function MasterMeters({ before, after, target, busy, active }: { before: 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '150px minmax(0, 1fr)', gap: 10 }}>
-        <div style={box}><div style={label}>Goniometer</div><Goniometer /></div>
-        <div style={box}><div style={label}>Spectrum <span style={{ color: '#9ca3af' }}>before</span> / <span style={{ color: 'var(--accent-light)' }}>after</span></div><Spectrum /></div>
+        <div style={box}><div style={label}>{tr('Goniometer')}</div><Goniometer /></div>
+        <div style={box}><div style={label}>{tr('Spectrum')} <span style={{ color: '#9ca3af' }}>{tr('before')}</span> / <span style={{ color: 'var(--accent-light)' }}>{tr('after')}</span></div><Spectrum /></div>
       </div>
       <div style={box}>
-        <div style={label}>Loudness over time (short-term) · <span style={{ color: '#9ca3af' }}>before</span> / <span style={{ color: 'var(--accent-light)' }}>after</span> · target</div>
+        <div style={label}>{tr('Loudness over time (short-term) ·')} <span style={{ color: '#9ca3af' }}>{tr('before')}</span> / <span style={{ color: 'var(--accent-light)' }}>{tr('after')}</span> {tr('· target')}</div>
         <History before={before} after={after} target={target} active={active} />
       </div>
       <div style={box}>
         <div style={{ ...label, display: 'flex', justifyContent: 'space-between' }}>
-          <span>Whole song: <span style={{ color: active === 'before' ? 'var(--text-primary)' : undefined }}>before</span> → <span style={{ color: active === 'after' ? 'var(--accent-light)' : undefined }}>after</span> · now: <b style={{ color: 'var(--text-primary)' }}>{active === 'before' ? 'Before (original)' : 'After (master)'}</b></span>{busy && <span style={{ color: 'var(--accent-light)' }}>measuring…</span>}
+          <span>{tr('Whole song:')} <span style={{ color: active === 'before' ? 'var(--text-primary)' : undefined }}>{tr('before')}</span> → <span style={{ color: active === 'after' ? 'var(--accent-light)' : undefined }}>{tr('after')}</span> {tr('· now:')} <b style={{ color: 'var(--text-primary)' }}>{active === 'before' ? tr('Before (original)') : tr('After (master)')}</b></span>{busy && <span style={{ color: 'var(--accent-light)' }}>{tr('measuring…')}</span>}
         </div>
-        <Row name="Loudness (integrated)" before={before?.integrated} after={after?.integrated} unit="LUFS"
-          title="Integrated loudness after ITU-R BS.1770 / EBU R128: what streaming services measure" />
-        <Row name="True peak" before={before?.truePeak} after={after?.truePeak} unit="dBTP" warn={(after?.truePeak ?? -99) > -0.95} warnBefore={(before?.truePeak ?? -99) > -0.95}
-          title="The highest peak, also between samples (4x oversampled). Above −1 dBTP a lossy file (MP3, AAC) can distort." />
-        <Row name="Sample peak" before={before?.samplePeak} after={after?.samplePeak} unit="dBFS" />
-        <Row name="Loudness range" before={before?.range} after={after?.range} unit="LU" title="How much the loudness changes over the song (EBU Tech 3342)" />
+        <Row name={tr('Loudness (integrated)')} before={before?.integrated} after={after?.integrated} unit="LUFS"
+          title={tr('Integrated loudness after ITU-R BS.1770 / EBU R128: what streaming services measure')} />
+        <Row name={tr('True peak')} before={before?.truePeak} after={after?.truePeak} unit="dBTP" warn={(after?.truePeak ?? -99) > -0.95} warnBefore={(before?.truePeak ?? -99) > -0.95}
+          title={tr('The highest peak, also between samples (4x oversampled). Above −1 dBTP a lossy file (MP3, AAC) can distort.')} />
+        <Row name={tr('Sample peak')} before={before?.samplePeak} after={after?.samplePeak} unit="dBFS" />
+        <Row name={tr('Loudness range')} before={before?.range} after={after?.range} unit="LU" title={tr('How much the loudness changes over the song (EBU Tech 3342)')} />
         <Row name="RMS" before={before?.rms} after={after?.rms} unit="dBFS" />
-        <Row name="Crest factor" before={before?.crest} after={after?.crest} unit="dB" title="Peak to RMS: lower means more compressed" />
-        <Row name="Short-term max" before={before?.shortTermMax} after={after?.shortTermMax} unit="LUFS" />
-        <Row name="Clipping" before={before?.clips.length} after={after?.clips.length} unit="×" warn={(after?.clips.length ?? 0) > 0} warnBefore={(before?.clips.length ?? 0) > 0} title="Places where the waveform reaches 0 dBFS (red in the waveform)" />
+        <Row name={tr('Crest factor')} before={before?.crest} after={after?.crest} unit="dB" title={tr('Peak to RMS: lower means more compressed')} />
+        <Row name={tr('Short-term max')} before={before?.shortTermMax} after={after?.shortTermMax} unit="LUFS" />
+        <Row name={tr('Clipping')} before={before?.clips.length} after={after?.clips.length} unit="×" warn={(after?.clips.length ?? 0) > 0} warnBefore={(before?.clips.length ?? 0) > 0} title={tr('Places where the waveform reaches 0 dBFS (red in the waveform)')} />
         {after && Number.isFinite(after.integrated) && (
           <div style={{ fontSize: 11, color: Math.abs(after.integrated - target) <= 0.5 ? 'var(--green)' : 'var(--text-secondary)' }}>
-            Target {target} LUFS (master): {Math.abs(after.integrated - target) <= 0.5 ? 'reached' : `${after.integrated > target ? '+' : ''}${(after.integrated - target).toFixed(1)} LU`}
+            {tr('Target')} {target} {tr('LUFS (master):')} {Math.abs(after.integrated - target) <= 0.5 ? tr('reached') : `${after.integrated > target ? '+' : ''}${(after.integrated - target).toFixed(1)} LU`}
           </div>
         )}
       </div>
       <div style={box}>
-        <div style={label}>Live, real level {masterPlayer.bypass ? '(before)' : '(after)'}</div>
+        <div style={label}>{tr('Live, real level')} {masterPlayer.bypass ? tr('(before)') : tr('(after)')}</div>
         <Bar value={live ? r!.momentary : -Infinity} min={-40} max={0} color="var(--accent)" text={`M ${fmt(live ? r!.momentary : undefined)} LUFS`} />
         <Bar value={live ? r!.shortTerm : -Infinity} min={-40} max={0} color="var(--accent-light)" text={`S ${fmt(live ? r!.shortTerm : undefined)} LUFS`} />
         <Bar value={live ? r!.truePeak : -Infinity} min={-30} max={0} color={live && r!.truePeak > -1 ? 'var(--red)' : 'var(--green)'} text={`TP ${fmt(live ? r!.truePeak : undefined)} (max ${fmt(r?.truePeakMax)}) dBTP`} />
         <Bar value={live ? r!.rms : -Infinity} min={-40} max={0} color="var(--teal)" text={`RMS ${fmt(live ? r!.rms : undefined)} dB`} />
-        <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Integrated since play: <b>{fmt(r?.integrated)}</b> LUFS</div>
-        <div style={label}>Gain reduction</div>
+        <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{tr('Integrated since play:')} <b>{fmt(r?.integrated)}</b> LUFS</div>
+        <div style={label}>{tr('Gain reduction')}</div>
         <Bar value={-limDb} min={0} max={12} color="var(--orange)" text={`Limiter ${fmt(limDb)} dB`} />
         <Bar value={red.comp} min={0} max={12} color="var(--yellow)" text={`Compressor −${fmt(red.comp)} dB`} />
         {red.dyneq > 0.05 && <Bar value={red.dyneq} min={0} max={12} color="var(--teal)" text={`Dynamic EQ −${fmt(red.dyneq)} dB`} />}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
           {red.bands.map((b, i) => <Bar key={i} value={b} min={0} max={12} color="var(--yellow)" text={`${['Low', 'Mid', 'High'][i]} −${fmt(b)}`} />)}
         </div>
-        <div style={label}>Stereo correlation</div>
+        <div style={label}>{tr('Stereo correlation')}</div>
         <div style={{ position: 'relative', height: 14, background: 'linear-gradient(90deg, #7f1d1d, #3f3f46 50%, #14532d)', borderRadius: 3 }}>
           <div style={{ position: 'absolute', top: -2, bottom: -2, width: 3, background: '#fff', left: `calc(${((corr + 1) / 2) * 100}% - 1px)` }} />
           <span style={{ position: 'absolute', left: 4, fontSize: 9, lineHeight: '14px' }}>−1</span>

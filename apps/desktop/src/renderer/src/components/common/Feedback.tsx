@@ -54,32 +54,30 @@ export function FeedbackButton(): React.ReactElement {
 
   return (
     <>
-      <button onClick={() => { setOpen(true); setState('idle') }} title="Report a problem or an idea"
+      <button onClick={() => { setOpen(true); setState('idle') }} title={tr('Report a problem or an idea')}
         style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 10 }}>
-        Feedback
+        {tr('Feedback')}
       </button>
       {open && (
         <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 9700, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()} style={{ width: 'min(520px, 100%)', background: 'var(--bg-primary)', border: '1px solid var(--border-mid)', borderRadius: 10, padding: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>Feedback</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('Feedback')}</div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Describe what you did and what went wrong (or what you wish for). The report adds your system details,
-              the engine status and the last log lines. <b>Nothing is sent automatically</b>: you copy the report and paste it into
-              a GitHub issue or a message.
+              {tr('Describe what you did and what went wrong (or what you wish for). The report adds your system details,\n              the engine status and the last log lines.')} <b>{tr('Nothing is sent automatically')}</b>{tr(': you copy the report and paste it into\n              a GitHub issue or a message.')}
             </div>
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={5} placeholder="e.g. I pressed Create with 300 seconds and the track was only 30 seconds long."
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={5} placeholder={tr('e.g. I pressed Create with 300 seconds and the track was only 30 seconds long.')}
               style={{ width: '100%', resize: 'vertical' }} />
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
               <button className="btn btn-primary" disabled={state === 'busy'} onClick={() => void copy()}>
-                {state === 'busy' ? 'Preparing…' : 'Copy report'}
+                {state === 'busy' ? tr('Preparing…') : tr('Copy report')}
               </button>
-              <button className="btn btn-ghost" onClick={() => void window.api.feedback.openIssues()}>Open GitHub issues</button>
-              <button className="btn btn-ghost" onClick={() => void window.api.feedback.showCrashLog()}>Show error log</button>
+              <button className="btn btn-ghost" onClick={() => void window.api.feedback.openIssues()}>{tr('Open GitHub issues')}</button>
+              <button className="btn btn-ghost" onClick={() => void window.api.feedback.showCrashLog()}>{tr('Show error log')}</button>
               <span style={{ flex: 1 }} />
-              <button className="btn btn-ghost" onClick={() => setOpen(false)}>Close</button>
+              <button className="btn btn-ghost" onClick={() => setOpen(false)}>{tr('Close')}</button>
             </div>
-            {state === 'copied' && <div style={{ color: 'var(--green)', fontSize: 12 }}>Copied. Paste it into the issue (Ctrl+V).</div>}
-            {state === 'failed' && <div style={{ color: 'var(--red)', fontSize: 12 }}>Could not copy to the clipboard.</div>}
+            {state === 'copied' && <div style={{ color: 'var(--green)', fontSize: 12 }}>{tr('Copied. Paste it into the issue (Ctrl+V).')}</div>}
+            {state === 'failed' && <div style={{ color: 'var(--red)', fontSize: 12 }}>{tr('Could not copy to the clipboard.')}</div>}
             <DiagSection note={note} />
           </div>
         </div>

@@ -9,6 +9,7 @@ import { bars } from '../../audio/timemap'
 import { snapBeat } from '../../edit/grid'
 import { LOOP_H, MARKER_H, NUM_H, trackPointer } from './studioLayout'
 import type { PopoverSpec } from './Popover'
+import { tr } from '../../i18n/tr'
 
 const EDGE = 6
 
@@ -117,7 +118,7 @@ export function Ruler({ beatWidth, totalBeats, popover }: { beatWidth: number; t
   return (
     <div ref={ref} style={{ position: 'relative', flex: 1, height: '100%' }}>
       {/* markers */}
-      <div title="Double-click: add a marker. Drag a marker to move it, click it to jump there, right-click to rename or delete. Double-click a cycle marker to loop it."
+      <div title={tr('Double-click: add a marker. Drag a marker to move it, click it to jump there, right-click to rename or delete. Double-click a cycle marker to loop it.')}
         onDoubleClick={(e) => { if (e.target === e.currentTarget) addMarker(snapBeat(beatAt(e.clientX))) }}
         style={{ position: 'absolute', left: 0, right: 0, top: 0, height: MARKER_H, borderBottom: '1px solid var(--border)', background: 'var(--bg-primary)' }}>
         {markers.map((m) => (
@@ -136,7 +137,7 @@ export function Ruler({ beatWidth, totalBeats, popover }: { beatWidth: number; t
       </div>
       {/* loop brace */}
       <div onPointerDown={loopDown}
-        title="Loop: drag here to set the loop range, drag the brace to move it, its edges to resize, click it to switch the loop on or off"
+        title={tr('Loop: drag here to set the loop range, drag the brace to move it, its edges to resize, click it to switch the loop on or off')}
         style={{ position: 'absolute', left: 0, right: 0, top: MARKER_H, height: LOOP_H, background: 'var(--bg-secondary)', cursor: 'pointer' }}>
         {loop && (
           <div style={{
@@ -154,7 +155,7 @@ export function Ruler({ beatWidth, totalBeats, popover }: { beatWidth: number; t
       </div>
       {/* bar numbers */}
       <div onPointerDown={scrub} onContextMenu={editSignature}
-        title="Click or drag: move the playhead (Alt: off the grid). Right-click: change the time signature from this bar on"
+        title={tr('Click or drag: move the playhead (Alt: off the grid). Right-click: change the time signature from this bar on')}
         style={{ position: 'absolute', left: 0, right: 0, top: MARKER_H + LOOP_H, height: NUM_H, cursor: 'text' }}>
         {barList.map((b) => {
           const sig = `${b.num}/${b.den}`

@@ -6,6 +6,7 @@ import { useProjectStore } from '../../stores/project.store'
 import { useUIStore } from '../../stores/ui.store'
 import { ExportDialog } from '../common/ExportDialog'
 import { WaveformSeek } from '../common/WaveformSeek'
+import { tr } from '../../i18n/tr'
 
 // The stems of one split, played together: Solo, Mute and volume per stem, a remix of the audible stems
 // (karaoke without vocals, a version without drums, ...) and Audio → MIDI of one stem into the Piano Roll.
@@ -181,7 +182,7 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', maxWidth: 720 }}>
         <button className="btn btn-primary" style={{ minWidth: 92 }} disabled={loading}
           onClick={() => (playing ? stop() : void playFrom(pos >= length ? 0 : pos))}>
-          {loading ? 'Loading…' : playing ? '■ Stop' : '▶ Play'}
+          {loading ? tr('Loading…') : playing ? tr('■ Stop') : tr('▶ Play')}
         </button>
         <div style={{ flex: 1 }}>
           <WaveformSeek fileKey={`stems:${names.map((n) => stems[n]).join('|')}`} buffers={loaded}
@@ -201,20 +202,20 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: colors[n] ?? '#888', flexShrink: 0 }} />
               <span style={{ width: 90, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{labels[n] ?? n}</span>
               <button className="btn btn-ghost" style={{ ...small, background: s.solo ? '#ca8a04' : undefined, color: s.solo ? 'white' : undefined }}
-                title="Solo: hear only the soloed stems" onClick={() => set(n, { solo: !s.solo })}>S</button>
+                title={tr('Solo: hear only the soloed stems')} onClick={() => set(n, { solo: !s.solo })}>S</button>
               <button className="btn btn-ghost" style={{ ...small, background: s.mute ? 'var(--red)' : undefined, color: s.mute ? 'white' : undefined }}
-                title="Mute: leave this stem out (also in the remix)" onClick={() => set(n, { mute: !s.mute })}>M</button>
-              <input type="range" min={0} max={1.5} step={0.01} value={s.volume} style={{ flex: 1 }} title="Volume"
+                title={tr('Mute: leave this stem out (also in the remix)')} onClick={() => set(n, { mute: !s.mute })}>M</button>
+              <input type="range" min={0} max={1.5} step={0.01} value={s.volume} style={{ flex: 1 }} title={tr('Volume')}
                 onChange={(e) => set(n, { volume: Number(e.target.value) })} onDoubleClick={() => set(n, { volume: 1 })} />
               <span style={{ width: 40, fontSize: 11, color: 'var(--text-muted)', textAlign: 'right' }}>{Math.round(s.volume * 100)} %</span>
               {n !== 'drums' && (
                 <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={busy !== null}
-                  title="Turn this stem into MIDI notes on a new track (Piano Roll)" onClick={() => void toMidi(n)}>
-                  {busy === n ? 'Converting…' : '→ MIDI'}
+                  title={tr('Turn this stem into MIDI notes on a new track (Piano Roll)')} onClick={() => void toMidi(n)}>
+                  {busy === n ? tr('Converting…') : tr('→ MIDI')}
                 </button>
               )}
-              <button className="btn btn-ghost" style={{ fontSize: 11 }} title="Open this stem in Mastering (e.g. the instrumental)"
-                onClick={() => sendToMastering(stems[n], `${title} – ${labels[n] ?? n}`)}>Mastering</button>
+              <button className="btn btn-ghost" style={{ fontSize: 11 }} title={tr('Open this stem in Mastering (e.g. the instrumental)')}
+                onClick={() => sendToMastering(stems[n], `${title} – ${labels[n] ?? n}`)}>{tr('Mastering')}</button>
             </div>
           )
         })}
@@ -222,10 +223,10 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
 
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
         <button className="btn btn-primary" disabled={busy !== null || names.every((n) => !audible(n))} onClick={() => void exportRemix()}>
-          {busy === 'remix' ? 'Mixing…' : 'Export remix…'}
+          {busy === 'remix' ? tr('Mixing…') : tr('Export remix…')}
         </button>
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-          Mixes the stems you hear, at these levels: mute Vocals for a karaoke version, Drums for a version without drums.
+          {tr('Mixes the stems you hear, at these levels: mute Vocals for a karaoke version, Drums for a version without drums.')}
         </span>
       </div>
 
@@ -233,11 +234,11 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
       {notice && (
         <div style={{ color: 'var(--green)', fontSize: 12 }}>
           {notice} <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }}
-            onClick={() => useUIStore.getState().setActiveView('piano-roll')}>Open Piano Roll</button>
+            onClick={() => useUIStore.getState().setActiveView('piano-roll')}>{tr('Open Piano Roll')}</button>
         </div>
       )}
       {exporting && (
-        <ExportDialog title="remix" items={[exporting]} onClose={() => setExporting(null)} />
+        <ExportDialog title={tr('remix')} items={[exporting]} onClose={() => setExporting(null)} />
       )}
     </div>
   )

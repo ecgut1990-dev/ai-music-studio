@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { tr } from '../../i18n/tr'
 
 // The output menu: formats (several at once), sample rate, bit depth with dither, bit rates, metadata and cover,
 // folder and file name, presets per destination. The settings are remembered.
@@ -77,32 +78,32 @@ export function MasterOutput({ initial, onClose, onExport, busy, results }: {
     <div role="dialog" aria-modal="true" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onMouseDown={(e) => { if (e.target === e.currentTarget && !busy) onClose() }}>
       <div style={{ width: 720, maxHeight: '90vh', overflow: 'auto', background: 'var(--bg-elevated)', borderRadius: 12, padding: 18, display: 'flex', flexDirection: 'column', gap: 12, border: '1px solid var(--border-mid)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 15, fontWeight: 700, flex: 1 }}>Export the master</span>
+          <span style={{ fontSize: 15, fontWeight: 700, flex: 1 }}>{tr('Export the master')}</span>
           <select value="" onChange={(e) => { const d = DESTINATIONS[e.target.value]; if (d) upd(d) }} style={{ fontSize: 11 }}>
-            <option value="">Preset for…</option>
+            <option value="">{tr('Preset for…')}</option>
             {Object.keys(DESTINATIONS).map((k) => <option key={k} value={k}>{k}</option>)}
           </select>
           <button className="btn btn-ghost" disabled={!!busy} onClick={onClose}>×</button>
         </div>
 
-        <div style={lab}>Formats (several at once)</div>
+        <div style={lab}>{tr('Formats (several at once)')}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
           {ALL.map((a) => {
             const f = has(a.id)
             return (
               <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, background: f ? 'var(--accent-dim)' : 'var(--bg-tertiary)', borderRadius: 6, padding: '5px 8px' }}>
                 <label style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 1, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={!!f} onChange={() => toggle(a.id)} /> {a.label}
+                  <input type="checkbox" checked={!!f} onChange={() => toggle(a.id)} /> {tr(a.label)}
                 </label>
                 {f && a.bits && (
                   <select value={f.bits} onChange={(e) => setFmt(a.id, { bits: Number(e.target.value) })} style={{ fontSize: 11 }}>
-                    {a.bits.map((b) => <option key={b} value={b}>{b === 32 ? '32-bit float' : `${b}-bit`}</option>)}
+                    {a.bits.map((b) => <option key={b} value={b}>{b === 32 ? tr('32-bit float') : `${b}-bit`}</option>)}
                   </select>
                 )}
                 {f && a.rates && (
                   <select value={f.vbr ? 'vbr' : f.kbps} onChange={(e) => setFmt(a.id, e.target.value === 'vbr' ? { vbr: true } : { vbr: false, kbps: Number(e.target.value) })} style={{ fontSize: 11 }}>
-                    {a.rates.map((r) => <option key={r} value={r}>{r} kbps</option>)}
-                    {a.vbr && <option value="vbr">VBR (best)</option>}
+                    {a.rates.map((r) => <option key={r} value={r}>{r} {tr('kbps')}</option>)}
+                    {a.vbr && <option value="vbr">{tr('VBR (best)')}</option>}
                   </select>
                 )}
               </div>
@@ -111,40 +112,40 @@ export function MasterOutput({ initial, onClose, onExport, busy, results }: {
         </div>
 
         <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', fontSize: 12 }}>
-          <label>Sample rate{' '}
+          <label>{tr('Sample rate')}{' '}
             <select value={s.sampleRate} onChange={(e) => upd({ sampleRate: Number(e.target.value) })}>
               {[44100, 48000, 88200, 96000].map((r) => <option key={r} value={r}>{(r / 1000).toFixed(1).replace('.0', '')} kHz</option>)}
             </select>
           </label>
-          <label title="Adds a very quiet noise when the bit depth is reduced (e.g. to 16-bit), so quiet parts fade out smoothly instead of grainy">
-            <input type="checkbox" checked={s.dither} onChange={(e) => upd({ dither: e.target.checked })} /> Dither (TPDF) when reducing bit depth
+          <label title={tr('Adds a very quiet noise when the bit depth is reduced (e.g. to 16-bit), so quiet parts fade out smoothly instead of grainy')}>
+            <input type="checkbox" checked={s.dither} onChange={(e) => upd({ dither: e.target.checked })} /> {tr('Dither (TPDF) when reducing bit depth')}
           </label>
         </div>
 
-        <div style={lab}>Metadata</div>
+        <div style={lab}>{tr('Metadata')}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
           {(['title', 'artist', 'album', 'year', 'isrc', 'comment'] as const).map((k) => (
             <label key={k} style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 11, color: 'var(--text-secondary)' }}>
               {k === 'isrc' ? 'ISRC' : k[0].toUpperCase() + k.slice(1)}
-              <input style={field} value={s.meta[k]} placeholder={k === 'isrc' ? 'e.g. DEABC2600001' : ''}
+              <input style={field} value={s.meta[k]} placeholder={k === 'isrc' ? tr('e.g. DEABC2600001') : ''}
                 onChange={(e) => upd({ meta: { ...s.meta, [k]: e.target.value } })} />
             </label>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 12 }}>
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={async () => { const p = await window.api.dialog.openImage(); if (p) upd({ cover: p }) }}>Cover picture…</button>
-          <span className="truncate" style={{ color: 'var(--text-secondary)', fontSize: 11 }}>{s.cover ?? 'none (JPG or PNG, square, e.g. 3000 × 3000)'}</span>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={async () => { const p = await window.api.dialog.openImage(); if (p) upd({ cover: p }) }}>{tr('Cover picture…')}</button>
+          <span className="truncate" style={{ color: 'var(--text-secondary)', fontSize: 11 }}>{s.cover ?? tr('none (JPG or PNG, square, e.g. 3000 × 3000)')}</span>
           {s.cover && <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => upd({ cover: null })}>×</button>}
         </div>
 
-        <div style={lab}>Where</div>
+        <div style={lab}>{tr('Where')}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, alignItems: 'end' }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 11, color: 'var(--text-secondary)' }}>File name
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 11, color: 'var(--text-secondary)' }}>{tr('File name')}
             <input style={field} value={s.name} onChange={(e) => upd({ name: e.target.value })} />
           </label>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={async () => { const f = await window.api.dialog.pickFolder('Folder for the master'); if (f) upd({ folder: f }) }}>Folder…</button>
-            <span className="truncate" style={{ fontSize: 11, color: s.folder ? 'var(--text-secondary)' : 'var(--orange)' }}>{s.folder || 'choose a folder'}</span>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={async () => { const f = await window.api.dialog.pickFolder('Folder for the master'); if (f) upd({ folder: f }) }}>{tr('Folder…')}</button>
+            <span className="truncate" style={{ fontSize: 11, color: s.folder ? 'var(--text-secondary)' : 'var(--orange)' }}>{s.folder || tr('choose a folder')}</span>
           </div>
         </div>
 
@@ -154,7 +155,7 @@ export function MasterOutput({ initial, onClose, onExport, busy, results }: {
               <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', color: r.error ? 'var(--red)' : 'var(--green)' }}>
                 <b style={{ width: 44 }}>{r.format.toUpperCase()}</b>
                 <span className="truncate" style={{ flex: 1 }}>{r.error ?? r.path}{r.warning ? ` (${r.warning})` : ''}</span>
-                {r.path && <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => void window.api.files.showItem(r.path!)}>Show</button>}
+                {r.path && <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => void window.api.files.showItem(r.path!)}>{tr('Show')}</button>}
               </div>
             ))}
           </div>
@@ -162,9 +163,9 @@ export function MasterOutput({ initial, onClose, onExport, busy, results }: {
 
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', alignItems: 'center' }}>
           {busy && <span style={{ fontSize: 11, color: 'var(--accent-light)' }}>{busy}</span>}
-          <button className="btn btn-ghost" disabled={!!busy} onClick={onClose}>Close</button>
+          <button className="btn btn-ghost" disabled={!!busy} onClick={onClose}>{tr('Close')}</button>
           <button className="btn btn-primary" disabled={!!busy || !s.folder || !s.formats.length || !s.name.trim()} onClick={go}>
-            Export {s.formats.length} file{s.formats.length === 1 ? '' : 's'}
+            {tr('Export')} {s.formats.length} {tr('file')}{s.formats.length === 1 ? '' : 's'}
           </button>
         </div>
       </div>

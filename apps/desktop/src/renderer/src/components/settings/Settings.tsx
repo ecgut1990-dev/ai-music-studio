@@ -10,6 +10,7 @@ import { EnginesTab } from './EnginesTab'
 import { ShortcutsTab } from './ShortcutsTab'
 import { ModelsTab } from './ModelsTab'
 import { HardwareTab } from './HardwareTab'
+import { tr } from '../../i18n/tr'
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -76,13 +77,13 @@ function ModelPicker({ models, value, onChange }: {
         style={inputStyle}
       >
         {models.map(m => <option key={m.id} value={m.id}>{m.label} ({m.id})</option>)}
-        <option value={CUSTOM}>Other model ID…</option>
+        <option value={CUSTOM}>{tr('Other model ID…')}</option>
       </select>
       {custom && (
         <input
           value={value}
           onChange={e => onChange(e.target.value.trim())}
-          placeholder="exact model ID"
+          placeholder={tr('exact model ID')}
           style={inputStyle}
         />
       )}
@@ -136,10 +137,10 @@ function UpdatesTab(): React.ReactElement {
     <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
         <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
-          AI Music Studio Updates
+          {tr('AI Music Studio Updates')}
         </div>
         <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-          Updates werden automatisch gesucht und im Hintergrund geladen.
+          {tr('Updates werden automatisch gesucht und im Hintergrund geladen.')}
         </div>
       </div>
 
@@ -165,13 +166,13 @@ function UpdatesTab(): React.ReactElement {
         background: 'var(--bg-elevated)', border: '1px solid var(--border-mid)', borderRadius: 8,
         padding: '12px 16px', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '6px 16px', fontSize: 12
       }}>
-        <span style={{ color: 'var(--text-muted)' }}>Installierte Version</span>
+        <span style={{ color: 'var(--text-muted)' }}>{tr('Installierte Version')}</span>
         <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>v{__APP_VERSION__}</span>
-        <span style={{ color: 'var(--text-muted)' }}>Verfügbares Update</span>
+        <span style={{ color: 'var(--text-muted)' }}>{tr('Verfügbares Update')}</span>
         <span style={{ color: info.version ? 'var(--accent-light)' : 'var(--text-secondary)', fontWeight: 600 }}>
           {info.version
             ? `v${info.version}${phase === 'ready' ? ' (heruntergeladen)' : ''}`
-            : phase === 'checking' ? 'wird gesucht…' : 'keins gefunden'}
+            : phase === 'checking' ? tr('wird gesucht…') : tr('keins gefunden')}
         </span>
       </div>
 
@@ -179,23 +180,23 @@ function UpdatesTab(): React.ReactElement {
       <div style={{ display: 'flex', gap: 10 }}>
         {(phase === 'idle' || phase === 'error') && (
           <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={checkNow}>
-            Jetzt suchen
+            {tr('Jetzt suchen')}
           </button>
         )}
         {phase === 'available' && (
           <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={download}>
-            Herunterladen
+            {tr('Herunterladen')}
           </button>
         )}
         {phase === 'ready' && (
           <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={install}>
-            Neu starten & Installieren
+            {tr('Neu starten & Installieren')}
           </button>
         )}
       </div>
 
       <div style={{ fontSize: 10, color: 'var(--text-disabled)' }}>
-        Updates kommen von github.com/pierrecinema/ai-music-studio
+        {tr('Updates kommen von github.com/pierrecinema/ai-music-studio')}
       </div>
     </div>
   )
@@ -224,8 +225,8 @@ export function Settings(): React.ReactElement {
       {/* Close button (Esc and a second click on the Settings icon also close it) */}
       <button
         onClick={closeSettings}
-        title="Close settings (Esc)"
-        aria-label="Close settings"
+        title={tr('Close settings (Esc)')}
+        aria-label={tr('Close settings')}
         style={{
           position: 'absolute', top: 10, right: 14, zIndex: 5, width: 30, height: 30, borderRadius: 8,
           border: '1px solid var(--border-mid)', background: 'var(--bg-secondary)', color: 'var(--text-secondary)',
@@ -276,8 +277,8 @@ export function Settings(): React.ReactElement {
             <div>
               <label style={labelStyle}>{t('settings.vstPaths')}</label>
               <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 6, padding: 10, fontSize: 12, color: 'var(--text-muted)' }}>
-                C:\Program Files\VSTPlugins<br />
-                C:\Program Files\Steinberg\VSTPlugins
+                {tr('C:\\Program Files\\VSTPlugins')}<br />
+                {tr('C:\\Program Files\\Steinberg\\VSTPlugins')}
               </div>
               <button style={{ marginTop: 8, ...smallBtnStyle }}>{t('settings.scanVst')}</button>
             </div>
@@ -305,7 +306,7 @@ export function Settings(): React.ReactElement {
                       fontWeight: provider === p ? 600 : 400
                     }}
                   >
-                    {p === 'claude' ? 'Claude (Anthropic)' : p === 'openai' ? 'ChatGPT (OpenAI)' : p === 'grok' ? 'Grok (xAI)' : p === 'gemini' ? 'Gemini (Google)' : p === 'ollama' ? 'Ollama (free, on this PC)' : 'Local server (LM Studio, KoboldCpp, llama.cpp)'}
+                    {p === 'claude' ? tr('Claude (Anthropic)') : p === 'openai' ? tr('ChatGPT (OpenAI)') : p === 'grok' ? tr('Grok (xAI)') : p === 'gemini' ? tr('Gemini (Google)') : p === 'ollama' ? tr('Ollama (free, on this PC)') : tr('Local server (LM Studio, KoboldCpp, llama.cpp)')}
                   </button>
                 ))}
               </div>
@@ -320,10 +321,10 @@ export function Settings(): React.ReactElement {
                       type={showKey ? 'text' : 'password'}
                       value={claudeApiKey}
                       onChange={e => setClaudeApiKey(e.target.value)}
-                      placeholder="sk-ant-..."
+                      placeholder={tr('sk-ant-...')}
                       style={{ ...inputStyle, flex: 1 }}
                     />
-                    <button onClick={() => setShowKey(s => !s)} style={smallBtnStyle}>{showKey ? 'Hide' : 'Show'}</button>
+                    <button onClick={() => setShowKey(s => !s)} style={smallBtnStyle}>{showKey ? tr('Hide') : tr('Show')}</button>
                   </div>
                 </div>
                 <div>
@@ -342,10 +343,10 @@ export function Settings(): React.ReactElement {
                       type={showKey ? 'text' : 'password'}
                       value={openaiApiKey}
                       onChange={e => setOpenaiApiKey(e.target.value)}
-                      placeholder="sk-..."
+                      placeholder={tr('sk-...')}
                       style={{ ...inputStyle, flex: 1 }}
                     />
-                    <button onClick={() => setShowKey(s => !s)} style={smallBtnStyle}>{showKey ? 'Hide' : 'Show'}</button>
+                    <button onClick={() => setShowKey(s => !s)} style={smallBtnStyle}>{showKey ? tr('Hide') : tr('Show')}</button>
                   </div>
                 </div>
                 <div>
@@ -358,15 +359,14 @@ export function Settings(): React.ReactElement {
             {provider === 'gemini' && (
               <>
                 <div>
-                  <label style={labelStyle}>Gemini API key (Google)</label>
+                  <label style={labelStyle}>{tr('Gemini API key (Google)')}</label>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <input type={showKey ? 'text' : 'password'} value={geminiApiKey} onChange={e => setGeminiApiKey(e.target.value)}
-                      placeholder="AIza..." style={{ ...inputStyle, flex: 1 }} />
-                    <button onClick={() => setShowKey(s => !s)} style={smallBtnStyle}>{showKey ? 'Hide' : 'Show'}</button>
+                      placeholder={tr('AIza...')} style={{ ...inputStyle, flex: 1 }} />
+                    <button onClick={() => setShowKey(s => !s)} style={smallBtnStyle}>{showKey ? tr('Hide') : tr('Show')}</button>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, lineHeight: 1.5 }}>
-                    Create a key at aistudio.google.com (Get API key). Google offers a free tier with limits per minute and
-                    per day. If a model name no longer exists, choose "Other model ID" and enter a current one.
+                    {tr('Create a key at aistudio.google.com (Get API key). Google offers a free tier with limits per minute and\n                    per day. If a model name no longer exists, choose "Other model ID" and enter a current one.')}
                   </div>
                 </div>
                 <div>
@@ -379,15 +379,14 @@ export function Settings(): React.ReactElement {
             {provider === 'grok' && (
               <>
                 <div>
-                  <label style={labelStyle}>Grok API key (xAI)</label>
+                  <label style={labelStyle}>{tr('Grok API key (xAI)')}</label>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <input type={showKey ? 'text' : 'password'} value={grokApiKey} onChange={e => setGrokApiKey(e.target.value)}
-                      placeholder="xai-..." style={{ ...inputStyle, flex: 1 }} />
-                    <button onClick={() => setShowKey(s => !s)} style={smallBtnStyle}>{showKey ? 'Hide' : 'Show'}</button>
+                      placeholder={tr('xai-...')} style={{ ...inputStyle, flex: 1 }} />
+                    <button onClick={() => setShowKey(s => !s)} style={smallBtnStyle}>{showKey ? tr('Hide') : tr('Show')}</button>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, lineHeight: 1.5 }}>
-                    Create a key at console.x.ai. New xAI accounts have often received free starter credits; check your
-                    credit balance there. If a model name no longer exists, choose "Other model ID" and enter a current one.
+                    {tr('Create a key at console.x.ai. New xAI accounts have often received free starter credits; check your\n                    credit balance there. If a model name no longer exists, choose "Other model ID" and enter a current one.')}
                   </div>
                 </div>
                 <div>
@@ -400,13 +399,13 @@ export function Settings(): React.ReactElement {
             {provider === 'ollama' && (
               <>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  <b>Completely free, no account, no key:</b> Ollama runs an AI model on your own PC.
+                  <b>{tr('Completely free, no account, no key:')}</b> {tr('Ollama runs an AI model on your own PC.')}
                   <ol style={{ margin: '6px 0 0 18px', padding: 0 }}>
-                    <li>Install Ollama from ollama.com (Windows installer).</li>
-                    <li>Open a command prompt once and type <code>ollama pull llama3.2</code> (about 2 GB).</li>
-                    <li>Keep Ollama running; choose the same model below.</li>
+                    <li>{tr('Install Ollama from ollama.com (Windows installer).')}</li>
+                    <li>{tr('Open a command prompt once and type')} <code>{tr('ollama pull llama3.2')}</code> {tr('(about 2 GB).')}</li>
+                    <li>{tr('Keep Ollama running; choose the same model below.')}</li>
                   </ol>
-                  Answers come slower than from the cloud on a PC without a strong graphics card, and small models know less.
+                  {tr('Answers come slower than from the cloud on a PC without a strong graphics card, and small models know less.')}
                 </div>
                 <div>
                   <label style={labelStyle}>{t('settings.model')}</label>
@@ -418,19 +417,16 @@ export function Settings(): React.ReactElement {
             {provider === 'local' && (
               <>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  <b>Free, on this PC, also on older AMD graphics cards:</b> any program that offers an OpenAI-compatible
-                  server works. LM Studio and KoboldCpp run models on the graphics card through <b>Vulkan</b>, which also works on
-                  cards that ROCm and CUDA do not support (for example an AMD Radeon R9 290 with 4 GB: small models of 1 to 3
-                  billion parameters, 4-bit GGUF files of up to about 2.5 GB).
+                  <b>{tr('Free, on this PC, also on older AMD graphics cards:')}</b> {tr('any program that offers an OpenAI-compatible\n                  server works. LM Studio and KoboldCpp run models on the graphics card through')} <b>{tr('Vulkan')}</b>{tr(', which also works on\n                  cards that ROCm and CUDA do not support (for example an AMD Radeon R9 290 with 4 GB: small models of 1 to 3\n                  billion parameters, 4-bit GGUF files of up to about 2.5 GB).')}
                   <ol style={{ margin: '6px 0 0 18px', padding: 0 }}>
-                    <li>Install LM Studio (lmstudio.ai) or KoboldCpp (github.com/LostRuins/koboldcpp, file koboldcpp.exe).</li>
-                    <li>Choose <b>Vulkan</b> as backend (LM Studio: runtime "Vulkan llama.cpp"; KoboldCpp: preset "Use Vulkan") and load a small GGUF model.</li>
-                    <li>Start the server (LM Studio: Developer → Start Server; KoboldCpp starts it by itself), then choose the address below.</li>
+                    <li>{tr('Install LM Studio (lmstudio.ai) or KoboldCpp (github.com/LostRuins/koboldcpp, file koboldcpp.exe).')}</li>
+                    <li>{tr('Choose')} <b>{tr('Vulkan')}</b> {tr('as backend (LM Studio: runtime "Vulkan llama.cpp"; KoboldCpp: preset "Use Vulkan") and load a small GGUF model.')}</li>
+                    <li>{tr('Start the server (LM Studio: Developer → Start Server; KoboldCpp starts it by itself), then choose the address below.')}</li>
                   </ol>
                 </div>
                 <div>
-                  <label style={labelStyle}>Server address</label>
-                  <input value={localUrl} onChange={e => setLocalUrl(e.target.value.trim())} placeholder="http://127.0.0.1:1234/v1" style={inputStyle} />
+                  <label style={labelStyle}>{tr('Server address')}</label>
+                  <input value={localUrl} onChange={e => setLocalUrl(e.target.value.trim())} placeholder={tr('http://127.0.0.1:1234/v1')} style={inputStyle} />
                   <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
                     {[['LM Studio', 'http://127.0.0.1:1234/v1'], ['KoboldCpp', 'http://127.0.0.1:5001/v1'], ['llama.cpp server', 'http://127.0.0.1:8080/v1']].map(([n, u]) => (
                       <button key={n} onClick={() => setLocalUrl(u)} style={{ ...smallBtnStyle, fontWeight: localUrl === u ? 700 : 400 }}>{n}</button>
@@ -439,8 +435,8 @@ export function Settings(): React.ReactElement {
                 </div>
                 <div>
                   <label style={labelStyle}>{t('settings.model')}</label>
-                  <input value={model} onChange={e => setModel(e.target.value)} placeholder="local-model" style={inputStyle} />
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>The model loaded in the server; most servers answer with the loaded model whatever name is given here.</div>
+                  <input value={model} onChange={e => setModel(e.target.value)} placeholder={tr('local-model')} style={inputStyle} />
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{tr('The model loaded in the server; most servers answer with the loaded model whatever name is given here.')}</div>
                 </div>
               </>
             )}
@@ -453,18 +449,18 @@ export function Settings(): React.ReactElement {
             <div>
               <label style={labelStyle}>{t('settings.sampleRate')}</label>
               <select style={inputStyle} defaultValue={String(exportSampleRate())} onChange={(e) => setExportSampleRate(Number(e.target.value))}>
-                <option value="44100">44,100 Hz (streaming platforms, CD: recommended)</option>
-                <option value="48000">48,000 Hz (video)</option>
-                <option value="88200">88,200 Hz</option>
-                <option value="96000">96,000 Hz</option>
+                <option value="44100">{tr('44,100 Hz (streaming platforms, CD: recommended)')}</option>
+                <option value="48000">{tr('48,000 Hz (video)')}</option>
+                <option value="88200">{tr('88,200 Hz')}</option>
+                <option value="96000">{tr('96,000 Hz')}</option>
               </select>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>Every export uses this rate (File → Export audio, Export… in the Library and the Stem Splitter). AI models often make 48 kHz; the files are converted.</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{tr('Every export uses this rate (File → Export audio, Export… in the Library and the Stem Splitter). AI models often make 48 kHz; the files are converted.')}</div>
             </div>
             <div>
               <label style={labelStyle}>{t('settings.bufferSize')}</label>
               <select style={inputStyle} defaultValue="512">
                 {[64, 128, 256, 512, 1024, 2048].map(b => (
-                  <option key={b} value={b}>{b} samples</option>
+                  <option key={b} value={b}>{b} {tr('samples')}</option>
                 ))}
               </select>
             </div>
@@ -525,28 +521,24 @@ function AboutTab(): React.ReactElement {
       <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
         <img src={logo} alt="AI Music Studio" style={{ width: 84, height: 84, borderRadius: 18 }} />
         <div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--text-primary)' }}>AI Music Studio</div>
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Version {__APP_VERSION__} · free and open source (GPL-3.0)</div>
+          <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--text-primary)' }}>{tr('AI Music Studio')}</div>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{tr('Version')} {__APP_VERSION__} {tr('· free and open source (GPL-3.0)')}</div>
         </div>
       </div>
       <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-        AI Music Studio is a free music studio for Windows: a DAW with Studio, mixer and piano roll, and AI music
-        generation that runs on your own computer. Describe a style, write lyrics and make songs or seamless loops,
-        without a cloud service or a subscription. Your music and lyrics stay on your PC.
+        {tr('AI Music Studio is a free music studio for Windows: a DAW with Studio, mixer and piano roll, and AI music\n        generation that runs on your own computer. Describe a style, write lyrics and make songs or seamless loops,\n        without a cloud service or a subscription. Your music and lyrics stay on your PC.')}
       </div>
       <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--accent)', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>⭐ Do you like AI Music Studio?</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('⭐ Do you like AI Music Studio?')}</div>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          Give it a star on GitHub. It takes a second (with a free GitHub account), helps other musicians find the
-          project and shows that it is worth working on.
+          {tr('Give it a star on GitHub. It takes a second (with a free GitHub account), helps other musicians find the\n          project and shows that it is worth working on.')}
         </div>
         <div>{link('home', '⭐ Star on GitHub', true)}</div>
       </div>
       <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-mid)', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>❤ Support the project</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('❤ Support the project')}</div>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          AI Music Studio is free and stays free. If it is useful to you, a small donation helps to keep it going:
-          new features, more AI models and code signing for the installer.
+          {tr('AI Music Studio is free and stays free. If it is useful to you, a small donation helps to keep it going:\n          new features, more AI models and code signing for the installer.')}
         </div>
         <div>{link('donate', '❤ Donate with PayPal', true)}</div>
       </div>
@@ -556,7 +548,7 @@ function AboutTab(): React.ReactElement {
         {link('newIssue', 'Report a problem')}
         {link('issues', 'Known issues')}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>github.com/pierrecinema/ai-music-studio</div>
+      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tr('github.com/pierrecinema/ai-music-studio')}</div>
     </div>
   )
 }

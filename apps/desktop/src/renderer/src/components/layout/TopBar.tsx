@@ -31,7 +31,7 @@ function LevelMeter(): React.ReactElement {
 
   const bars = 8
   return (
-    <div title="Master level" style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 18, padding: '0 4px' }}>
+    <div title={tr('Master level')} style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 18, padding: '0 4px' }}>
       {Array.from({ length: bars }, (_, i) => {
         const on = level * bars > i + 0.2
         const hot = i >= bars - 1 ? 'var(--red)' : i >= bars - 3 ? 'var(--yellow)' : 'var(--green)'
@@ -121,7 +121,7 @@ export function TopBar(): React.ReactElement {
             style={{ display: 'block', filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.85))' }}
           />
           <span style={{ fontWeight: 800, fontSize: 12, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-            AI Music Studio
+            {tr('AI Music Studio')}
           </span>
         </div>
       </div>
@@ -149,7 +149,7 @@ export function TopBar(): React.ReactElement {
         {/* Play/Pause */}
         <button
           className={`tb-btn${isPlaying ? ' active' : ''}`}
-          title={loading ? 'Reading audio files…' : undefined}
+          title={loading ? tr('Reading audio files…') : undefined}
           onClick={() => (isPlaying ? pause() : void play())}
           data-tooltip={isPlaying ? t('toolbar.pause') : t('toolbar.play')}
           style={{ width: 36, height: 36, borderRadius: 8 }}
@@ -193,7 +193,7 @@ export function TopBar(): React.ReactElement {
           <input
             type="text" inputMode="decimal"
             value={bpmDraft}
-            title="Project tempo: type a value (20–300) and press Enter, or use the arrow keys / mouse wheel (Shift: 0.1)"
+            title={tr('Project tempo: type a value (20–300) and press Enter, or use the arrow keys / mouse wheel (Shift: 0.1)')}
             onChange={(e) => setBpmDraft(e.target.value.replace(/[^0-9.,]/g, ''))}
             onFocus={(e) => e.target.select()}
             onBlur={() => commitBpm(bpmDraft)}
@@ -221,7 +221,7 @@ export function TopBar(): React.ReactElement {
           data-tooltip={autoSync ? 'Auto-sync is ON: every audio is kept in time with the master BPM, beats on the grid. With several clips selected: click syncs them together (same start bar).' : 'Auto-sync is off. Click: all audio in the project is synced to the master BPM now, and new audio automatically. With several clips selected: they are synced together, beat 1 of each on the same bar.'}
           style={{ width: 'auto', padding: '0 8px', fontSize: 10, fontWeight: 800, letterSpacing: '0.05em' }}
         >
-          AUTO SYNC
+          {tr('AUTO SYNC')}
         </button>
       </div>
 
