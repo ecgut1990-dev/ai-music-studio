@@ -977,7 +977,7 @@ def _stage_peft(entry: dict, f: Path, rank: int, targets: list[str], warnings: l
     """A folder ACE-Step 1.5 can load: the weights (hard link) and an adapter_config.json, fetched from the LoRA's
     Hugging Face page or, if that fails, written from what the weights show (rank, layers; alpha = 2 x rank, the
     ACE-Step trainer's default)."""
-    stage = LORA_DIR / ".engine" / ("peft-" + re.sub(r"[^\w.-]+", "_", entry["id"]))
+    stage = LORA_DIR / ".engine" / ("peft-" + re.sub(r"[^\w-]+", "_", entry["id"]))      # no "." (ACE-Step names the adapter after it)
     stage.mkdir(parents=True, exist_ok=True)
     target = stage / "adapter_model.safetensors"
     if not target.exists() or target.stat().st_size != f.stat().st_size:

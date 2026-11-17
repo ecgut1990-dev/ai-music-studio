@@ -70,8 +70,14 @@ def main() -> int:
     if req.get("lora_path"):
         name = req.get("lora_name") or os.path.basename(req["lora_path"])
         say(stage="load", text=f"Loading the LoRA {name}")
+        # ACE-Step first copies the whole model (several GB) so a LoRA can be removed again later. This run makes
+        # one song set and ends, so the copy is never needed; on a PC with 12-16 GB it ran out of memory.
+        if getattr(dit, "_base_decoder", 0) is None:
+            dit._base_decoder = {}
         try:
-            msg = str(dit.load_lora(req["lora_path"]))
+            # a fixed adapter name: the default comes from the folder name, which must not contain "."
+            msg = str(dit.add_lora(req["lora_path"], adapter_name="ams_lora") if hasattr(dit, "add_lora")
+                      else dit.load_lora(req["lora_path"]))
             if msg.startswith("\u274c"):                             # ACE-Step reports problems with a red cross
                 say(warning=f"The LoRA '{name}' could not be loaded and was left out: {msg.lstrip(chr(0x274c)).strip()}")
             else:
