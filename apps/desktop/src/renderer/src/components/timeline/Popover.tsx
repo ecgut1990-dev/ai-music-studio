@@ -1,5 +1,6 @@
 // A small box with input fields at the mouse (Electron has no window.prompt).
 import React, { useEffect, useRef } from 'react'
+import { tr } from '../../i18n/tr'
 
 export interface PopoverField { key: string; label: string; value: string; type?: 'text' | 'number'; options?: string[] }
 export interface PopoverSpec { x: number; y: number; title: string; fields: PopoverField[]; onOk: (v: Record<string, string>) => void; danger?: { label: string; run: () => void } }
@@ -19,7 +20,7 @@ export function Popover({ spec, onClose }: { spec: PopoverSpec; onClose: () => v
         background: 'var(--bg-panel)', border: '1px solid var(--border-mid)', borderRadius: 8, padding: 10, boxShadow: '0 8px 24px #000a', display: 'flex', flexDirection: 'column', gap: 6 }}>
       <b style={{ fontSize: 12, color: 'var(--text-primary)' }}>{spec.title}</b>
       {spec.fields.map((f, i) => (
-        <label key={f.key} style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 2 }}>{f.label}
+        <label key={f.key} style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 2 }}>{tr(f.label)}
           {f.options ? (
             <select defaultValue={f.value} onChange={(e) => { values.current[f.key] = e.target.value }}>
               {f.options.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -30,8 +31,8 @@ export function Popover({ spec, onClose }: { spec: PopoverSpec; onClose: () => v
         </label>
       ))}
       <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-        {spec.danger && <button className="btn btn-ghost" style={{ fontSize: 11, color: 'var(--red)', marginRight: 'auto' }} onClick={() => { spec.danger!.run(); onClose() }}>{spec.danger.label}</button>}
-        <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={onClose}>Cancel</button>
+        {spec.danger && <button className="btn btn-ghost" style={{ fontSize: 11, color: 'var(--red)', marginRight: 'auto' }} onClick={() => { spec.danger!.run(); onClose() }}>{tr(spec.danger.label)}</button>}
+        <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={onClose}>{tr('Cancel')}</button>
         <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={ok}>OK</button>
       </div>
     </div>

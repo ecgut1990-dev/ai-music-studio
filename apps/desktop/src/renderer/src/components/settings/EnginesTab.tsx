@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { tr } from '../../i18n/tr'
 
 interface Group { id: string; name: string; desc: string; note?: string; recommended?: boolean }
 
@@ -57,23 +58,22 @@ export function EnginesTab(): React.ReactElement {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: 10 }}>
-        AI Engines
+        {tr('AI Engines')}
       </div>
 
       {status && !status.pythonFound && (
         <div style={{ color: 'var(--yellow)', fontSize: 12 }}>
-          Python 3.10+ was not found. Install it from python.org (tick “Add python.exe to PATH”), then reopen this page.
+          {tr('Python 3.10+ was not found. Install it from python.org (tick “Add python.exe to PATH”), then reopen this page.')}
         </div>
       )}
       {status && status.pythonFound && (
         <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-          Python {status.pythonVersion} · GPU: {status.gpu} · AI backend: {status.serverReady ? 'running' : 'not running'}
+          {tr('Python')} {status.pythonVersion} {tr('· GPU:')} {status.gpu} {tr('· AI backend:')} {status.serverReady ? tr('running') : tr('not running')}
         </div>
       )}
       {status?.pythonVersion && Number(status.pythonVersion.split('.')[1]) >= 13 && (
         <div style={{ color: 'var(--yellow)', fontSize: 11 }}>
-          Python {status.pythonVersion} is very new: some engines (PyTorch, basic-pitch, Whisper) may fail to install.
-          Python 3.11 is recommended: <code>winget install Python.Python.3.11</code>, then reopen this page.
+          {tr('Python')} {status.pythonVersion} {tr('is very new: some engines (PyTorch, basic-pitch, Whisper) may fail to install.\n          Python 3.11 is recommended:')} <code>{tr('winget install Python.Python.3.11')}</code>{tr(', then reopen this page.')}
         </div>
       )}
 
@@ -88,7 +88,7 @@ export function EnginesTab(): React.ReactElement {
                 <span style={{ display: 'block', fontSize: 11, color: 'var(--text-secondary)' }}>{g.desc}</span>
                 {g.note && <span style={{ display: 'block', fontSize: 10, color: 'var(--orange)' }}>{g.note}</span>}
               </span>
-              <span style={{ fontSize: 10, color: done ? 'var(--green)' : 'var(--text-muted)' }}>{done ? 'installed' : 'not installed'}</span>
+              <span style={{ fontSize: 10, color: done ? 'var(--green)' : 'var(--text-muted)' }}>{done ? tr('installed') : tr('not installed')}</span>
             </label>
           )
         })}
@@ -96,23 +96,23 @@ export function EnginesTab(): React.ReactElement {
 
       {(picked.has('torch') || picked.has('ace15')) && (
         <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-          PyTorch variant{' '}
+          {tr('PyTorch variant')}{' '}
           <select value={torch} onChange={e => setTorch(e.target.value)} disabled={busy}>
-            <option value="cpu">CPU (works everywhere)</option>
-            <option value="cuda">NVIDIA CUDA</option>
-            <option value="directml">AMD / any DirectX 12 GPU (DirectML, optional add-on)</option>
+            <option value="cpu">{tr('CPU (works everywhere)')}</option>
+            <option value="cuda">{tr('NVIDIA CUDA')}</option>
+            <option value="directml">{tr('AMD / any DirectX 12 GPU (DirectML, optional add-on)')}</option>
           </select>
           <span style={{ display: 'block', marginTop: 4, fontSize: 10, color: 'var(--text-muted)' }}>
-            DirectML needs Python 3.12 or older. If it is not available the installer keeps the CPU build and carries on.
+            {tr('DirectML needs Python 3.12 or older. If it is not available the installer keeps the CPU build and carries on.')}
           </span>
         </label>
       )}
 
       <div style={{ display: 'flex', gap: 8 }}>
         <button className="btn btn-primary" disabled={busy || !status?.pythonFound} onClick={install}>
-          {busy ? 'Installing…' : 'Install selected'}
+          {busy ? tr('Installing…') : tr('Install selected')}
         </button>
-        {busy && <button className="btn btn-ghost" onClick={() => window.api.engines.cancel()}>Cancel</button>}
+        {busy && <button className="btn btn-ghost" onClick={() => window.api.engines.cancel()}>{tr('Cancel')}</button>}
       </div>
 
       {result && <div style={{ fontSize: 12, color: result.startsWith('Installation finished') ? 'var(--green)' : 'var(--red)' }}>{result}</div>}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { tr, trf } from '../../i18n/tr'
 
 type UpdateState =
   | { phase: 'idle' }
@@ -51,10 +52,10 @@ export function UpdateToast(): React.ReactElement | null {
             display: 'inline-block'
           }} />
           <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
-            {state.phase === 'available' && `Update verfügbar — v${state.version}`}
-            {state.phase === 'downloading' && 'Update wird geladen…'}
-            {state.phase === 'ready' && `v${state.version} bereit zum Installieren`}
-            {state.phase === 'error' && 'Update-Fehler'}
+            {state.phase === 'available' && trf('Update available: v{v}', { v: state.version ?? '' })}
+            {state.phase === 'downloading' && tr('Downloading the update…')}
+            {state.phase === 'ready' && trf('v{v} is ready to install', { v: state.version ?? '' })}
+            {state.phase === 'error' && tr('Update error')}
           </span>
         </div>
         <button
@@ -66,7 +67,7 @@ export function UpdateToast(): React.ReactElement | null {
       {/* Body */}
       {state.phase === 'available' && (
         <div style={{ color: 'var(--text-secondary)', fontSize: 11 }}>
-          Neue Version verfügbar. Jetzt herunterladen und im Hintergrund installieren.
+          {tr('A new version is available. Download it now; it installs in the background.')}
         </div>
       )}
 
@@ -88,7 +89,7 @@ export function UpdateToast(): React.ReactElement | null {
 
       {state.phase === 'ready' && (
         <div style={{ color: 'var(--text-secondary)', fontSize: 11 }}>
-          Download abgeschlossen. App neu starten um zu aktualisieren.
+          {tr('Download complete. Restart the app to update.')}
         </div>
       )}
 
@@ -104,7 +105,7 @@ export function UpdateToast(): React.ReactElement | null {
             style={{ fontSize: 11 }}
             onClick={() => window.api.updater.download()}
           >
-            Herunterladen
+            {tr('Download')}
           </button>
         )}
         {state.phase === 'ready' && (
@@ -113,7 +114,7 @@ export function UpdateToast(): React.ReactElement | null {
             style={{ fontSize: 11 }}
             onClick={() => window.api.updater.install()}
           >
-            Jetzt neu starten & installieren
+            {tr('Restart and install now')}
           </button>
         )}
         {state.phase === 'error' && (
@@ -122,7 +123,7 @@ export function UpdateToast(): React.ReactElement | null {
             style={{ fontSize: 11 }}
             onClick={() => window.api.updater.check()}
           >
-            Erneut versuchen
+            {tr('Try again')}
           </button>
         )}
       </div>

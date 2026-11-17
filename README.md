@@ -1,5 +1,7 @@
 # AI Music Studio
 
+[![Downloads](https://img.shields.io/github/downloads/pierrecinema/ai-music-studio/total?label=downloads&color=7c3aed)](https://github.com/pierrecinema/ai-music-studio/releases) [![Latest release](https://img.shields.io/github/v/release/pierrecinema/ai-music-studio?label=latest&color=7c3aed)](https://github.com/pierrecinema/ai-music-studio/releases/latest) [![License](https://img.shields.io/github/license/pierrecinema/ai-music-studio)](LICENSE)
+
 [![AI Music Studio – watch the 2-minute tour on YouTube](https://img.youtube.com/vi/F1hakwjWwEc/hqdefault.jpg)](https://youtu.be/F1hakwjWwEc)
 
 **🎬 [Watch the 2-minute tour on YouTube](https://youtu.be/F1hakwjWwEc)**
@@ -25,6 +27,18 @@ AI Music Studio is free and stays free, made in my spare time. If it saves you t
 
 [![Buy me a coffee with PayPal](https://img.shields.io/badge/%E2%98%95%20Buy%20me%20a%20coffee-PayPal-0070ba?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/djpedroflores)
 
+## What's new
+
+### New in 0.40.0
+
+- **The app speaks your language:** every screen (Studio, Mastering, Library, Create music, Stem Splitter, Settings, dialogs and messages) is now translated into **German, French, Spanish, Italian, Portuguese and Chinese**. Switch in *Settings → General → Language*. Japanese and Korean show the menu in their language and the rest in English for now.
+- **Save before closing:** closing the app with unsaved changes asks whether to save the project first (Save / Don't save / Cancel).
+- **Library:** uses the whole width when the AI assistant is closed, and shows the full name of every song; the buttons sit in their own row.
+
+**Mastering (0.30 – 0.31):** a full mastering workspace with an **AI assistant** that measures the song and suggests EQ, compression and loudness for 10 genres (each with its reason), **editing** (cut, copy, paste, fades, normalise, markers, undo), a big **master gain fader**, dynamic EQ, saturation / exciter, before / after at the same loudness, and export in 8 formats.
+
+Every change of every version: [CHANGELOG.md](CHANGELOG.md) and the [release notes](https://github.com/pierrecinema/ai-music-studio/releases).
+
 ## Features
 
 ### Studio (DAW): available now
@@ -47,11 +61,11 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 | **Create loop** | Exactly 1–16 bars, starts on beat 1, repeats seamlessly, named with tempo and bars | own loop cutter on the beat grid |
 | **Stem Splitter** | Vocals, drums, bass, piano, guitar and more; a stem mixer (solo, mute, volume) with remix export, e.g. karaoke without vocals; saved to the Library and exported for any DAW | Meta Demucs (htdemucs_ft) |
 | **Audio → MIDI** | The melody of a stem as notes on a MIDI track, opened in the Piano Roll | Spotify basic-pitch |
-| **Mastering** | Full mastering workspace: EQ, compressor, multiband, stereo, true-peak limiter to a loudness target, LUFS / true peak / spectrum / goniometer before and after, export in 8 formats with metadata; reference match | own DSP (Web Audio worklets), Matchering, ffmpeg |
+| **Mastering** | Full mastering workspace: an AI assistant that measures the song and suggests settings per genre; EQ, dynamic EQ, compressor, multiband, saturation / exciter, stereo, true-peak limiter to a loudness target, master gain fader; cut, fade and normalise; LUFS / true peak / spectrum / goniometer before and after; export in 8 formats with metadata; reference match | own DSP (Web Audio worklets), Matchering, ffmpeg |
 | **Library** | Songs, loops, stems and samples with tempo and tags; search by name, tag or BPM; export as WAV, AIFF, FLAC or MP3 | |
 | **AI Chat** | Music assistant for chords, lyrics and ideas | Claude, ChatGPT, Grok, or free and local with Ollama |
 | **Hardware** | Runs on the CPU; faster on NVIDIA (CUDA) and AMD / Intel graphics cards (DirectML) | PyTorch |
-| **Languages** | 🇩🇪 🇬🇧 🇫🇷 🇪🇸 🇮🇹 🇵🇹 🇨🇳 🇯🇵 🇰🇷 | |
+| **Languages** | The whole app in English, German, French, Spanish, Italian, Portuguese and Chinese; menus in Japanese and Korean | |
 
 ### Coming soon
 
@@ -77,11 +91,17 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 <img src="docs/screenshots/library.png" alt="Library" width="100%">
 **Library** – every created song and loop is kept with its tempo; loops are named like "Deep house – Loop 124 BPM 4 bars".
 
+<img src="docs/screenshots/mastering.png" alt="Mastering" width="100%">
+**Mastering** – waveform before and after with a marked region to cut, fade or change the volume; meters before and after (loudness, true peak, spectrum, goniometer), same-loudness A/B and export in every format.
+
+<img src="docs/screenshots/mastering-assistant.png" alt="Mastering assistant" width="100%">
+**Mastering assistant** – measures tone balance per octave, dynamics, stereo and loudness against the genre and suggests settings, each with its reason; apply all with one click and compare.
+
 | | |
 |---|---|
 | <img src="docs/screenshots/piano-roll.png" alt="Piano Roll" width="100%"><br>**Piano Roll** – draw, move and quantize MIDI notes | <img src="docs/screenshots/mixer.png" alt="Mixer" width="100%"><br>**Mixer** – faders, pan, mute/solo, level meters, master |
 | <img src="docs/screenshots/vocal-editor.png" alt="Vocal Editor" width="100%"><br>**Vocal Editor** – voices and lyrics for AI singing (coming soon) | <img src="docs/screenshots/instruments.png" alt="AI Instruments" width="100%"><br>**AI Instruments** – instruments for MIDI tracks (coming soon) |
-| <img src="docs/screenshots/stem-splitter.png" alt="Stem Splitter" width="100%"><br>**Stem Splitter** – vocals, drums, bass and more with Demucs | <img src="docs/screenshots/mastering.png" alt="Mastering" width="100%"><br>**Mastering** – chain, loudness target, meters before and after, export in every format |
+| <img src="docs/screenshots/stem-splitter.png" alt="Stem Splitter" width="100%"><br>**Stem Splitter** – vocals, drums, bass and more with Demucs | <img src="docs/screenshots/mastering-chain.png" alt="Mastering chain" width="100%"><br>**Mastering chain** – EQ, compressor, multiband, stereo, limiter with loudness target, master gain fader |
 | <img src="docs/screenshots/karaoke.png" alt="Karaoke Export" width="100%"><br>**Karaoke Export** – word timing, .lrc and lyric videos (coming soon) | <img src="docs/screenshots/video-composer.png" alt="Video Composer" width="100%"><br>**Video Composer** – music that follows the cuts of a video (coming soon) |
 | <img src="docs/screenshots/ai-chat.png" alt="AI Chat" width="100%"><br>**AI Chat** – Claude, ChatGPT, Gemini, Grok or a local model as a music assistant that can also make songs | <img src="docs/screenshots/settings-ai-engines.png" alt="Settings → AI Engines" width="100%"><br>**Settings → AI Engines** – install the local AI models with one click |
 | <img src="docs/screenshots/settings-hardware.png" alt="Settings → Hardware" width="100%"><br>**Settings → Hardware** – what this PC can run, and how fast | <img src="docs/screenshots/settings-models.png" alt="Settings → Models" width="100%"><br>**Settings → Models** – downloaded models, sizes and the models folder |
@@ -90,325 +110,6 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 | <img src="docs/screenshots/settings-appearance.png" alt="Settings → Appearance" width="100%"><br>**Settings → Appearance** – dark or light theme | <img src="docs/screenshots/settings-updates.png" alt="Settings → Updates" width="100%"><br>**Settings → Updates** – automatic updates from GitHub releases |
 
 **Beta testers wanted** ([guide, German](docs/BETA.md)): we are looking for testers, especially with **NVIDIA cards**: open *Feedback → Record a detailed log*, reproduce the problem, then attach the saved log to a GitHub issue. Nothing is sent automatically.
-
-All changes of every version: [CHANGELOG.md](CHANGELOG.md)
-
-### New in 0.31.6
-
-- **Mastering waveform: move through the song with the mouse,** like in the Studio: drag the white play line (its ▼ grip) or along the time ruler to go back and forth, also while the song plays; a click still jumps there and dragging elsewhere marks a region. Zoomed in, the wheel scrolls and the view follows the play position.
-- **Fix: the empty room after the end of the song was not shown** (the waveform was stretched over the whole width), so zooming out showed nothing new. Now the end of the song is followed by empty room.
-
-### New in 0.31.5
-
-- **Fix: the "✦ AI assistant" button in the top bar could not be clicked** in the installed app (the top bar is the area for moving the window). It works now, sits further left, and a **✦ AI** tab at the right edge opens the panel as well.
-- **Mastering waveform:** zoom out further than the whole song (more empty room after the end), **⤢** for the whole song; Ctrl + wheel no longer scrolls the page at the same time.
-
-### New in 0.31.4
-
-- **AI assistant button at the top:** with the AI panel closed, a **✦ AI assistant** button at the top right opens it again (instead of the small tab at the side).
-- **Mastering, new order on the right:** goniometer and spectrum, loudness over time, whole song, live meters, and the master gain fader at the bottom.
-
-### New in 0.31.3
-
-- **Mastering layout:** with the AI panel closed, the master fader and all meters move to the right edge of the window, in their own column that is always in view (no scrolling down to see them). With the AI panel open the layout stays as before. The app remembers whether the AI panel is open.
-
-### New in 0.31.2
-
-- **Master gain fader:** a big fader like on a mixing desk makes the master louder or quieter, through the limiter (no clipping), with live true peak, loudness and limiter meters next to it.
-- **Assistant easier to use:** every proposal has its own **Apply** button; **✓ Apply all ticked** and **↶ Undo** are at the top. After applying, the bars show the **master** (the original as a grey outline), so you see what changed. **Analyse the master again** makes a second round on the master; its EQ proposals add to the settings.
-- **Edit bar in German** (with the app in German); the volume change is now a clear "Volume … dB · Apply".
-- **Waveform:** the view reaches a little past the end of the song, so the end is easy to see and to mark; the zoom stays after an edit.
-
-### New in 0.31.1
-
-- **Mastering assistant in your language:** its proposals, bands and buttons are in German when the app is set to German.
-- **You see what the assistant changed:** after *Apply* a green box lists what was applied, the app switches to "After" so you hear the result, and it shows when the loudness target is being set. It says what the song is compared with; a new style or reference song measures again at once.
-- **Fix: after a cut the waveform disappeared for a few seconds;** it now stays while the song is measured again.
-- **The edit bar shows the song's values** (length, loudness, peak, RMS) and the last step, so you see what Gain, Normalise or Trim did.
-
-### New in 0.31.0
-
-**Mastering: assistant, cutting and new effects.**
-
-- **✨ Analyse & suggest:** measures tone balance (eight bands), dynamics, stereo, clipping and silence, compares the song with a style (Techno / House, Afro House, Trance / EDM, Pop, Hip-hop, Rock, Soul / R&B, Funk, Acoustic, Podcast) or with a reference song, and proposes settings for the chain, each with its reason. Tick what you want, *Apply*, and the loudness target is reached; *Undo* brings the chain back. Runs on your PC in seconds, no internet.
-- **Cut and edit:** mark a region in the waveform, then **Cut**, **Copy**, **Paste**, **Delete**, **Crop**, **Silence**, **Fade in / out** (S-curve, linear, logarithmic), **Gain**, **Normalise** (peak or LUFS), **Trim silence**, **DC offset**; Ctrl+X / C / V, Del, Ctrl+Z / Y; markers with names. The original file is never changed: the steps are applied on export.
-- **New effects in the chain:** **Dynamic EQ** (turns a frequency down only while it is too loud) and **Saturation / exciter** (warmth and air).
-- **Mastering effects in the Studio:** dynamic EQ, saturation, stereo / mono bass and the true-peak limiter can be added to any track (FX → + Effect…).
-- Each song keeps its own chain; stems open in Mastering from the Stem Splitter.
-- **New project asks for its name.**
-
-### New in 0.30.9
-
-- **ACE-Step 1.5 says whether it downloads or only loads its model.** The model (about 10 GB) is downloaded only once and kept; every song then loads it from the disk, which takes a minute or two. The progress text used to say "the first time it downloads the model" on every song, which looked like a new download each time. Now it says "Loading … from the disk (already downloaded)", or, if a part of the model is really missing, "Downloading … missing: <part>" (also in the backend log).
-
-### New in 0.30.8
-
-- **Fix: ACE-Step 1.5 LoRAs from 0.30.6 failed to load** ("module name can't contain '.'"): the adapter now gets a fixed name.
-- **Fix: "not enough memory" with a LoRA on PCs with 12–16 GB:** before loading a LoRA, ACE-Step kept a full copy of the model (several GB) so the LoRA could be removed again later. The app makes each song in its own run and never removes a LoRA, so this copy is no longer made.
-
-### New in 0.30.7
-
-- **Finished songs go to the Stem Splitter with one click:** next to *Add to project* and *Mastering*, the results in Create music and every song in the Library now have a **Stem Splitter** button. The song opens there with its name, ready to split.
-
-### New in 0.30.6
-
-- **Fix: ACE-Step 1.5 LoRAs from Hugging Face were left out** ("not an ACE-Step 1.5 LoRA (no adapter_config.json)"). The app's Hugging Face download saved only the weights of such a LoRA, not the small `adapter_config.json` that ACE-Step 1.5 needs. New downloads keep both in one folder; LoRAs downloaded before are recognised by their weights, and the first time one is used the app fetches its `adapter_config.json` from Hugging Face (or writes one from the weights if that is not possible).
-
-### New in 0.30.5
-
-- **Removed: the built-in retro music player** (Ctrl+M and the button in the bottom bar). It had nothing to do with making music; the app is a little smaller, and Ctrl+M is free.
-
-### New in 0.30.4
-
-- **Fix: long songs with ACE-Step 1.5 stopped after 10 minutes** ("Music generation timed out after 600 seconds … GPU ran out of VRAM"). ACE-Step has its own 10-minute limit per song, which a processor reaches with songs of about 2 minutes and more. The app now allows 6 hours; *Cancel* still stops a song at any time.
-
-### New in 0.30.3
-
-- **Mastering, Before / After also switches the controls:** in "Before" every control of the chain jumps to its starting value (read-only, grey) and the EQ curve goes flat; in "After" your settings come back and every control you moved is marked purple with a dot. So you see at a glance what you changed.
-
-### New in 0.30.2
-
-- **Mastering, Before / After shows the side you hear:** the waveform, the numbers (large and bright), the spectrum and the loudness curve switch to the original or the master, so you see what the chain changed.
-- **"Same loudness" can be switched off:** with it on (default) the louder side is turned down while comparing, so you judge only the sound; off, you hear how much louder the master really is.
-- **Fix:** for the comparison the original was turned *up* and could distort; now the louder side is turned down instead. The live meters always show the real level.
-
-### New in 0.30.1
-
-- **Fix: in the Studio the "Drag a clip here for a new track" area covered the first return track** (e.g. Reverb). It now sits between the last track and the return tracks.
-- **Mastering:** the equalizer's controls are grouped per filter (low and high cut, low shelf, each band, high shelf), so frequency, gain and width of a band stay together.
-- The screenshots on the project page show the current version.
-
-### New in 0.30.0
-
-**Mastering, rebuilt.** The Mastering page is now a full mastering workspace:
-
-- **Open a song** by dragging it in from the Explorer, with *Open…*, or with one click from the Library, Create music
-  and the Studio (*File → Send song to Mastering*). Several songs as tabs, recent files.
-- **Listen and compare:** play, click in the waveform to jump, drag to loop a region, zoom. **A/B** switches between
-  the master and the original, played at the same loudness so you judge the sound, not the volume.
-- **Built-in chain:** equalizer (with its curve over the live spectrum), compressor, three-band multiband compressor,
-  stereo width and mono bass, and a **true-peak limiter** (4x oversampled, look-ahead) with a **Louder** control.
-  Slots can be switched off, moved, added and removed; built-in and your own presets.
-- **Loudness targets:** Streaming −14, Apple −16, Loud −9, Broadcast −23, Podcast −16 LUFS: *Reach* sets the song to it.
-- **Meters, before → after:** integrated loudness (ITU-R BS.1770 / EBU R128), true peak, sample peak, loudness range,
-  RMS, crest factor, clipping; live momentary / short-term loudness, true peak, gain reduction, stereo correlation,
-  goniometer, spectrum and loudness over time.
-- **Export:** WAV, AIFF, FLAC, ALAC, MP3, AAC, OGG and Opus, several at once; 44.1 to 96 kHz, 16 / 24 / 32-bit with
-  dither; title, artist, album, year, ISRC, comment and cover picture; presets for streaming, CD, Bandcamp, hi-res,
-  YouTube and more. What you hear while playing is exactly what is written to the file.
-- The reference match (Matchering) is still there and opens its result as a new tab.
-
-### New in 0.20.7
-
-- **Voice previews take about half the time:** *Preview voices* now makes three takes of 10 seconds (before 20) with your first two lines. On the processor most of the time goes into turning each take into audio (the bar stands at 80 %), and that time halves with the length.
-
-### New in 0.20.6
-
-- **Fix: Ctrl+R did nothing in the installed app** (Record in the Ableton and Cubase layouts; Ctrl+Shift+R, Export in the Ableton layout, too). A helper meant to stop the page from reloading swallowed the keys before the app saw them; it is now only used during development.
-
-### New in 0.20.5
-
-- **Create music: the newest song on top.** When a run makes several songs or versions, the newest is now shown at the top of the results and the first at the bottom (each keeps its take number).
-
-### New in 0.20.4
-
-- **Voice previews: the voice alone, and faster.** *Preview voices* now makes three takes of the voice without music (a cappella), all singing your first lines, so the voices are easy to compare (before, a take could be only an instrumental intro). ACE-Step 1.5 loads the model once for all three takes instead of once per take; the same goes for several songs made in one run.
-- **Fix: LoRAs greyed out with ACE-Step 1.5 turbo.** The Create page now asks the backend which model a LoRA fits, with the same check used to load it (PEFT folders, LoKr files, packs); only LoRAs made for ACE-Step v1 or the XL model are greyed out.
-- **Fix: Ctrl+R records MIDI** also when a MIDI clip is selected or the Piano Roll was clicked last (before, it could start a microphone recording instead).
-
-### New in 0.20.3
-
-- **Fix: the AI chat with Gemini stopped with "Error code: 400" when it made a song.** Gemini 3 attaches a signature to every tool call and needs it back in the next step; the app dropped it. The tool call now goes back exactly as Gemini sent it. If a song has already started when an error comes, the chat still shows it with its progress, and errors show the provider's own reason instead of only the code.
-
-### New in 0.20.2
-
-- **Updates:** new versions are published by themselves as soon as they are ready. The app looks for one when it starts and then once a day (before: every 4 hours), so testers are not asked too often; Settings → Updates → *Check for updates* finds a new version at once.
-
-### New in 0.20.1
-
-- **The AI chat can use the app:** with every provider (Claude, ChatGPT, Gemini, Grok, Ollama and local servers that support tools) the assistant can now **make a song itself** ("make me an afro house track with female vocals"), check how far it is, list LoRAs, split stems, master a track, suggest chords and read the system info: the same tools the app offers over MCP. A song it starts shows its progress in the chat and, when ready, can go to the Studio with one click; it is saved in the Library. It uses the music model chosen in Create music.
-- **Gemini 3.5:** the model list now offers Gemini 3.5 Flash and Pro; the older models Google switched off are replaced on start. **Fix:** the Gemini key and the local server address were not saved and were gone after a restart.
-- **Fix: exports at 44.1 kHz.** ACE-Step 1.5 makes songs at 48 kHz, and *Export…* in the Library and the Stem Splitter kept that rate, so a platform rejected the file. Exports now use the rate from **Settings → Audio** (44.1 kHz unless changed; the setting did nothing before), converted in high quality; the export dialog shows the rate and can keep the file's own. File → Export audio uses the same setting.
-
-### New in 0.20.0
-
-- **Studio: automation in its own lanes.** The A button (or right-click → Show automation) opens **volume and pan as two lanes** below the track; each lane can be made small (▸ / ▾), switched to another value or closed, and more lanes (sends) can be added with +.
-- **Studio: effects in every track (FX).** The FX button opens an effects lane: **EQ, compressor, delay, reverb, filter**, each with its settings, on / bypass and order. They are heard in playback and in the export. VST3 plugins will appear in the same place later.
-- **Track colour:** right-click a track header (or click the colour strip at its left) and pick a colour.
-- **MIDI recording:** the record button, **Ctrl+R** and the new **● Rec** in the Piano Roll record MIDI when a MIDI track is selected or the Piano Roll is open. What you play on the Piano Roll's keyboard or on a **MIDI keyboard** appears as notes right away, as long as you held the keys.
-- **Create music – lyrics:** buttons insert **[Intro] [Verse] [Pre-Chorus] [Chorus] [Bridge] [Outro]** at the cursor; **Auto structure** turns stanzas into verses and choruses (a stanza that comes back is the chorus); lyrics without sections are structured automatically.
-- **Create music – preview voices:** three short takes of your first lines with different voices (ACE-Step); **Use this voice** makes the whole song with that voice (its seed). Previews are not saved in the Library.
-- **Create music – LoRAs per model:** the LoRA list shows the LoRAs that fit the chosen model; the others are greyed out with the reason (made for XL, made for ACE-Step v1).
-- **AI chat: Google Gemini** (with your own key, free tier) and **Local server** (LM Studio, KoboldCpp, llama.cpp; on older AMD cards through Vulkan).
-- **Top bar:** the position display shows bar . beat . sixteenth (1.1.1 = the start) and switches to minutes:seconds with a click. **Channel tab:** pan shows L / R and "Center".
-
-### New in 0.18.13
-
-- **ACE-Step 1.5 songs end where the music ends:** the end is now found relative to the song's own loudness (quiet reverb tails and hiss no longer leave about a second of "nothing"), and a song that already dies away is no longer faded out a second time; only a song that stops abruptly is faded.
-
-### New in 0.18.12
-
-- **LoRAs work with ACE-Step 1.5 turbo:** a LoRA made for ACE-Step 1.5 (a folder with adapter_config.json, or a LoKr file) is now loaded with its strength. Packs with several LoRAs in one folder (like "...-5-LoRAs") show each LoRA on its own. LoRAs for the larger XL model ("xl" in the name) and LoRAs of ACE-Step v1 do not fit the 2B turbo model: they are left out with a note, and a LoRA that fails to load never stops the song. One LoRA per song (the strongest).
-
-### New in 0.18.11
-
-- **ACE-Step 1.5: no empty bar at the end:** when the model ends the song by itself before the length asked for, the extra seconds were silence. The silence at the end is now cut (a quarter second of the decay is kept) before the fade-out. The backend log also shows what the model got (style, number of lyric lines, language), to find out why a song came without vocals.
-- **Changing the tempo while the song plays keeps it playing:** pressing Enter in the BPM field stopped the music for the moment every synced song was stretched to the new tempo. The old sound now keeps playing until the new one is ready, then it switches over at the same place in the song, in time with the metronome (measured: every kick within 1 ms of its click before and after the change). The position is also counted in the old tempo up to the switch, so the song no longer jumps.
-- **ACE-Step 1.5: a clear message when Windows runs out of virtual memory** ("the paging file is too small", error 1455). On the processor the model needs about 12 to 14 GB; with 16 GB RAM Windows covers the rest with its paging file, which is often set too small. The message now says how to fix it once in Windows (let Windows manage the paging file size, or set 16–32 GB).
-
-### New in 0.18.10
-
-- **The project tempo can be typed again:** the BPM field at the top took every key on its own, so typing "1" on the way to 128 was refused and the field jumped back. Now type the tempo and press Enter (or leave the field); decimals work (95.5), arrow keys and the mouse wheel change it by 1 (Shift: 0.1). The field is wider, so the whole tempo is visible.
-- **Click or double-click anywhere in the Studio to move the playhead there** (snapped to the grid, Alt: free). A double-click on an empty audio track no longer opens the file dialog (use *Import audio…*); on a MIDI track it still makes a clip.
-- **SYNC keeps a song tempo you corrected by hand:** the clip bar field is now called *Song tempo* (the tempo the song itself was made at) and shows the project tempo it plays at; SYNC used to measure again and put the measured tempo back.
-
-### New in 0.18.9
-
-- **Track height:** every audio and MIDI track in the Studio can be made higher or lower by dragging its lower edge with the mouse (36 to 320 pixels); a double-click on the edge sets the normal height again. The height is saved with the project.
-- **ACE-Step 1.5 songs end cleanly:** the model renders exactly the length asked for and then simply stops, often in the middle of the music, so the end of a song seemed cut off. It now renders 5 seconds more and fades out over the last 3 seconds (a fade-out set under Advanced is used instead).
-- **ACE-Step 1.5 shows its phase:** at 80 % it decodes the song into audio, which takes a few minutes on the processor without further progress. The progress now says so ("Decoding audio…"), so a standing bar is not taken for a hang.
-
-### New in 0.18.8
-
-- **Synced songs hit the beat exactly, from the first kick on:**
-  - **Stretched beat by beat**, like the "Beats" warp mode of DAWs: a synced clip is cut at every beat of its grid and each piece is stretched on its own, starting exactly at its place. Every kick now lands within 1 ms of its beat. Before, whole songs over 90 s went through a phase vocoder that smeared every kick over about 60 ms and moved single beats by up to 40 ms ("it does not start exactly on the beat"); loops could be up to 15 ms off.
-  - The metronome no longer misses the click on the first beat when the computer is busy at the start.
-  - A clip that starts right on a kick keeps its full attack (the fade against clicks at the clip start is 2 ms instead of 6 ms).
-
-### New in 0.18.7
-
-- **Move the playhead by hand:** drag the blue playhead line (or the small triangle on top of it) to any point in the Studio, or click and drag in the bar numbers of the ruler. It snaps to the grid (Alt: free). While the song plays, playback jumps there when you let go. No more pressing Stop to get back.
-- **Fix: "'charmap' codec can't encode characters" when making a song** (seen with ACE-Step 1.5): the AI backend wrote its log in the old Windows code page, and a single character outside it (a progress bar of block characters, an arrow, lyrics in Japanese) stopped the song. The backend and its helpers now write UTF-8 and never fail on a character.
-
-### New in 0.18.6
-
-- **Beat grid, checked against Mixxx and opendj:** a tempo is rounded to a whole (or half) BPM only when the song's kicks really sit on the rounded grid, as in those programs. Before, a song at 124.07 BPM was rounded to 124 and was 50 ms off after three minutes; now it stays at 124.07 (on test tracks within 1–2 ms over three minutes).
-- **Warning for songs with an unsteady tempo** (live playing, a drummer without a click): Sync now says which clips should be checked by ear, instead of syncing them silently with a grid that drifts in and out.
-- **ACE-Step 1.5 install, third fix:** ACE-Step asks for an old setuptools (<72) while current PyTorch needs a new one (≥77), so pip could find no solution once PyTorch was held. That requirement is now skipped (both versions work). If torchvision still does not match PyTorch ("operator torchvision::nms does not exist"), it is removed: it is only used by training tools, not for making music.
-- **Sync several clips together:** select songs, loops or stems in the Studio (Ctrl/Shift+click, drag a frame or Ctrl+A), then click **Sync together** in the selection bar, **AUTO SYNC**, the toolbar's *Sync … selected* or *SYNC the selected clips together* in the right-click menu. Every clip is stretched to the master BPM and beat 1 of each one is put on the same bar line, so they all start together and stay in time. If a song has an intro before its beat 1, all clips move to a later bar so no intro is cut off.
-
-### New in 0.18.5
-
-- **ACE-Step 1.5 install, second fix:** one of its packages made pip replace the installed PyTorch with an older one that no longer matched torchvision ("operator torchvision::nms does not exist"). PyTorch is now held at its installed version while the packages are installed, a broken PyTorch is repaired by *Install selected*, and torchao / torchcodec are left out if no version of them fits.
-- **Beat matching and AUTO SYNC rebuilt like DJ software builds a beat grid:**
-  - **Whole songs are synced too.** The Studio stretched only files up to 90 seconds; longer songs kept their own tempo next to the synced grid and drifted away from the metronome ("every song a little different"). Long files are now stretched on the AI backend to the project tempo, exactly to the length the grid expects.
-  - **Exact tempo:** after the beat tracker, the tempo is fine-tuned over up to four minutes of the song (the tempo at which its attacks line up best), so 124 is 124 and not 123.6, and real in-between tempos such as 127.3 stay as they are.
-  - **Exact phase:** the grid sits on the kick, not on loud off-beat hi-hats (beat trackers often lock half a beat off), and on the attack itself, not a few milliseconds before or after. On test tracks within 1–7 ms (before: up to half a beat).
-  - **Bar sync:** the downbeat (beat 1 of a bar, found by its low-end attack) is put on a bar line of the project, not just on any beat.
-  - Songs saved earlier are measured again when they are synced (only loops keep their stored tempo).
-
-### New in 0.18.4
-
-- **ACE-Step 1.5 installs on Windows:** its package list asks for *nano-vllm* (its language model runtime, not on PyPI) and a CUDA build of PyTorch pinned to its own server, so pip stopped with "No matching distribution found for nano-vllm". The install now takes the list without these (the music part used here does not need them), installs PyTorch for your PC, and checks that ACE-Step 1.5 starts.
-
-### New in 0.18.3
-
-- **Resizable Studio and panel:** drag the line between the Studio and the panel below it (mixer, piano roll, ...) up or down; double-click resets it. The Studio now takes all the height the panel leaves.
-- **New-track zone in the Studio:** under the last track there is always a dashed "+ Drag a clip or an audio file here for a new track" area; it lights up while you drag a clip there.
-- **Split into stems in the Studio** shows its progress next to the toolbar and uses the graphics-card models when *Fast vocal separation* is installed (else Demucs Fast); the message says where the stems are (new tracks at the bottom, in a group).
-- **Piano Roll: select several notes:** draw a frame with the *Select* tool (or Shift+drag with any tool), Shift/Ctrl+click adds or removes a note, **Ctrl+A** selects all notes (after a click in the Piano Roll). Selected notes move and get deleted together, and *Quantize* acts on all of them.
-- **Only one app at a time:** starting AI Music Studio again now brings the open window to the front. Before, every start ran its own AI backend (the logs showed three at once), so stem splits and songs waited on each other.
-- **ACE-Step 1.5 repair:** its environment lacked NumPy, so it never started. *Install selected* now installs NumPy and checks that ACE-Step 1.5 really starts; the error message says how to repair it.
-- **No more hard distortion:** a safety limiter at the end of the master stops many notes or loud clips together from clipping.
-
-### New in 0.18.2
-
-- **Every new clip gets its own track:** *Studio: synced* / *as is* in the Samples tab no longer put every sample onto the selected track; like *Add to project* in the Library, each one now gets a new audio track.
-- **Stem Splitter can be cancelled:** *✕ Cancel* next to the progress bar stops a split (the fast modes at once, Demucs after its current chunk). A split that waits for an earlier one still running now says "Waiting for the previous split to finish…" instead of sitting at 0 %.
-- **Drag a clip below the last track** in the Studio: a dashed frame shows "Release here: new audio track" (or MIDI track), and on release the clip moves onto a new track of its kind.
-- **Test plan** for systematic testing: [docs/TESTPLAN.md](docs/TESTPLAN.md) (German).
-
-### New in 0.18.1
-
-- **Stem Splitter: "4 Stems on the graphics card":** vocals, drums, bass and other with four small MDX-Net models that run on the graphics card like *Vocals + Instrumental* (AMD / Intel through DirectML, also the R9 290, and NVIDIA). Much faster than Demucs *Fast* on these cards, a little less clean than *Balanced*. Uses the same *Fast vocal separation* engine; the models download on the first split.
-- Release pages show the changelog and the install notes; the donation link is only on the project page ("Buy me a coffee").
-
-### New in 0.18
-
-- **Stem Splitter: "Vocals + Instrumental (fastest)":** a new mode with an MDX-Net model (through audio-separator) that is much faster than Demucs, ideal for karaoke and acapellas. It uses the graphics card on AMD and Intel (DirectX 12 through DirectML, also older cards like the R9 290) and on NVIDIA (CUDA), and falls back to the processor. Install it once in Settings → AI Engines → *Fast vocal separation*; it has its own environment and does not touch the others.
-- **Waveform previews:** in the Library (My tracks, Stems, Samples) the real waveform appears under what is playing, and the stem mixer shows the waveform of all stems; click or drag in it to jump anywhere, with the time so far and the length.
-- **Demucs "Fast" is quicker:** fewer overlapping chunks (10 % instead of 25 %), with hardly any audible difference.
-
-### New in 0.17
-
-- **Stem mixer in the Stem Splitter:** after splitting, play all stems together and set **Solo**, **Mute** and the **volume** of each stem while listening (double-click a slider: 100 %).
-- **Export remix:** mixes the stems you hear at these levels into one file (WAV, AIFF, FLAC or MP3). Mute *Vocals* for a karaoke version, *Drums* for a version without drums; the file is named after what was left out.
-- **Audio → MIDI:** *→ MIDI* on a stem (vocals, bass, piano, guitar, other) turns its melody into notes on a new MIDI track and opens it in the Piano Roll. Needs *Audio → MIDI (basic-pitch)* in Settings → AI Engines.
-
-### New in 0.16.3
-
-- **Stem Splitter with a progress bar:** percent, what it is doing, the time so far and about how long is left. The split runs in the background, so the app stays responsive (also the Studio's *split clip*).
-- A hint explains the speed: *Balanced* runs 4 models one after the other; on the processor (also with AMD / Intel graphics, which Demucs cannot use) *Fast* is about 4 times quicker.
-
-### New in 0.16.2
-
-- **Stem Splitter fixed:** with current PyTorch versions every stem came out as an empty file (shown as "Ready to export"), so *Save to library* said "There were no stem files to save". Audio is now read and written without torchaudio's file functions, the stems keep the song's own level, and a missing Demucs or a failed split shows its reason instead of empty stems.
-- **Export:** an empty file now says so instead of "Format not recognised".
-- **Library → Stems:** *Open Library → Stems* in the Stem Splitter now opens the Stems tab, and *My tracks* points to the Stems tab when stems are saved.
-
-### New in 0.16.1
-
-- **Support the project:** Settings → About has a *Donate with PayPal* button, next to the GitHub star. Everything stays free.
-- **Cloud Rendering (Pro)** appears in the menu as *Coming soon*: an optional paid extra that renders on fast NVIDIA graphics cards in the cloud. Everything you have now stays free and local.
-
-### New in 0.16
-
-- **Stems are kept and exported properly:** after splitting, *Save to library* puts the stems into their own folder in the Library (tab *Stems*, grouped by song, with tags and tempo). *Export…* writes every stem as its own file in the format your DAW wants: WAV 16/24/32-bit, AIFF, FLAC or MP3.
-- **Library with tabs and search:** *My tracks* (songs and loops from Create music, imports), *Stems* and *Samples*. Search by name, tag or BPM (`124`, `120-130`). Tags can be set when creating (Create music → Tags), when saving stems, and later on every item. Every item can be exported. Samples can be copied into the Library (*+ Library*).
-- **Loops stay in sync:** loops go into the Studio with their exact tempo and beat 1 at the file start, so AUTO SYNC and *Sync all* no longer measure them again and nudge them off the grid.
-- **Cancel stops within seconds:** a model that cannot stop in time (ACE-Step on the CPU) makes the AI engine restart itself.
-- **Updates no longer ask you to close the app:** the AI engine and its workers are ended before installing.
-- **More graphics cards:** MusicGen medium and large run on AMD / Intel cards with 8 / 16 GB through DirectML (small on any DirectX 12 card).
-- **AI assistant: Grok (xAI) and Ollama.** Ollama runs a model on your own PC: free, no account, no key.
-- **Settings → About:** project, links, and a request for a GitHub ⭐. Vocal Editor, AI Instruments, Karaoke Export and Video Composer show "Coming soon" until they are finished.
-- Windows *Settings → Apps* shows the description, project page and help link.
-
-### New in 0.15.1
-
-- **Copying text works again:** since 0.14.2 Ctrl+C, Ctrl+A, Ctrl+V and Ctrl+X were taken by the Studio everywhere, so log texts could not be copied. They now copy clips only in the Studio, piano roll and mixer, and never while text is selected or a dialog is open.
-- **Right-click menu for text:** Copy / Cut / Paste / Select all on selected text and in text fields.
-
-### New in 0.15
-
-- **ACE-Step 1.5 turbo (experimental): songs with vocals also without a suitable graphics card.** The 2B turbo model needs only 8 steps and runs "DiT only" (without its language model), the mode the project recommends for small machines. On the processor it is slow but works with 16 GB RAM; with an NVIDIA card choose the CUDA variant of PyTorch. Install: *Settings → AI Engines → ACE-Step 1.5* (needs Python 3.11 or 3.12 and Git; the model, about 10 GB, downloads on the first song). Written from the project documentation and not yet tested on real hardware.
-- **Code signing prepared** (SignPath Foundation): the release workflow signs the installer as soon as the project is approved.
-
-### New in 0.14.4
-
-- **MusicGen makes several clips side by side on the CPU:** with more than one song or variation, up to 4 clips are rendered together in one pass (as many as the free memory allows). One clip alone keeps the processor busy only in short bursts, because MusicGen writes one token after the other; clips side by side share every step, so all cores have work and several clips take far less than that many times as long. The graphics card path (DirectML) still makes them one after the other.
-- Install notes explain the Windows SmartScreen warning of the unsigned installer.
-
-### New in 0.14.3
-
-- **The CPU is used fully** when a model runs on the processor: the AI now computes on all CPU threads (hyper-threads included) instead of one per core, and the AI backend runs at below-normal priority so the app and Windows stay responsive. `AMS_CPU_THREADS` still sets another number.
-- **Loop titles** say what they are: "Deep house – Loop 124 BPM 4 bars" (in the library and as the track name in the Studio).
-
-### New in 0.14.2
-
-- **Copy, cut and paste in the Studio** (Ctrl+C, Ctrl+X, Ctrl+V, in the Ableton and the Cubase layout): pasting puts the clips at the playhead and moves the playhead behind them, so pressing Ctrl+V again lines up copies without a gap (ideal for loops). Clips from one track go onto the selected track. Ctrl+D with several clips duplicates all of them.
-- **Shortcuts no longer go dead** after choosing a value in a drop-down list (Grid, Count-in, ...) or clicking a button: Space, Ctrl+C and the rest work at once. Space also plays and pauses while a number field (BPM) has the focus.
-- Undo no longer leaves a deleted clip selected (Ctrl+X or Delete did nothing afterwards).
-
-### New in 0.14.1
-
-- **Faster on the CPU:** the AI used at most 4 CPU threads (a 6-core/12-thread CPU sat at about 25 %). It now computes on one thread per physical core (all cores of CPUs without hyper-threading, minus one on CPUs with up to 4 threads). Set the environment variable `AMS_CPU_THREADS` to choose another number.
-
-### New in 0.14
-
-- **Create loop** in Create music: a loop of exactly 1, 2, 4, 8 or 16 bars that starts on beat 1 and repeats seamlessly. The generator renders a little more music than needed; the loop is cut on the beat grid of the tempo the model really played, and the music after the loop end is crossfaded into its start, so copies placed one after the other (Ctrl+D in the Studio) play endlessly without a gap or a click. Loops go into the Studio synced to the project tempo and are saved as FLAC/WAV without fades.
-
-### New in 0.13.1
-
-- **Cancel button in Create music** (and a ✕ next to the progress in the status bar): stops a running or waiting generation at the next step. External workers (DiffRhythm, the DirectML graphics-card worker) are stopped at once. Songs that were already finished stay in the library.
-
-### New in 0.13
-
-- **Studio works like Ableton and Cubase:** drag a loop in the ruler (seamless wrap), markers and cycle markers, tempo and time-signature changes, multi-select and consolidate, crossfades, volume/pan automation lanes, reverb/delay return tracks with per-track sends, group tracks, loop recording into take lanes with comping, warp markers, count-in, punch in/out, a channel tab, split a clip into stems from the right-click menu, quick export.
-- **Shortcuts** for all of the above in both the Ableton Live 12 and the Cubase layout (Settings → Shortcuts).
-- **Create music** is translated into German and warns *before* rendering when the chosen model cannot sing.
-- **Vocals fix:** lyrics sent to ACE-Step now always carry a vocal tag and a structure tag, which should stop typed lyrics from coming out as an instrumental (still to be confirmed with the real model on an NVIDIA PC).
-- **Detailed log for beta testers** in the Feedback dialog (on/off, copy, save as file).
-- AI engines are no longer shown as "not installed" when they are.
 
 ## Low-resource mode (8 GB VRAM / 12 GB RAM)
 
@@ -506,8 +207,10 @@ pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 ## Languages
 
-Switch language in **Settings → Appearance → Language**:
-- English, Deutsch, Français, Español, Italiano, Português, 中文, 日本語, 한국어
+Switch language in **Settings → General → Language**:
+- Fully translated: English, Deutsch, Français, Español, Italiano, Português, 中文
+- Menus only so far: 日本語, 한국어
+- How to add or improve a translation: [docs/TRANSLATING.md](docs/TRANSLATING.md)
 
 ## Code signing policy
 

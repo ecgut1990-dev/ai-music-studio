@@ -71,7 +71,7 @@ Nach der Installation die App neu starten, damit sie die neuen Programme im PATH
 
 ### Schritt 5: Weiteres
 
-- **Einstellungen → Allgemein**: Sprache (9 Sprachen), VST-Suchpfade.
+- **Einstellungen → Allgemein**: Sprache, VST-Suchpfade. Ab 0.40 ist die ganze App übersetzt: Deutsch, Englisch, Französisch, Spanisch, Italienisch, Portugiesisch und Chinesisch. Bei Japanisch und Koreanisch ist vorerst nur das Menü übersetzt, der Rest bleibt Englisch.
 - **Einstellungen → Darstellung**: dunkles oder helles Design.
 
 ## 3. Funktionen
@@ -202,7 +202,7 @@ Das fertige LoRA erscheint automatisch in deiner Liste. Hinweis: Das Training se
 
 **Tempo.** Ändert man das Tempo, bleibt Audio zeitlich an seiner Stelle (es wird nicht gestreckt); MIDI folgt dem Tempo.
 
-**Projekte.** *File → Save* (Ctrl+S) schreibt eine `.ams`-Datei. Die Audiodateien bleiben, wo sie sind (Bibliothek oder Importordner); fehlt beim Öffnen eine, meldet die App es und der Clip bleibt stumm und rot. Alle 30 Sekunden sichert die App ungespeicherte Arbeit; nach einem Absturz bietet sie beim Start an, sie wiederherzustellen. Ein Punkt im Fenstertitel zeigt ungespeicherte Änderungen. Rückgängig/Wiederholen (Ctrl+Z / Ctrl+Y) gelten für alle Änderungen am Projekt.
+**Projekte.** *File → Save* (Ctrl+S) schreibt eine `.ams`-Datei. Die Audiodateien bleiben, wo sie sind (Bibliothek oder Importordner); fehlt beim Öffnen eine, meldet die App es und der Clip bleibt stumm und rot. Alle 30 Sekunden sichert die App ungespeicherte Arbeit; nach einem Absturz bietet sie beim Start an, sie wiederherzustellen. Ein Punkt im Fenstertitel zeigt ungespeicherte Änderungen. Wer die App mit ungespeicherten Änderungen schließt, wird gefragt, ob das Projekt vorher gespeichert werden soll (Speichern / Nicht speichern / Abbrechen). Rückgängig/Wiederholen (Ctrl+Z / Ctrl+Y) gelten für alle Änderungen am Projekt.
 
 **Export.** *File → Export audio* mischt das ganze Projekt (Mute, Solo, Lautstärke und Pan wie gehört) zu WAV (16 oder 24 Bit) oder MP3 (braucht ffmpeg; fehlt es, wird stattdessen eine WAV-Datei gespeichert). Optional normalisiert die App auf −1 dBFS und warnt, wenn der Mix übersteuert.
 
@@ -374,5 +374,5 @@ Getestet ist die Verbindung mit dem offiziellen MCP-Python-Client (Verbindung, W
 - Die Engines (ACE-Step, Matchering, Whisper, MuScriptor) sind eingebunden, aber noch nicht auf allen Hardware-Kombinationen erprobt.
 - Eine LoRA pro Durchgang.
 - MCP steuert nur Erzeugen und Analysieren, noch nicht das offene Projekt (Spuren, Noten, Transport).
-- Die neuen Panels (Generator, Mastering, Karaoke, Engines, Updates) sind noch nicht in alle 9 Sprachen übersetzt.
+- Japanisch und Koreanisch: nur das Menü ist übersetzt, alles andere erscheint auf Englisch.
 - Der Installer ist nicht signiert (SmartScreen-Hinweis).

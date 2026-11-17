@@ -3,6 +3,13 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.40.0
+
+- **The app speaks your language:** every screen is now translated: Studio, Mastering, Library, Create music, Stem Splitter, Settings, the dialogs and the messages. Fully translated: **German, French, Spanish, Italian, Portuguese and Chinese** (Settings → General → Language). Japanese and Korean show the menu in their language and the rest in English for now.
+- **Save before closing:** closing the app with unsaved changes asks whether to save the project first (Save / Don't save / Cancel). Without changes the app closes as before.
+- **Library:** with the AI assistant closed the list uses the whole width, and every song shows its full name (the buttons moved to their own row).
+- **Update messages** in the app are now English like the rest of the app (and translated with it); before they were always German.
+
 ## 0.31.6
 
 - **Mastering waveform: move through the song with the mouse,** like in the Studio: drag the white play line (its ▼ grip) or along the time ruler to go back and forth, also while the song plays; a click still jumps there and dragging elsewhere marks a region. Zoomed in, the wheel scrolls and the view follows the play position.

@@ -1,3 +1,4 @@
+import { tr, trf } from '../../i18n/tr'
 import React, { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { apiKeyFor, PROVIDER_LABEL, useAIStore } from '../../stores/ai.store'
@@ -96,7 +97,7 @@ export function AIChat({ compact = false }: AIChatProps): React.ReactElement {
         {messages.length === 0 && (
           <div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, textAlign: 'center' }}>
-              AI music assistant ready. Try:
+              {tr('AI music assistant ready. Try:')}
             </div>
             {SUGGESTIONS.map((s, i) => (
               <div
@@ -148,9 +149,9 @@ export function AIChat({ compact = false }: AIChatProps): React.ReactElement {
           // a song the AI is making: progress, then into the Studio or the Library
           <div style={{ margin: '4px 0', padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border-mid)', background: 'var(--bg-primary)', fontSize: 12, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 6 }}>
             <span>🎵 {shownJob.status === 'done' ? `Ready: ${shownJob.results.length} song(s) in the Library`
-              : shownJob.status === 'error' ? `The song could not be made: ${shownJob.error ?? ''}`
+              : shownJob.status === 'error' ? trf('The song could not be made: {m}', { m: shownJob.error ?? '' })
               : shownJob.status === 'cancelled' ? 'Cancelled'
-              : `Making the song… ${shownJob.stage_text ?? ''}${shownJob.step && shownJob.step_total ? ` ${Math.round((shownJob.step / shownJob.step_total) * 100)} %` : ''}`}</span>
+              : tr('Making the song…') + ` ${shownJob.stage_text ?? ''}${shownJob.step && shownJob.step_total ? ` ${Math.round((shownJob.step / shownJob.step_total) * 100)} %` : ''}`}</span>
             {shownJob.status === 'done' && shownJob.results.length > 0 && (
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 <button className="btn btn-primary" style={{ fontSize: 11 }} onClick={() => void (async () => {

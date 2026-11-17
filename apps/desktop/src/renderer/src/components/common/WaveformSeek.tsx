@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { tr } from '../../i18n/tr'
 
 // The real waveform of a file with the play position: click or drag anywhere to jump there.
 // Either drives an HTMLAudioElement that plays the same file (Library), or reads the position and seeks through
@@ -125,7 +126,7 @@ export function WaveformSeek({ fileKey, bytes, buffers, audio, position, onSeek,
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums', width: 36, textAlign: 'right' }}>{mmss(time)}</span>
-      <div ref={wrap} title={failed ? 'Click to jump (the waveform could not be drawn)' : 'Click or drag to jump'}
+      <div ref={wrap} title={failed ? tr('Click to jump (the waveform could not be drawn)') : tr('Click or drag to jump')}
         style={{ flex: 1, height: 48, cursor: 'pointer', background: 'var(--bg-secondary)', borderRadius: 6, overflow: 'hidden' }}
         onPointerDown={(e) => { dragging.current = true; (e.target as HTMLElement).setPointerCapture(e.pointerId); seekTo(e.clientX) }}
         onPointerMove={(e) => { if (dragging.current) seekTo(e.clientX) }}

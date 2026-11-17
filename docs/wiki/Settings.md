@@ -4,7 +4,7 @@ Open with the gear at the bottom of the left menu (Ableton layout: Ctrl+,). Clos
 
 | Tab | What is there |
 |---|---|
-| **General** | Language (English, Deutsch, Français, Español, Italiano, Português, 中文, 日本語, 한국어); VST plugin folders (for the coming VST3 support) |
+| **General** | Language: the whole app in English, Deutsch, Français, Español, Italiano, Português and 中文; the menu in 日本語 and 한국어 (the rest in English for now); VST plugin folders (for the coming VST3 support) |
 | **AI** | Provider for the [[AI Chat]] (Claude, ChatGPT, Grok, Ollama), API key, model |
 | **AI Engines** | Tick packages and **Install selected**: see [[Installation and Setup]]. PyTorch variant (CPU or NVIDIA CUDA). The log can be selected and copied (Ctrl+C or right-click) |
 | **Hardware** | What your PC can run and how fast: rating (*Entry* to *Studio*), per feature *Runs well* / *Slow here* / *Not possible* with reasons; *Show backend log file* |

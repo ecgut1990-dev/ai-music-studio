@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { tr, trf } from '../../i18n/tr'
 
 type Model = ModelsOverview['models'][number]
 
@@ -81,7 +82,7 @@ export function ModelsTab(): React.ReactElement {
   const remove = async (id: string): Promise<void> => {
     setConfirmDelete(null); setError(null); setNotice(null)
     const r = await window.api.models.delete(id)
-    if (r.ok) setNotice('Deleted. It is downloaded again the next time it is needed.')
+    if (r.ok) setNotice(tr('Deleted. It is downloaded again the next time it is needed.'))
     else setError(r.error)
     await refresh()
   }
@@ -89,7 +90,7 @@ export function ModelsTab(): React.ReactElement {
   const clear = async (id: string): Promise<void> => {
     setConfirmDelete(null); setError(null); setNotice(null)
     const r = await window.api.models.clearCache(id)
-    if (r.ok) setNotice(`Freed ${fmt(r.freed)}.`)
+    if (r.ok) setNotice(trf('Freed {n}.', { n: fmt(r.freed) }))
     else setError(r.error)
     await refresh()
   }
@@ -101,7 +102,7 @@ export function ModelsTab(): React.ReactElement {
     await refresh()
   }
 
-  if (!o) return <div style={muted}>Reading the models folder…</div>
+  if (!o) return <div style={muted}>{tr('Reading the models folder…')}</div>
 
   const lowSpace = o.free > 0 && o.free < 15 * GB
   const pct = move && move.total ? Math.min(100, Math.round((move.copied / move.total) * 100)) : 0
@@ -109,7 +110,7 @@ export function ModelsTab(): React.ReactElement {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', borderBottom: '1px solid var(--border)', paddingBottom: 10 }}>
-        Models and storage
+        {tr('Models and storage')}
       </div>
 
       {error && <div style={{ color: 'var(--red)', fontSize: 12 }}>{error}</div>}
@@ -117,11 +118,11 @@ export function ModelsTab(): React.ReactElement {
 
       {/* storage location */}
       <section style={card}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Models folder</div>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>{tr('Models folder')}</div>
         <div style={mono}>{o.baseDir}</div>
         <div style={{ fontSize: 12, color: lowSpace ? 'var(--orange)' : 'var(--text-secondary)' }}>
-          Models use {fmt(total)} here. {o.total > 0 ? `${fmt(o.free)} free of ${fmt(o.total)} on this drive.` : ''}
-          {lowSpace ? ' Space is getting tight: a folder on another drive is a good idea.' : ''}
+          {tr('Models use')} {fmt(total)} {tr('here.')} {o.total > 0 ? `${fmt(o.free)} free of ${fmt(o.total)} on this drive.` : ''}
+          {lowSpace ? tr(' Space is getting tight: a folder on another drive is a good idea.') : ''}
         </div>
 
         {move ? (
@@ -131,43 +132,43 @@ export function ModelsTab(): React.ReactElement {
             </div>
             <div style={muted}>
               {move.phase === 'copying' ? `Moving… ${fmt(move.copied)} of ${fmt(move.total)} (${pct}%). Do not close the app.`
-                : move.phase === 'cleaning' ? 'Finishing, removing the old files…' : 'Done.'}
+                : move.phase === 'cleaning' ? tr('Finishing, removing the old files…') : tr('Done.')}
             </div>
             {move.phase === 'copying' && (
-              <button className="btn btn-ghost" style={{ alignSelf: 'flex-start' }} onClick={() => void window.api.models.cancelMove()}>Cancel (nothing is changed)</button>
+              <button className="btn btn-ghost" style={{ alignSelf: 'flex-start' }} onClick={() => void window.api.models.cancelMove()}>{tr('Cancel (nothing is changed)')}</button>
             )}
           </div>
         ) : pending ? (
           <div style={{ border: '1px solid var(--accent)', borderRadius: 8, padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>New folder:</div>
+            <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>{tr('New folder:')}</div>
             <div style={mono}>{pending.path}</div>
-            <div style={muted}>Free there: {fmt(pending.free)}</div>
+            <div style={muted}>{tr('Free there:')} {fmt(pending.free)}</div>
             {total > 0 && (
               <>
                 <label style={{ fontSize: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
                   <input type="radio" checked={moveFiles} onChange={() => setMoveFiles(true)} />
-                  Move the existing models ({fmt(total)}). Recommended: nothing has to be downloaded again.
+                  {tr('Move the existing models (')}{fmt(total)}{tr('). Recommended: nothing has to be downloaded again.')}
                 </label>
                 <label style={{ fontSize: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
                   <input type="radio" checked={!moveFiles} onChange={() => setMoveFiles(false)} />
-                  Only use the new folder. Models are downloaded again when needed; the old files stay where they are.
+                  {tr('Only use the new folder. Models are downloaded again when needed; the old files stay where they are.')}
                 </label>
               </>
             )}
             {moveFiles && total > 0 && pending.free > 0 && pending.free < total + GB && (
-              <div style={{ color: 'var(--red)', fontSize: 12 }}>Not enough free space there: {fmt(total + GB)} needed.</div>
+              <div style={{ color: 'var(--red)', fontSize: 12 }}>{tr('Not enough free space there:')} {fmt(total + GB)} {tr('needed.')}</div>
             )}
             <div style={{ display: 'flex', gap: 8 }}>
-              <button className="btn btn-primary" onClick={() => void apply(pending.path, moveFiles)}>{moveFiles && total > 0 ? 'Move models' : 'Use this folder'}</button>
-              <button className="btn btn-ghost" onClick={() => setPending(null)}>Cancel</button>
+              <button className="btn btn-primary" onClick={() => void apply(pending.path, moveFiles)}>{moveFiles && total > 0 ? tr('Move models') : tr('Use this folder')}</button>
+              <button className="btn btn-ghost" onClick={() => setPending(null)}>{tr('Cancel')}</button>
             </div>
           </div>
         ) : (
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="btn btn-primary" onClick={() => void choose()}>Change folder…</button>
-            <button className="btn btn-ghost" onClick={() => void window.api.models.open('models')}>Open folder</button>
+            <button className="btn btn-primary" onClick={() => void choose()}>{tr('Change folder…')}</button>
+            <button className="btn btn-ghost" onClick={() => void window.api.models.open('models')}>{tr('Open folder')}</button>
             {!o.usingDefault && (
-              <button className="btn btn-ghost" onClick={() => void apply(o.defaultDir, true)}>Back to the default folder</button>
+              <button className="btn btn-ghost" onClick={() => void apply(o.defaultDir, true)}>{tr('Back to the default folder')}</button>
             )}
           </div>
         )}
@@ -190,7 +191,7 @@ export function ModelsTab(): React.ReactElement {
               </div>
             </div>
             {m.id === 'acestep' && m.status === 'missing' && (
-              <div style={{ fontSize: 11, color: 'var(--yellow)' }}>About 8 GB are downloaded when you create your first song.</div>
+              <div style={{ fontSize: 11, color: 'var(--yellow)' }}>{tr('About 8 GB are downloaded when you create your first song.')}</div>
             )}
             {m.components.length > 0 && (
               <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
@@ -205,12 +206,12 @@ export function ModelsTab(): React.ReactElement {
             {m.bytes > 0 && (
               confirmDelete === m.id ? (
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <span style={{ fontSize: 12, color: 'var(--red)' }}>Really delete {fmt(m.bytes)}?</span>
-                  <button className="btn btn-primary" style={{ background: 'var(--red)' }} onClick={() => void remove(m.id)}>Yes, delete</button>
-                  <button className="btn btn-ghost" onClick={() => setConfirmDelete(null)}>No</button>
+                  <span style={{ fontSize: 12, color: 'var(--red)' }}>{tr('Really delete')} {fmt(m.bytes)}?</span>
+                  <button className="btn btn-primary" style={{ background: 'var(--red)' }} onClick={() => void remove(m.id)}>{tr('Yes, delete')}</button>
+                  <button className="btn btn-ghost" onClick={() => setConfirmDelete(null)}>{tr('No')}</button>
                 </div>
               ) : (
-                <button className="btn btn-ghost" style={{ alignSelf: 'flex-start', fontSize: 11 }} onClick={() => setConfirmDelete(m.id)}>Delete to free space</button>
+                <button className="btn btn-ghost" style={{ alignSelf: 'flex-start', fontSize: 11 }} onClick={() => setConfirmDelete(m.id)}>{tr('Delete to free space')}</button>
               )
             )}
           </section>
@@ -220,11 +221,11 @@ export function ModelsTab(): React.ReactElement {
       {/* LoRAs */}
       <section style={card}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>LoRAs</div>
-          <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void window.api.models.open('loras')}>Open folder</button>
+          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{tr('LoRAs')}</div>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void window.api.models.open('loras')}>{tr('Open folder')}</button>
         </div>
         <div style={mono}>{o.loraDir}</div>
-        {o.loras.length === 0 && <div style={muted}>No LoRAs yet. Add them in Create music → LoRA.</div>}
+        {o.loras.length === 0 && <div style={muted}>{tr('No LoRAs yet. Add them in Create music → LoRA.')}</div>}
         {o.loras.map((l) => (
           <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
             <div style={{ minWidth: 0 }}>
@@ -233,40 +234,40 @@ export function ModelsTab(): React.ReactElement {
             </div>
             {confirmDelete === `lora:${l.id}` ? (
               <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                <button className="btn btn-primary" style={{ background: 'var(--red)' }} onClick={() => void removeLora(l.id)}>Delete</button>
-                <button className="btn btn-ghost" onClick={() => setConfirmDelete(null)}>No</button>
+                <button className="btn btn-primary" style={{ background: 'var(--red)' }} onClick={() => void removeLora(l.id)}>{tr('Delete')}</button>
+                <button className="btn btn-ghost" onClick={() => setConfirmDelete(null)}>{tr('No')}</button>
               </div>
             ) : (
-              <button className="btn btn-ghost" style={{ fontSize: 11, flexShrink: 0 }} onClick={() => setConfirmDelete(`lora:${l.id}`)}>Delete</button>
+              <button className="btn btn-ghost" style={{ fontSize: 11, flexShrink: 0 }} onClick={() => setConfirmDelete(`lora:${l.id}`)}>{tr('Delete')}</button>
             )}
           </div>
         ))}
-        <div style={muted}>LoRAs stay in this folder; the models folder above does not move them.</div>
+        <div style={muted}>{tr('LoRAs stay in this folder; the models folder above does not move them.')}</div>
       </section>
 
       {/* caches */}
       <section style={card}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Free up space</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{tr('Free up space')}</div>
         {o.caches.every((c) => c.bytes === 0) ? (
-          <div style={muted}>Nothing to clean up: no leftover caches.</div>
+          <div style={muted}>{tr('Nothing to clean up: no leftover caches.')}</div>
         ) : (
-          <div style={muted}>Caches can be cleared safely. They only cost download time if they are needed again. Your models, LoRAs and songs are not touched.</div>
+          <div style={muted}>{tr('Caches can be cleared safely. They only cost download time if they are needed again. Your models, LoRAs and songs are not touched.')}</div>
         )}
-        {o.caches.some((c) => c.bytes === null) && <div style={muted}>Calculating sizes…</div>}
+        {o.caches.some((c) => c.bytes === null) && <div style={muted}>{tr('Calculating sizes…')}</div>}
         {o.caches.filter((c) => c.bytes === null || c.bytes > 0).map((c) => (
           <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>{c.name} <span style={{ color: 'var(--text-secondary)' }}>· {c.bytes === null ? 'calculating…' : fmt(c.bytes)}</span></div>
+              <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>{c.name} <span style={{ color: 'var(--text-secondary)' }}>· {c.bytes === null ? tr('calculating…') : fmt(c.bytes)}</span></div>
               <div style={muted}>{c.description}</div>
               <div style={mono}>{c.path}</div>
             </div>
             {confirmDelete === `cache:${c.id}` ? (
               <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                <button className="btn btn-primary" style={{ background: 'var(--red)' }} onClick={() => void clear(c.id)}>Clear</button>
-                <button className="btn btn-ghost" onClick={() => setConfirmDelete(null)}>No</button>
+                <button className="btn btn-primary" style={{ background: 'var(--red)' }} onClick={() => void clear(c.id)}>{tr('Clear')}</button>
+                <button className="btn btn-ghost" onClick={() => setConfirmDelete(null)}>{tr('No')}</button>
               </div>
             ) : (
-              <button className="btn btn-ghost" style={{ fontSize: 11, flexShrink: 0 }} disabled={c.bytes === null} onClick={() => setConfirmDelete(`cache:${c.id}`)}>Clear{c.bytes === null ? '' : ` ${fmt(c.bytes)}`}</button>
+              <button className="btn btn-ghost" style={{ fontSize: 11, flexShrink: 0 }} disabled={c.bytes === null} onClick={() => setConfirmDelete(`cache:${c.id}`)}>{tr('Clear')}{c.bytes === null ? '' : ` ${fmt(c.bytes)}`}</button>
             )}
           </div>
         ))}
@@ -275,15 +276,15 @@ export function ModelsTab(): React.ReactElement {
       {/* python environment */}
       <section style={card}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Python environment (engines)</div>
-          <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>{o.env.bytes === null ? 'calculating…' : fmt(o.env.bytes)}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{tr('Python environment (engines)')}</div>
+          <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>{o.env.bytes === null ? tr('calculating…') : fmt(o.env.bytes)}</div>
         </div>
         <div style={mono}>{o.env.path}</div>
-        <div style={muted}>Managed in Settings → AI Engines.</div>
+        <div style={muted}>{tr('Managed in Settings → AI Engines.')}</div>
       </section>
 
       <div style={{ ...muted, lineHeight: 1.5 }}>
-        Model choice: with the current engine, ACE-Step v1 (3.5B) is the only music model. Other variants (XL, turbo, quantised) need a different engine and are not available yet.
+        {tr('Model choice: with the current engine, ACE-Step v1 (3.5B) is the only music model. Other variants (XL, turbo, quantised) need a different engine and are not available yet.')}
       </div>
     </div>
   )

@@ -2,6 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUIStore } from '../../stores/ui.store'
 import type { View } from '../../types'
+import { tr } from '../../i18n/tr'
 
 interface NavItem {
   view: View
@@ -72,8 +73,8 @@ export function Sidebar(): React.ReactElement {
     >
       <button
         onClick={toggleSidebar}
-        title={sidebarOpen ? 'Collapse menu' : 'Expand menu'}
-        aria-label={sidebarOpen ? 'Collapse menu' : 'Expand menu'}
+        title={sidebarOpen ? tr('Collapse menu') : tr('Expand menu')}
+        aria-label={sidebarOpen ? tr('Collapse menu') : tr('Expand menu')}
         style={{
           width: '100%', height: 36, display: 'flex', alignItems: 'center',
           justifyContent: sidebarOpen ? 'space-between' : 'center', padding: sidebarOpen ? '0 12px' : 0,
@@ -81,12 +82,12 @@ export function Sidebar(): React.ReactElement {
           fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4,
         }}
       >
-        {sidebarOpen && <span>Menu</span>}
+        {sidebarOpen && <span>{tr('Menu')}</span>}
         <span style={{ fontSize: 15 }}>{sidebarOpen ? '«' : '»'}</span>
       </button>
 
       {NAV_ITEMS.map((item) =>
-        button(item.view, item.icon, t(item.labelKey, { defaultValue: item.fallback }))
+        button(item.view, item.icon, ((v) => (v === item.fallback ? tr(v) : v))(t(item.labelKey, { defaultValue: item.fallback })))
       )}
 
       <div style={{ flex: 1 }} />

@@ -1,4 +1,5 @@
 // Saving, opening and autosaving projects (.ams = JSON), recent projects, and the window title.
+import { tr } from '../i18n/tr'
 import { askText } from '../components/common/AskText'
 import { useProjectStore } from '../stores/project.store'
 import { useAudioStore } from '../stores/audio.store'
@@ -101,7 +102,7 @@ function confirmDiscard(): boolean {
 /** A new, empty project: first asks for its name (Cancel keeps the current project). */
 export async function newProject(): Promise<boolean> {
   if (!confirmDiscard()) return false
-  const name = await askText('New project', 'Name of the project', 'Untitled Project', 'Create')
+  const name = await askText(tr('New project'), tr('Name of the project'), tr('Untitled Project'), tr('Create'))
   if (!name) return false
   stop()
   useProjectStore.getState().newProject()

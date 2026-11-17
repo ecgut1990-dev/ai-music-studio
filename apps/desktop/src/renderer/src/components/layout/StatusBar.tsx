@@ -1,6 +1,7 @@
 import React from 'react'
 import { useProjectStore } from '../../stores/project.store'
 import { useAudioStore } from '../../stores/audio.store'
+import { tr } from '../../i18n/tr'
 
 export function StatusBar(): React.ReactElement {
   const { project } = useProjectStore()
@@ -22,13 +23,13 @@ export function StatusBar(): React.ReactElement {
       color: 'var(--text-muted)'
     }}>
       <span style={{ color: isPlaying ? 'var(--success)' : 'var(--text-muted)' }}>
-        {isPlaying ? '▶ Playing' : '■ Stopped'}
+        {isPlaying ? tr('▶ Playing') : tr('■ Stopped')}
       </span>
       <span>{beats + 1}:{sub} / {bpm} BPM</span>
-      <span>{project.tracks.length} track{project.tracks.length !== 1 ? 's' : ''}</span>
+      <span>{project.tracks.length} {tr('track')}{project.tracks.length !== 1 ? 's' : ''}</span>
       <span>{project.sampleRate} Hz</span>
       <span style={{ flex: 1 }} />
-      <span>AI Music Studio v0.1.0</span>
+      <span>{tr('AI Music Studio v0.1.0')}</span>
     </footer>
   )
 }

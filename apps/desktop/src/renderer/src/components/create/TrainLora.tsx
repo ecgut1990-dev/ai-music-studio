@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { api, type TrainItem, type TrainJob, type TrainOptions } from '../../lib/api'
+import { tr } from '../../i18n/tr'
 
 const box: React.CSSProperties = { background: 'var(--bg-panel)', border: '1px solid var(--border-mid)', borderRadius: 10 }
 const muted: React.CSSProperties = { fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4 }
@@ -122,8 +123,8 @@ export function TrainLora({ open, onClose, onDone }: {
       >
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', borderBottom: '1px solid var(--border-mid)' }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>Train your own LoRA</div>
-            <div style={muted}>Teach ACE-Step a style from your own songs. Use only music you have the rights to.</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('Train your own LoRA')}</div>
+            <div style={muted}>{tr('Teach ACE-Step a style from your own songs. Use only music you have the rights to.')}</div>
           </div>
           <button className="btn btn-ghost" onClick={onClose} disabled={running || !!busy}>✕</button>
         </header>
@@ -135,40 +136,39 @@ export function TrainLora({ open, onClose, onDone }: {
               {v.reason && <div style={muted}>{v.reason}</div>}
               {v.status === 'unavailable' && (
                 <div style={muted}>
-                  You can still prepare everything here and take the bundle to a stronger computer (NVIDIA graphics card,
-                  12 GB or more recommended). Then import the result with “Import LoRA folder”.
+                  {tr('You can still prepare everything here and take the bundle to a stronger computer (NVIDIA graphics card,\n                  12 GB or more recommended). Then import the result with “Import LoRA folder”.')}
                 </div>
               )}
             </div>
           )}
 
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary" onClick={pick} disabled={!!busy || running}>1. Choose a folder with songs…</button>
+            <button className="btn btn-primary" onClick={pick} disabled={!!busy || running}>{tr('1. Choose a folder with songs…')}</button>
             <span style={muted}>
-              Text files next to a song are picked up: song_prompt.txt (style tags), song_lyrics.txt or song.txt (lyrics).
+              {tr('Text files next to a song are picked up: song_prompt.txt (style tags), song_lyrics.txt or song.txt (lyrics).')}
             </span>
           </div>
 
           {items.length > 0 && (
             <>
-              <div style={lab}>2. Describe each song ({items.length} found)</div>
+              <div style={lab}>{tr('2. Describe each song (')}{items.length} {tr('found)')}</div>
               <div style={{ ...box, maxHeight: 260, overflowY: 'auto' }}>
                 {items.map((it) => (
                   <div key={it.path} style={{ padding: 8, borderBottom: '1px solid var(--border-subtle)', display: 'grid', gridTemplateColumns: '170px 1fr', gap: 8 }}>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 12, color: 'var(--text-primary)', wordBreak: 'break-all' }}>{it.name}</div>
-                      <div style={muted}>{it.seconds ? mmss(it.seconds) : '?'}{it.caption_found ? ' · tags found' : ''}</div>
+                      <div style={muted}>{it.seconds ? mmss(it.seconds) : '?'}{it.caption_found ? tr(' · tags found') : ''}</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                       <input
                         value={get(it).caption} onChange={(e) => setField(it, 'caption', e.target.value)}
-                        placeholder="style tags, e.g. deep house, warm bass, 122 bpm" style={{ width: '100%' }}
+                        placeholder={tr('style tags, e.g. deep house, warm bass, 122 bpm')} style={{ width: '100%' }}
                       />
                       <input
                         value={get(it).lyrics.includes('\n') ? '' : get(it).lyrics}
                         disabled={get(it).lyrics.includes('\n')}
                         onChange={(e) => setField(it, 'lyrics', e.target.value)}
-                        placeholder={get(it).lyrics.includes('\n') ? `${get(it).lyrics.split('\n').length} lines of lyrics found` : 'lyrics (empty = instrumental)'}
+                        placeholder={get(it).lyrics.includes('\n') ? `${get(it).lyrics.split('\n').length} lines of lyrics found` : tr('lyrics (empty = instrumental)')}
                         style={{ width: '100%' }}
                       />
                     </div>
@@ -176,22 +176,22 @@ export function TrainLora({ open, onClose, onDone }: {
                 ))}
               </div>
               <div style={muted}>
-                Good tags name the genre, mood, instruments, tempo and vocals, separated by commas. The same style words on many songs teach the LoRA best.
+                {tr('Good tags name the genre, mood, instruments, tempo and vocals, separated by commas. The same style words on many songs teach the LoRA best.')}
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <label style={lab}>Name
+                <label style={lab}>{tr('Name')}
                   <input value={name} onChange={(e) => setName(e.target.value)} style={{ width: '100%', marginTop: 4 }} />
                 </label>
-                <label style={lab}>Tags added to every song (optional)
-                  <input value={shared} onChange={(e) => setShared(e.target.value)} placeholder="e.g. my-sound" style={{ width: '100%', marginTop: 4 }} />
+                <label style={lab}>{tr('Tags added to every song (optional)')}
+                  <input value={shared} onChange={(e) => setShared(e.target.value)} placeholder={tr('e.g. my-sound')} style={{ width: '100%', marginTop: 4 }} />
                 </label>
-                <label style={lab}>Length
+                <label style={lab}>{tr('Length')}
                   <select value={preset} onChange={(e) => setPreset(e.target.value)} style={{ width: '100%', marginTop: 4 }}>
-                    {opts && Object.entries(opts.presets).map(([k, p]) => <option key={k} value={k}>{k} · {p.steps} steps</option>)}
+                    {opts && Object.entries(opts.presets).map(([k, p]) => <option key={k} value={k}>{k} · {p.steps} {tr('steps')}</option>)}
                   </select>
                 </label>
-                <label style={lab}>Strength (rank)
+                <label style={lab}>{tr('Strength (rank)')}
                   <select value={rank} onChange={(e) => setRank(Number(e.target.value))} style={{ width: '100%', marginTop: 4 }}>
                     {opts && Object.entries(opts.ranks).map(([k, t]) => <option key={k} value={k}>{k} · {t}</option>)}
                   </select>
@@ -200,8 +200,8 @@ export function TrainLora({ open, onClose, onDone }: {
               {opts && <div style={muted}>{opts.presets[preset]?.text}</div>}
 
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <button className="btn btn-ghost" onClick={exportIt} disabled={!!busy || running}>Build bundle for another computer</button>
-                <button className="btn btn-primary" onClick={train} disabled={!!busy || running || v?.status === 'unavailable'}>3. Train here</button>
+                <button className="btn btn-ghost" onClick={exportIt} disabled={!!busy || running}>{tr('Build bundle for another computer')}</button>
+                <button className="btn btn-primary" onClick={train} disabled={!!busy || running || v?.status === 'unavailable'}>{tr('3. Train here')}</button>
               </div>
             </>
           )}
@@ -211,14 +211,14 @@ export function TrainLora({ open, onClose, onDone }: {
           {info.map((w, i) => <div key={i} style={{ color: 'var(--yellow)', fontSize: 11 }}>{w}</div>)}
           {bundle && (
             <div style={{ color: 'var(--green)', fontSize: 12, wordBreak: 'break-all' }}>
-              Bundle ready: {bundle}. It contains the converted songs, the settings and a README with the steps.
+              {tr('Bundle ready:')} {bundle}{tr('. It contains the converted songs, the settings and a README with the steps.')}
             </div>
           )}
 
           {job && (
             <div style={{ ...box, padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 700 }}>
-                {job.status === 'error' ? 'Training failed' : job.status === 'done' ? 'Done: the LoRA is in your list' : job.stage_text}
+                {job.status === 'error' ? tr('Training failed') : job.status === 'done' ? tr('Done: the LoRA is in your list') : job.stage_text}
               </div>
               <div style={{ height: 8, background: 'var(--bg-tertiary)', borderRadius: 4, overflow: 'hidden', position: 'relative' }}>
                 {known !== null && job.stage === 'train' ? (
@@ -229,18 +229,18 @@ export function TrainLora({ open, onClose, onDone }: {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', ...muted }}>
                 <span>
-                  {job.stage === 'train' && known !== null ? `step ${job.step} of ${job.step_total} (${Math.round(known * 100)}%)` : 'Working…'}
+                  {job.stage === 'train' && known !== null ? `step ${job.step} of ${job.step_total} (${Math.round(known * 100)}%)` : tr('Working…')}
                   {job.loss !== undefined ? ` · loss ${job.loss}` : ''}
                   {eta !== null ? ` · about ${mmss(eta)} left` : ''}
                 </span>
-                <span>Running {mmss(elapsed)}</span>
+                <span>{tr('Running')} {mmss(elapsed)}</span>
               </div>
               {job.warning && <div style={{ color: 'var(--yellow)', fontSize: 11 }}>{job.warning}</div>}
               {job.error && <div style={{ color: 'var(--red)', fontSize: 11, wordBreak: 'break-word' }}>{job.error}</div>}
               {job.log.length > 0 && (
                 <pre style={{ ...muted, margin: 0, maxHeight: 90, overflow: 'auto', whiteSpace: 'pre-wrap' }}>{job.log.slice(-6).join('\n')}</pre>
               )}
-              {running && <div><button className="btn btn-ghost" onClick={() => void api.train.stop(job.id)}>Stop</button></div>}
+              {running && <div><button className="btn btn-ghost" onClick={() => void api.train.stop(job.id)}>{tr('Stop')}</button></div>}
             </div>
           )}
         </div>

@@ -8,6 +8,7 @@ import type { Note } from '../../types'
 import { minLength, snapBeat, snapStep } from '../../edit/grid'
 import { GridControls } from '../../edit/GridControls'
 import { pianoFocus, PIANO_SELECT_ALL } from '../timeline/studioOps'
+import { tr } from '../../i18n/tr'
 
 const NOTE_HEIGHT = 14
 const PIANO_WIDTH = 56
@@ -230,7 +231,7 @@ export function PianoRoll(): React.ReactElement {
   if (!track) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)', fontSize: 13 }}>
-        Select a MIDI track to edit its notes here.
+        {tr('Select a MIDI track to edit its notes here.')}
       </div>
     )
   }
@@ -249,17 +250,17 @@ export function PianoRoll(): React.ReactElement {
           </button>
         ))}
         <GridControls />
-        <button title="Record MIDI (Ctrl+R): the song plays, and what you play on the keyboard on the left or on a MIDI keyboard becomes notes. Press again (or Space) to stop."
+        <button title={tr('Record MIDI (Ctrl+R): the song plays, and what you play on the keyboard on the left or on a MIDI keyboard becomes notes. Press again (or Space) to stop.')}
           onClick={() => { if (recording) pause(); else void startMidiRecording() }}
           style={{ padding: '3px 10px', borderRadius: 4, border: `1px solid ${recording ? 'var(--red)' : 'var(--border)'}`, background: recording ? 'var(--red)' : 'var(--bg-primary)', color: recording ? 'white' : 'var(--red)', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>
-          ● {recording ? 'Recording…' : 'Rec'}
+          ● {recording ? tr('Recording…') : tr('Rec')}
         </button>
-        {midiInputs > 0 && <span style={{ fontSize: 10, color: 'var(--green)' }} title="MIDI keyboards found">🎹 {midiInputs}</span>}
+        {midiInputs > 0 && <span style={{ fontSize: 10, color: 'var(--green)' }} title={tr('MIDI keyboards found')}>🎹 {midiInputs}</span>}
         <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 8 }}>
-          {clip ? `${track.name} · ${clip.name ?? 'clip'} · ${notes.length} notes${sel.size > 1 ? ` · ${sel.size} selected` : ''}` : 'No clip yet: click in the grid to create one'}
+          {clip ? `${track.name} · ${clip.name ?? 'clip'} · ${notes.length} notes${sel.size > 1 ? ` · ${sel.size} selected` : ''}` : tr('No clip yet: click in the grid to create one')}
         </span>
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Zoom</span>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tr('Zoom')}</span>
         <input type="range" min={0.25} max={4} step={0.25} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} style={{ width: 80, accentColor: 'var(--accent)' }} />
         <span style={{ fontSize: 11, color: 'var(--text-secondary)', width: 28 }}>{zoom}x</span>
       </div>
@@ -275,7 +276,7 @@ export function PianoRoll(): React.ReactElement {
                 <div key={pitch}
                   onPointerDown={(e) => { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); noteOn(pitch, 100) }}
                   onPointerUp={() => noteOff(pitch)} onPointerCancel={() => noteOff(pitch)}
-                  title="Play this note. While recording (● or Ctrl+R), what you play here becomes notes in the clip." 
+                  title={tr('Play this note. While recording (● or Ctrl+R), what you play here becomes notes in the clip.')} 
                   style={{ height: NOTE_HEIGHT, boxSizing: 'border-box', background: black ? '#222' : '#fff', borderBottom: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 4, cursor: 'pointer' }}>
                   {pitch % 12 === 0 && <span style={{ fontSize: 9, color: black ? '#888' : '#555' }}>{noteName(pitch)}</span>}
                 </div>
@@ -299,7 +300,7 @@ export function PianoRoll(): React.ReactElement {
               <div key={i} data-bg="1" style={{ position: 'absolute', left: i * beatWidth, top: 0, bottom: 0, width: 1, background: i % 4 === 0 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)' }} />
             ))}
             {clip && (
-              <div style={{ position: 'absolute', left: clipBeats * beatWidth, top: 0, bottom: 0, width: 2, background: 'rgba(124,58,237,0.6)', pointerEvents: 'none' }} title="End of the clip" />
+              <div style={{ position: 'absolute', left: clipBeats * beatWidth, top: 0, bottom: 0, width: 2, background: 'rgba(124,58,237,0.6)', pointerEvents: 'none' }} title={tr('End of the clip')} />
             )}
 
             {notes.map((note) => (

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { tr } from '../../i18n/tr'
 
 export function AudioFile({ path, label }: { path: string; label?: string }): React.ReactElement {
   const [url, setUrl] = useState<string | null>(null)
@@ -24,7 +25,7 @@ export function AudioFile({ path, label }: { path: string; label?: string }): Re
       {url && <audio controls src={url} style={{ height: 32 }} />}
       {err && <span style={{ color: 'var(--red)', fontSize: 11 }}>{err}</span>}
       <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => window.api.shell.openPath(path)}>
-        Open file
+        {tr('Open file')}
       </button>
     </div>
   )

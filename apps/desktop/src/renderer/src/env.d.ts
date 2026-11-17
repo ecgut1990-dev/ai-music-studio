@@ -101,6 +101,10 @@ declare global {
         autosaveRead: () => Promise<{ text: string; mtime: number } | null>
         autosaveClear: () => Promise<void>
       }
+      app?: {
+        onCloseRequest: (cb: () => void) => () => void
+        closeConfirmed: () => Promise<void>
+      }
       files: {
         exists: (paths: string[]) => Promise<boolean[]>
         saveRecording: (bytes: Uint8Array) => Promise<string>

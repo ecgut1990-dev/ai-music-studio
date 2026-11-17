@@ -3,7 +3,7 @@
 Everything you made or collected, kept with its tempo. Files are stored in `Music\AI Music Studio`. Three tabs:
 
 ## My tracks
-Songs and loops from [[Create Music]] and files you added.
+Songs and loops from [[Create Music]] and files you added. Each song shows its full name, the details below it and its buttons in a row underneath; the list uses the whole width of the window (more room when the AI assistant is closed).
 
 | Button / control | What it does |
 |---|---|

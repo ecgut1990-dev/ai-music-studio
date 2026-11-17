@@ -1,3 +1,4 @@
+import { CloseGuard } from './components/common/CloseGuard'
 import React, { useEffect, useState } from 'react'
 import { UpdateToast } from './components/updater/UpdateToast'
 import { api, baseUrl } from './lib/api'
@@ -26,6 +27,7 @@ import { AskTextDialog } from './components/common/AskText'
 import { FeedbackButton } from './components/common/Feedback'
 import { Mastering } from './components/mastering/Mastering'
 import { KaraokeExport } from './components/karaoke/KaraokeExport'
+import { tr, trf } from './i18n/tr'
 
 // Hardware info fetched from backend
 interface HardwareInfo {
@@ -46,14 +48,14 @@ function GeneratingBadge(): React.ReactElement | null {
       <span style={{ color: 'var(--border-mid)' }}>·</span>
       <button
         onClick={() => useUIStore.getState().setActiveView('create')}
-        title="Back to Create music"
+        title={tr('Back to Create music')}
         style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700,
           color: job.status === 'error' ? 'var(--red)' : 'var(--accent-light)' }}
       >
-        {job.status === 'error' ? 'Music generation failed: open' : `Generating music${pct !== null ? ` ${pct}%` : '…'}${job.stage_text ? ` · ${job.stage_text.slice(0, 40)}` : ''}`}
+        {job.status === 'error' ? tr('Music generation failed: open') : `${tr('Generating music')}${pct !== null ? ` ${pct}%` : '…'}${job.stage_text ? ` · ${job.stage_text.slice(0, 40)}` : ''}`}
       </button>
       {busy && !job.cancel && (
-        <button onClick={() => void useMusicJob.getState().cancel()} title="Cancel music generation"
+        <button onClick={() => void useMusicJob.getState().cancel()} title={tr('Cancel music generation')}
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, color: 'var(--red)', padding: '0 2px' }}>✕</button>
       )}
     </>
@@ -66,13 +68,13 @@ function StatusBar({ hw, base, onSetup }: {
   const { project } = useProjectStore()
   const gpuLabel = hw
     ? `${hw.gpu || 'CPU'} · ${hw.backend.toUpperCase()}`
-    : 'AI backend offline — click to open Settings → AI Engines'
+    : tr('AI backend offline — click to open Settings → AI Engines')
 
   return (
     <footer className="app-statusbar">
-      <span>AI Music Studio v{__APP_VERSION__}</span>
+      <span>{tr('AI Music Studio v')}{__APP_VERSION__}</span>
       <span style={{ color: 'var(--border-mid)' }}>·</span>
-      <span>{project.name}</span>
+      <span>{project.name === 'Untitled Project' ? tr('Untitled Project') : project.name}</span>
       <span style={{ color: 'var(--border-mid)' }}>·</span>
       <span
         onClick={hw ? undefined : onSetup}
@@ -86,13 +88,13 @@ function StatusBar({ hw, base, onSetup }: {
       {hw?.low_cpu && (
         <>
           <span style={{ color: 'var(--border-mid)' }}>·</span>
-          <span style={{ color: 'var(--orange)' }}>Low-CPU mode</span>
+          <span style={{ color: 'var(--orange)' }}>{tr('Low-CPU mode')}</span>
         </>
       )}
       <GeneratingBadge />
       <span style={{ flex: 1 }} />
       <FeedbackButton />
-      <span style={{ color: 'var(--accent-light)' }}>MCP: {base ? `${base}/mcp` : '…'}</span>
+      <span style={{ color: 'var(--accent-light)' }}>{tr('MCP:')} {base ? `${base}/mcp` : '…'}</span>
     </footer>
   )
 }
@@ -129,17 +131,17 @@ export default function App(): React.ReactElement {
     switch (activeView) {
       case 'piano-roll':    return <PianoRoll />
       case 'mixer':         return <Mixer />
-      case 'vocal-editor':  return <ComingSoon name="Vocal Editor" icon="🎤" />
-      case 'instruments':   return <ComingSoon name="AI Instruments" icon="🎻" />
+      case 'vocal-editor':  return <ComingSoon name={tr('Vocal Editor')} icon="🎤" />
+      case 'instruments':   return <ComingSoon name={tr('AI Instruments')} icon="🎻" />
       case 'ai-chat':       return <AIChat />
       case 'stem-splitter': return <StemSplitter />
-      case 'video-composer':return <ComingSoon name="Video Composer" icon="🎬" />
+      case 'video-composer':return <ComingSoon name={tr('Video Composer')} icon="🎬" />
       case 'create':        return <CreateMusic />
       case 'library':       return <Library />
       case 'mastering':     return <Mastering />
-      case 'karaoke':       return <ComingSoon name="Karaoke Export" icon="🎙" />
-      case 'cloud':         return <ComingSoon name="Cloud Rendering (Pro)" icon="☁"
-        text="Render on fast NVIDIA graphics cards in the cloud: a song in a few minutes, also on a PC without a strong graphics card. An optional paid extra; everything you have now stays free and runs on your own PC." />
+      case 'karaoke':       return <ComingSoon name={tr('Karaoke Export')} icon="🎙" />
+      case 'cloud':         return <ComingSoon name={tr('Cloud Rendering (Pro)')} icon="☁"
+        text={tr('Render on fast NVIDIA graphics cards in the cloud: a song in a few minutes, also on a PC without a strong graphics card. An optional paid extra; everything you have now stays free and runs on your own PC.')} />
       case 'settings':      return <Settings />
       default:              return null
     }
@@ -190,7 +192,7 @@ export default function App(): React.ReactElement {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between'
           }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              AI Assistant
+              {tr('AI Assistant')}
             </span>
             <button
               onClick={() => setChatOpen(false)}
@@ -204,10 +206,10 @@ export default function App(): React.ReactElement {
 
         {/* also at the right edge, near the top: always reachable, even when the top bar is too narrow */}
         {!chatOpen && (
-          <button onClick={() => setChatOpen(true)} title="AI"
+          <button onClick={() => setChatOpen(true)} title={tr('AI')}
             style={{ position: 'absolute', right: 0, top: 8, zIndex: 30, background: 'var(--accent)', border: 'none', cursor: 'pointer',
               color: '#fff', fontSize: 11, fontWeight: 700, padding: '8px 4px', borderRadius: '6px 0 0 6px', writingMode: 'vertical-rl', letterSpacing: '0.06em' }}>
-            ✦ AI
+            {tr('✦ AI')}
           </button>
         )}
       </div>
@@ -218,6 +220,7 @@ export default function App(): React.ReactElement {
       <BeatMatchCard />
       <QuantizeDialog />
       <AskTextDialog />
+      <CloseGuard />
     </div>
   )
 }
@@ -227,7 +230,7 @@ function PanelResizer(): React.ReactElement {
   const setPanelHeight = useUIStore((s) => s.setPanelHeight)
   const start = React.useRef<{ y: number; h: number } | null>(null)
   return (
-    <div title="Drag to resize the Studio and the panel below (double-click: default)"
+    <div title={tr('Drag to resize the Studio and the panel below (double-click: default)')}
       style={{ flex: '0 0 auto', height: 6, cursor: 'row-resize', background: 'var(--border-mid)', position: 'relative', zIndex: 5 }}
       onDoubleClick={() => setPanelHeight(320)}
       onPointerDown={(e) => {

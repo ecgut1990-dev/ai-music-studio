@@ -20,6 +20,7 @@ import { Ruler } from './Ruler'
 import { Popover, type PopoverSpec } from './Popover'
 import { AutomationHeader, AutomationLane, FxHeader, FxLane, MiniMeter, ReturnRow, TakeHeader, TempoLane } from './StudioLanes'
 import { ChannelTab } from './ChannelTab'
+import { tr, trf } from '../../i18n/tr'
 import {
   AUTO_HEIGHT, BEAT_WIDTH, buildRows, HANDLE, HEADER_WIDTH, RULER_HEIGHT, rowHeight, rowTops, TAKE_HEIGHT, TEMPO_HEIGHT, TRACK_MAX_HEIGHT, TRACK_MIN_HEIGHT, trackHeight, trackPointer, openLanes, toggleAutomationLanes, type Row
 } from './studioLayout'
@@ -159,7 +160,7 @@ const Waveform = React.memo(function Waveform({ clip, color, height, width, warp
                 if (validMarkers(next)) useProjectStore.getState().updateClip(trackId, clip.id, { warpMarkers: next })
               })
             }}
-            title={warpEdit ? 'Warp marker: drag to move this moment of the audio onto another beat, Alt+click to delete' : 'Warp marker'}
+            title={warpEdit ? tr('Warp marker: drag to move this moment of the audio onto another beat, Alt+click to delete') : tr('Warp marker')}
             style={{ position: 'absolute', left: x - 4, top: 0, width: 9, height: '100%', cursor: warpEdit ? 'ew-resize' : 'default', pointerEvents: warpEdit ? 'auto' : 'none', zIndex: 2 }}>
             <div style={{ position: 'absolute', left: 4, top: 0, width: 1, height: '100%', background: '#facc15' }} />
             <div style={{ position: 'absolute', left: 0, top: 0, width: 9, height: 7, background: '#facc15', clipPath: 'polygon(0 0, 100% 0, 50% 100%)' }} />
@@ -389,7 +390,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
     setDropping(false)
     const files = [...e.dataTransfer.files].filter((f) => /\.(wav|mp3|flac|ogg|opus|m4a|aif|aiff)$/i.test(f.name))
     const paths = files.map((f) => (f as File & { path?: string }).path).filter((p): p is string => !!p)
-    if (!paths.length) { setMessage('Drop audio files (wav, mp3, flac, ogg, m4a, aiff).'); return }
+    if (!paths.length) { setMessage(tr('Drop audio files (wav, mp3, flac, ogg, m4a, aiff).')); return }
     const lanes = lanesRef.current
     const beat = lanes ? snap(beatAt(e.clientX), false) : 0
     const row = lanes ? rowAt(e.clientY) : undefined
@@ -447,7 +448,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
           <div key={clip.id}
             onPointerDown={(e) => { if (e.button === 0) { e.stopPropagation(); promoteTake(track.id, row.lane.id, clip.id); setMessage(`${row.lane.name} now plays on ${track.name}.`) } }}
             onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setMenu({ x: e.clientX, y: e.clientY, kind: 'take', trackId: track.id, clipId: clip.id, laneId: row.lane.id }) }}
-            title="Click: use this take on the track (comping)"
+            title={tr('Click: use this take on the track (comping)')}
             style={{ position: 'absolute', left: clip.startTime * beatWidth, top: 4, width, height: TAKE_HEIGHT - 8, background: `${track.color}22`, border: `1px dashed ${track.color}aa`, borderRadius: 4, overflow: 'hidden', cursor: 'pointer' }}>
             {clip.audioFile && <Waveform clip={clip} color={track.color} height={TAKE_HEIGHT - 10} width={width} warpEdit={false} trackId={track.id} />}
             <span style={{ position: 'relative', fontSize: 10, color: '#fff', padding: '1px 6px', pointerEvents: 'none' }}>{clip.name}</span>
@@ -460,11 +461,11 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
         <>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             {isGroup ? (
-              <span onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { collapsed: !track.collapsed }) }} title={track.collapsed ? 'Show the tracks of this group' : 'Hide the tracks of this group'}
+              <span onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { collapsed: !track.collapsed }) }} title={track.collapsed ? tr('Show the tracks of this group') : tr('Hide the tracks of this group')}
                 style={{ cursor: 'pointer', color: 'var(--text-muted)', fontSize: 10, width: 10 }}>{track.collapsed ? '▶' : '▼'}</span>
             ) : (
               <span draggable onDragStart={(e) => { e.dataTransfer.setData('text/ams-track', track.id); e.dataTransfer.effectAllowed = 'move' }} onClick={(e) => e.stopPropagation()}
-                title="Drag to change the order of the tracks" style={{ cursor: 'grab', color: 'var(--text-muted)', fontSize: 11, userSelect: 'none' }}>⋮⋮</span>
+                title={tr('Drag to change the order of the tracks')} style={{ cursor: 'grab', color: 'var(--text-muted)', fontSize: 11, userSelect: 'none' }}>⋮⋮</span>
             )}
             <div style={{ flex: 1, minWidth: 0 }}>
               {renaming === track.id ? (
@@ -472,25 +473,25 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
                   onBlur={(e) => { updateTrack(track.id, { name: e.target.value.trim() || track.name }); setRenaming(null) }}
                   onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') setRenaming(null); e.stopPropagation() }} />
               ) : (
-                <div onDoubleClick={() => setRenaming(track.id)} title="Double-click to rename"
+                <div onDoubleClick={() => setRenaming(track.id)} title={tr('Double-click to rename')}
                   style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{track.name}</div>
               )}
               <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{isGroup ? `group · ${childCount(track)} tracks` : track.type}{track.takes?.length ? ` · ${track.takes.length} takes` : ''}</div>
             </div>
-            <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { muted: !track.muted }) }} style={{ ...tinyBtn, color: track.muted ? '#f59e0b' : 'var(--text-muted)' }} title="Mute">M</button>
-            <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { soloed: !track.soloed }) }} style={{ ...tinyBtn, color: track.soloed ? 'var(--accent-light)' : 'var(--text-muted)' }} title="Solo">S</button>
-            <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { showFx: !track.showFx }) }} title="Effects of this track (EQ, compressor, delay, reverb, filter)"
+            <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { muted: !track.muted }) }} style={{ ...tinyBtn, color: track.muted ? '#f59e0b' : 'var(--text-muted)' }} title={tr('Mute')}>M</button>
+            <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { soloed: !track.soloed }) }} style={{ ...tinyBtn, color: track.soloed ? 'var(--accent-light)' : 'var(--text-muted)' }} title={tr('Solo')}>S</button>
+            <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { showFx: !track.showFx }) }} title={tr('Effects of this track (EQ, compressor, delay, reverb, filter)')}
               style={{ ...tinyBtn, color: track.showFx ? 'var(--accent-light)' : track.fx?.length ? '#22c55e' : 'var(--text-muted)' }}>FX</button>
             <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, toggleAutomationLanes(track)) }}
               style={{ ...tinyBtn, color: openLanes(track).length ? 'var(--accent-light)' : Object.values(track.automation ?? {}).some((l) => l?.length) ? '#eab308' : 'var(--text-muted)' }}
-              title="Show / hide the automation lane (volume, pan, sends)">A</button>
+              title={tr('Show / hide the automation lane (volume, pan, sends)')}>A</button>
             {(track.takes?.length ?? 0) > 0 && (
-              <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { showTakes: !track.showTakes }) }} style={{ ...tinyBtn, color: track.showTakes ? 'var(--accent-light)' : 'var(--text-muted)' }} title="Show / hide the take lanes">T</button>
+              <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { showTakes: !track.showTakes }) }} style={{ ...tinyBtn, color: track.showTakes ? 'var(--accent-light)' : 'var(--text-muted)' }} title={tr('Show / hide the take lanes')}>T</button>
             )}
-            <button onClick={(e) => { e.stopPropagation(); removeTrack(track.id) }} style={{ ...tinyBtn, color: 'var(--text-muted)' }} title="Delete track (Ctrl+Z brings it back)">×</button>
+            <button onClick={(e) => { e.stopPropagation(); removeTrack(track.id) }} style={{ ...tinyBtn, color: 'var(--text-muted)' }} title={tr('Delete track (Ctrl+Z brings it back)')}>×</button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-            <input type="range" min={0} max={1} step={0.01} value={track.volume} title="Volume" onClick={(e) => e.stopPropagation()}
+            <input type="range" min={0} max={1} step={0.01} value={track.volume} title={tr('Volume')} onClick={(e) => e.stopPropagation()}
               onChange={(e) => updateTrack(track.id, { volume: parseFloat(e.target.value) })} style={{ width: 62, accentColor: track.color }} />
             {returns.map((r, k) => (
               <label key={r.id} title={`Send to ${r.name}`} onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: 9, color: 'var(--text-muted)' }}>
@@ -513,7 +514,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
       <div key={`${row.kind}-${track.id}-${row.kind === 'take' ? row.lane.id : row.kind === 'auto' ? row.param : ''}`} style={{ display: 'flex', height: h, position: 'relative' }}>
         {row.kind === 'track' && (
           // the lower edge of the track: drag to make it higher or lower, double-click for the normal height
-          <div title="Drag: track height · double-click: normal height"
+          <div title={tr('Drag: track height · double-click: normal height')}
             onPointerDown={(e) => {
               if (e.button !== 0) return
               e.preventDefault(); e.stopPropagation()
@@ -543,7 +544,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
             background: isSel ? 'var(--bg-hover)' : row.kind === 'track' ? (track.type === 'group' ? 'var(--bg-panel)' : 'var(--bg-secondary)') : 'var(--bg-primary)'
           }}>
           {row.kind === 'track' && (
-            <div title="Track colour: click to change" onClick={(e) => { e.stopPropagation(); setMenu({ x: e.clientX, y: e.clientY, kind: 'track', trackId: track.id }) }}
+            <div title={tr('Track colour: click to change')} onClick={(e) => { e.stopPropagation(); setMenu({ x: e.clientX, y: e.clientY, kind: 'track', trackId: track.id }) }}
               style={{ position: 'absolute', left: -3, top: 0, bottom: 0, width: 7, cursor: 'pointer', zIndex: 2 }} />
           )}
           {header}
@@ -596,7 +597,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
           const to = Math.min(a.startTime + a.duration, b.startTime + b.duration)
           return (
             <svg key={`x${a.id}${b.id}`} style={{ position: 'absolute', left: from * beatWidth, top: 6, width: Math.max(2, (to - from) * beatWidth), height: th - 12, pointerEvents: 'none', zIndex: 3 }} viewBox="0 0 100 100" preserveAspectRatio="none">
-              <title>Crossfade</title>
+              <title>{tr('Crossfade')}</title>
               <path d="M0,100 L100,0 M0,0 L100,100" stroke="#fff" strokeWidth={2} vectorEffect="non-scaling-stroke" opacity={0.8} />
             </svg>
           )
@@ -606,7 +607,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
   }
 
   const toolbarBtn = (label: string, title: string, onClick: () => void, active = false, disabled = false): React.ReactElement => (
-    <button className={`btn ${active ? 'btn-primary' : 'btn-ghost'}`} style={tb} title={title} disabled={disabled} onClick={onClick}>{label}</button>
+    <button className={`btn ${active ? 'btn-primary' : 'btn-ghost'}`} style={tb} title={tr(title)} disabled={disabled} onClick={onClick}>{tr(label)}</button>
   )
 
   return (
@@ -618,32 +619,32 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
     >
       {/* toolbar */}
       <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, padding: '4px 8px', borderBottom: '1px solid var(--border)', background: 'var(--bg-secondary)', flexShrink: 0 }}>
-        <button className="btn btn-ghost" style={tb} onClick={async () => setMessage((await pickAndImport({ trackId: selectedTrackId ?? undefined })).join(' ') || null)}>Import audio…</button>
+        <button className="btn btn-ghost" style={tb} onClick={async () => setMessage((await pickAndImport({ trackId: selectedTrackId ?? undefined })).join(' ') || null)}>{tr('Import audio…')}</button>
         {(['audio', 'midi'] as const).map((t) => (
-          <button key={t} className="btn btn-ghost" style={tb} onClick={() => addTrack(t)}>+ {t === 'audio' ? 'Audio' : 'MIDI'} track</button>
+          <button key={t} className="btn btn-ghost" style={tb} onClick={() => addTrack(t)}>+ {t === 'audio' ? tr('Audio') : 'MIDI'} {tr('track')}</button>
         ))}
-        <select value="" style={{ ...tb, padding: '2px 4px' }} title="Return tracks: one reverb or delay that many tracks share through their send knobs"
+        <select value="" style={{ ...tb, padding: '2px 4px' }} title={tr('Return tracks: one reverb or delay that many tracks share through their send knobs')}
           onChange={(e) => { if (e.target.value) addReturn(e.target.value as 'reverb' | 'delay'); e.target.value = ''; e.target.blur() }}>
-          <option value="">+ Return…</option><option value="reverb">Reverb</option><option value="delay">Delay</option>
+          <option value="">{tr('+ Return…')}</option><option value="reverb">{tr('Reverb')}</option><option value="delay">{tr('Delay')}</option>
         </select>
         <button className="btn btn-ghost" style={tb} disabled={syncing || !project.tracks.some((t) => t.clips.some((c) => c.audioFile))}
-          title={selAudio.length > 1 ? 'The selected clips: stretch each to the master BPM and start them together, beat 1 of each on the same bar' : 'Measure all audio clips and bring every one in time with the master BPM'}
+          title={selAudio.length > 1 ? tr('The selected clips: stretch each to the master BPM and start them together, beat 1 of each on the same bar') : tr('Measure all audio clips and bring every one in time with the master BPM')}
           onClick={async () => { setSyncing(true); setMessage(null); await (selAudio.length > 1 ? runSyncSelected(selAudio) : runSyncAll()); setSyncing(false) }}>
-          {syncing ? 'Syncing…' : selAudio.length > 1 ? `Sync ${selAudio.length} selected to ${project.bpm} BPM` : `Sync all to ${project.bpm} BPM`}
+          {syncing ? tr('Syncing…') : selAudio.length > 1 ? trf('Sync {n} selected to {bpm} BPM', { n: selAudio.length, bpm: project.bpm }) : trf('Sync all to {bpm} BPM', { bpm: project.bpm })}
         </button>
         <button className="btn btn-ghost" style={tb} disabled={!selectedAudioClip}
-          title={selectedAudioClip ? 'Measure the tempo of the selected audio and bring it in time with the project' : 'Select an audio clip first'}
+          title={selectedAudioClip ? tr('Measure the tempo of the selected audio and bring it in time with the project') : tr('Select an audio clip first')}
           onClick={() => selectedAudioClip && void useBeatMatch.getState().propose(selectedAudioClip.trackId, selectedAudioClip.clip.id, selectedAudioClip.clip.audioFile!, selectedAudioClip.clip.name ?? 'Audio', false, true)}>
-          Beat match…
+          {tr('Beat match…')}
         </button>
         <GridControls />
         <span style={{ width: 1, height: 18, background: 'var(--border)' }} />
         {toolbarBtn('Loop', 'Loop on / off (Ableton: loop switch, Cubase: cycle, Num /). Drag in the strip under the markers to set the range.', toggleLoop, !!loop?.enabled)}
         {toolbarBtn('Punch in', 'Punch in (Cubase I): recording starts at the start of the loop range', () => togglePunch('punchIn'), !!project.punchIn)}
         {toolbarBtn('Punch out', 'Punch out (Cubase O): recording stops at the end of the loop range', () => togglePunch('punchOut'), !!project.punchOut)}
-        <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 3 }} title="Count-in: bars of clicks before recording starts">Count-in
+        <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 3 }} title={tr('Count-in: bars of clicks before recording starts')}>{tr('Count-in')}
           <select value={String(project.countIn ?? 0)} style={{ fontSize: 11 }} onChange={(e) => { useProjectStore.getState().updateProject({ countIn: Number(e.target.value) }); e.target.blur() }}>
-            <option value="0">off</option><option value="1">1 bar</option><option value="2">2 bars</option><option value="4">4 bars</option>
+            <option value="0">{tr('off')}</option><option value="1">{tr('1 bar')}</option><option value="2">{tr('2 bars')}</option><option value="4">{tr('4 bars')}</option>
           </select>
         </label>
         {toolbarBtn('+ Marker', 'Add a marker at the playhead (Cubase: Insert). Right-click the ruler for time signatures.', addMarkerAtPlayhead)}
@@ -652,9 +653,9 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
         {toolbarBtn('Export', 'Quick export: the whole song as WAV or MP3', () => window.dispatchEvent(new CustomEvent(EXPORT_EVENT)))}
         <span style={{ flex: 1 }} />
         {busy && <span style={{ fontSize: 11, color: 'var(--accent-light)' }}>{busy}…</span>}
-        {loadingAudio && <span style={{ fontSize: 11, color: 'var(--accent-light)' }}>Reading audio files…</span>}
+        {loadingAudio && <span style={{ fontSize: 11, color: 'var(--accent-light)' }}>{tr('Reading audio files…')}</span>}
         {(message ?? notice) && <span style={{ fontSize: 11, color: 'var(--yellow)', maxWidth: 520, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={message ?? notice ?? ''}>{message ?? notice}</span>}
-        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Zoom</span>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('Zoom')}</span>
         <input type="range" min={0.25} max={4} step={0.05} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} style={{ width: 70, accentColor: 'var(--accent)' }} />
       </div>
 
@@ -662,19 +663,19 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
         onWarpEdit={(on) => setWarpClip(on ? selectedAudioClip.clip.id : null)} />}
       {selectedClipIds.length > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 10px', borderBottom: '1px solid var(--border)', background: 'var(--bg-panel)', fontSize: 11, color: 'var(--text-secondary)' }}>
-          <b style={{ color: 'var(--text-primary)' }}>{selectedClipIds.length} clips selected</b>
-          <span>Drag one to move all · Delete removes them</span>
+          <b style={{ color: 'var(--text-primary)' }}>{selectedClipIds.length} {tr('clips selected')}</b>
+          <span>{tr('Drag one to move all · Delete removes them')}</span>
           {selAudio.length > 1 && (
             <button className="btn btn-primary" style={{ fontSize: 10, padding: '1px 8px' }} disabled={syncing}
-              title="Stretch every selected song, loop or stem to the master BPM and start them together: beat 1 of each on the same bar"
+              title={tr('Stretch every selected song, loop or stem to the master BPM and start them together: beat 1 of each on the same bar')}
               onClick={async () => { setSyncing(true); setMessage(null); await runSyncSelected(selAudio); setSyncing(false) }}>
-              {syncing ? 'Syncing…' : `Sync together (${selAudio.length})`}
+              {syncing ? tr('Syncing…') : trf('Sync together ({n})', { n: selAudio.length })}
             </button>
           )}
-          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => void run('Consolidating', consolidate)} title="Join into one clip (Ableton Ctrl+J)">Consolidate</button>
-          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => loopToSelection()} title="Loop around the selection (Ableton Ctrl+L, Cubase P)">Loop selection</button>
-          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => groupSelectedTracks()} title="Put their tracks into a group track (Ctrl+G)">Group tracks</button>
-          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => selectClip(null)}>Clear selection</button>
+          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => void run('Consolidating', consolidate)} title={tr('Join into one clip (Ableton Ctrl+J)')}>{tr('Consolidate')}</button>
+          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => loopToSelection()} title={tr('Loop around the selection (Ableton Ctrl+L, Cubase P)')}>{tr('Loop selection')}</button>
+          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => groupSelectedTracks()} title={tr('Put their tracks into a group track (Ctrl+G)')}>{tr('Group tracks')}</button>
+          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} onClick={() => selectClip(null)}>{tr('Clear selection')}</button>
         </div>
       )}
 
@@ -684,15 +685,15 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
             {/* ruler */}
             <div style={{ display: 'flex', height: RULER_HEIGHT, position: 'sticky', top: 0, zIndex: 5, background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
               <div style={{ width: HEADER_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 6, background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)', fontSize: 10, color: 'var(--text-muted)', padding: '3px 8px', boxSizing: 'border-box', lineHeight: 1.6 }}>
-                <div>Markers <span style={{ opacity: 0.7 }}>(double-click to add)</span></div>
-                <div>Loop {loop ? `${(loop.start / 4 + 1).toFixed(2)}–${(loop.end / 4 + 1).toFixed(2)}` : '(drag to set)'}{loop && <span title="Save the loop range as a cycle marker" onClick={() => addCycleMarkerFromLoop()} style={{ marginLeft: 6, cursor: 'pointer', color: 'var(--accent-light)' }}>+ cycle</span>}</div>
+                <div>{tr('Markers')} <span style={{ opacity: 0.7 }}>{tr('(double-click to add)')}</span></div>
+                <div>{tr('Loop')} {loop ? `${(loop.start / 4 + 1).toFixed(2)}–${(loop.end / 4 + 1).toFixed(2)}` : tr('(drag to set)')}{loop && <span title={tr('Save the loop range as a cycle marker')} onClick={() => addCycleMarkerFromLoop()} style={{ marginLeft: 6, cursor: 'pointer', color: 'var(--accent-light)' }}>{tr('+ cycle')}</span>}</div>
               </div>
               <Ruler beatWidth={beatWidth} totalBeats={totalBeats} popover={setPopover} />
             </div>
             {showTempo && (
               <div style={{ display: 'flex', height: TEMPO_HEIGHT, position: 'sticky', top: RULER_HEIGHT, zIndex: 5, background: 'var(--bg-primary)', borderBottom: '1px solid var(--border)' }}>
                 <div style={{ width: HEADER_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 6, background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)', borderLeft: '3px solid #10b981', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 8px', boxSizing: 'border-box' }}>
-                  <b>Tempo track</b><div style={{ fontSize: 10, color: 'var(--text-muted)' }}>double-click: tempo change</div>
+                  <b>{tr('Tempo track')}</b><div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('double-click: tempo change')}</div>
                 </div>
                 <div style={{ flex: 1, position: 'relative' }}><TempoLane beatWidth={beatWidth} popover={setPopover} /></div>
               </div>
@@ -700,9 +701,9 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
 
             {empty && (
               <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontSize: 13, lineHeight: 1.8, position: 'sticky', left: 0, width: 'min(100%, 640px)' }}>
-                Start here: drag audio files onto this area, or press <b>Import audio…</b>.<br />
-                Add a <b>MIDI track</b> and double-click its lane to draw notes.<br />
-                Songs from <b>Create music</b> are added to the project from the Library.
+                {tr('Start here: drag audio files onto this area, or press')} <b>{tr('Import audio…')}</b>.<br />
+                {tr('Add a')} <b>{tr('MIDI track')}</b> {tr('and double-click its lane to draw notes.')}<br />
+                {tr('Songs from')} <b>{tr('Create music')}</b> {tr('are added to the project from the Library.')}
               </div>
             )}
 
@@ -727,7 +728,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
               <div style={{ position: 'absolute', left: 0, right: 0, top: lanesTop + lanesHeight + 4, height: 40, borderRadius: 8, display: 'flex', alignItems: 'center', paddingLeft: 16, fontSize: 12, zIndex: 9, pointerEvents: 'none',
                 border: `2px dashed ${newTrackHint ? 'var(--accent)' : 'var(--border-mid)'}`, background: newTrackHint ? 'rgba(124,58,237,0.12)' : 'transparent',
                 color: newTrackHint ? 'var(--accent-light)' : 'var(--text-muted)', fontWeight: newTrackHint ? 700 : 400 }}>
-                {newTrackHint ? `+ Release here: new ${newTrackHint === 'audio' ? 'audio' : 'MIDI'} track` : '+ Drag a clip or an audio file here for a new track'}
+                {newTrackHint ? `+ Release here: new ${newTrackHint === 'audio' ? 'audio' : 'MIDI'} track` : tr('+ Drag a clip or an audio file here for a new track')}
               </div>
             )}
             <Playhead scrollRef={scrollRef} beatWidth={beatWidth} />
@@ -742,14 +743,14 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
           {menu.kind === 'track' && (
             // the track colour: a palette, and any colour with the last field
             <div style={{ padding: '6px 10px 4px' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Track colour</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{tr('Track colour')}</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, maxWidth: 200 }}>
                 {TRACK_PALETTE.map((c) => (
                   <span key={c} title={c} onClick={() => { updateTrack(menu.trackId, { color: c }); setMenu(null) }}
                     style={{ width: 18, height: 18, borderRadius: 4, background: c, cursor: 'pointer',
                       outline: project.tracks.find((t) => t.id === menu.trackId)?.color === c ? '2px solid #fff' : 'none' }} />
                 ))}
-                <input type="color" title="Any colour" value={project.tracks.find((t) => t.id === menu.trackId)?.color ?? '#7c3aed'}
+                <input type="color" title={tr('Any colour')} value={project.tracks.find((t) => t.id === menu.trackId)?.color ?? '#7c3aed'}
                   onChange={(e) => updateTrack(menu.trackId, { color: e.target.value })}
                   style={{ width: 22, height: 20, padding: 0, border: 'none', background: 'none', cursor: 'pointer' }} />
               </div>
@@ -783,7 +784,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
                 { label: 'Consolidate selection (Ctrl+J)', run: () => void run('Consolidating', consolidate) },
                 { label: 'Crossfade with the clip before (X)', run: () => setMessage(crossfade()) },
                 { label: 'Loop this clip (Ctrl+L)', run: () => loopToSelection() },
-                { label: 'Edit warp markers', run: () => { setWarpClip(menu.clipId!); setMessage('Warp: double-click the waveform to set a marker, drag a marker onto another beat, Alt+click deletes it.') } },
+                { label: 'Edit warp markers', run: () => { setWarpClip(menu.clipId!); setMessage(tr('Warp: double-click the waveform to set a marker, drag a marker onto another beat, Alt+click deletes it.')) } },
                 { label: 'Split into stems (Demucs)', run: () => void run('Separating stems', () => splitIntoStems(menu.trackId, menu.clipId!, (pct, text) => setBusy(`Separating stems ${Math.floor(pct)} % · ${text}`))) },
                 { label: 'Delete clip', run: () => { const ids = selected.size > 1 && selected.has(menu.clipId!) ? [...selected] : [menu.clipId!]; useProjectStore.getState().removeClips(ids) }, danger: true }
               ]
@@ -793,7 +794,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)' }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
               style={{ padding: '6px 10px', borderRadius: 5, cursor: 'pointer', fontSize: 12, color: (it as { danger?: boolean }).danger ? 'var(--red)' : 'var(--text-primary)' }}>
-              {it.label}
+              {tr(it.label)}
             </div>
           ))}
         </div>
@@ -803,7 +804,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
 
       {dropping && (
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(124,58,237,0.18)', border: '2px dashed var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, pointerEvents: 'none', zIndex: 20 }}>
-          Drop audio files to add them
+          {tr('Drop audio files to add them')}
         </div>
       )}
     </div>
@@ -847,7 +848,7 @@ function Playhead({ scrollRef, beatWidth }: { scrollRef: React.RefObject<HTMLDiv
   }
   const x = HEADER_WIDTH + (drag ?? beat) * beatWidth
   return (
-    <div onPointerDown={down} title="Drag to move the playhead (Alt: off the grid)"
+    <div onPointerDown={down} title={tr('Drag to move the playhead (Alt: off the grid)')}
       style={{ position: 'absolute', left: x - 5, top: 0, width: 11, height: '100%', zIndex: 7, cursor: 'ew-resize', touchAction: 'none' }}>
       <div style={{ position: 'absolute', left: 5, top: 0, width: 2, height: '100%', background: 'var(--accent)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: '9px solid var(--accent)', pointerEvents: 'none' }} />
@@ -869,8 +870,8 @@ function ClipInspector({ trackId, clip, bpm, warpEdit, onWarpEdit }: { trackId: 
   }
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '3px 10px', borderBottom: '1px solid var(--border)', background: 'var(--bg-panel)', fontSize: 11, color: 'var(--text-secondary)', flexShrink: 0, flexWrap: 'wrap' }}>
-      <b style={{ color: 'var(--text-primary)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{clip.name ?? 'Clip'}</b>
-      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>Gain
+      <b style={{ color: 'var(--text-primary)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{clip.name ?? tr('Clip')}</b>
+      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>{tr('Gain')}
         <input type="range" min={0} max={2} step={0.01} value={gain} style={{ width: 90, accentColor: 'var(--accent)' }}
           onChange={(e) => updateClip(trackId, clip.id, { gain: Number(e.target.value) })} onDoubleClick={() => updateClip(trackId, clip.id, { gain: 1 })} />
         <span style={{ width: 52 }}>{db} dB</span>
@@ -878,33 +879,33 @@ function ClipInspector({ trackId, clip, bpm, warpEdit, onWarpEdit }: { trackId: 
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         {clip.warpBpm ? (
           <>
-            <span title="The tempo the song itself was made at (measured). It is NOT the project tempo: that is BPM at the top. Correct it here only if the measurement is off (half or double, or a little); SYNC then keeps your value.">Song tempo</span>
+            <span title={tr('The tempo the song itself was made at (measured). It is NOT the project tempo: that is BPM at the top. Correct it here only if the measurement is off (half or double, or a little); SYNC then keeps your value.')}>{tr('Song tempo')}</span>
             <input key={`bp${clip.id}${clip.warpBpm}`} defaultValue={String(clip.warpBpm)} style={{ width: 56 }}
               onBlur={(e) => { const v = parseFloat(e.target.value.replace(',', '.')); if (v && v !== clip.warpBpm) retune(trackId, clip.id, v) }}
               onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
-            <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title="Half speed" onClick={() => retune(trackId, clip.id, clip.warpBpm! / 2)}>÷2</button>
-            <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title="Double speed" onClick={() => retune(trackId, clip.id, clip.warpBpm! * 2)}>×2</button>
-            <span style={{ color: 'var(--text-muted)' }} title="Plays at the project tempo (BPM at the top)">→ {Math.round(bpm * 100) / 100} project</span>
+            <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title={tr('Half speed')} onClick={() => retune(trackId, clip.id, clip.warpBpm! / 2)}>÷2</button>
+            <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title={tr('Double speed')} onClick={() => retune(trackId, clip.id, clip.warpBpm! * 2)}>×2</button>
+            <span style={{ color: 'var(--text-muted)' }} title={tr('Plays at the project tempo (BPM at the top)')}>→ {Math.round(bpm * 100) / 100} {tr('project')}</span>
           </>
-        ) : <span style={{ color: 'var(--text-muted)' }}>not synced</span>}
-        <button className="btn btn-primary" style={{ fontSize: 10, padding: '1px 8px' }} disabled={busy} title="Stretch this audio to the master BPM and put its beats on the project beats"
-          onClick={async () => { setBusy(true); useBeatMatch.getState().setNotice(await syncOne(trackId, clip.id)); setBusy(false) }}>SYNC</button>
-        <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} disabled={busy} title="Make the project tempo the tempo of this audio"
-          onClick={async () => { setBusy(true); useBeatMatch.getState().setNotice(await makeMaster(trackId, clip.id)); setBusy(false) }}>MASTER</button>
+        ) : <span style={{ color: 'var(--text-muted)' }}>{tr('not synced')}</span>}
+        <button className="btn btn-primary" style={{ fontSize: 10, padding: '1px 8px' }} disabled={busy} title={tr('Stretch this audio to the master BPM and put its beats on the project beats')}
+          onClick={async () => { setBusy(true); useBeatMatch.getState().setNotice(await syncOne(trackId, clip.id)); setBusy(false) }}>{tr('SYNC')}</button>
+        <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }} disabled={busy} title={tr('Make the project tempo the tempo of this audio')}
+          onClick={async () => { setBusy(true); useBeatMatch.getState().setNotice(await makeMaster(trackId, clip.id)); setBusy(false) }}>{tr('MASTER')}</button>
       </span>
-      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>Fade in
+      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>{tr('Fade in')}
         <input key={`fi${clip.id}${clip.fadeIn ?? 0}`} defaultValue={sec(clip.fadeIn)} style={{ width: 46 }} onBlur={(e) => setFade('fadeIn', e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} /> s
       </label>
-      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>Fade out
+      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>{tr('Fade out')}
         <input key={`fo${clip.id}${clip.fadeOut ?? 0}`} defaultValue={sec(clip.fadeOut)} style={{ width: 46 }} onBlur={(e) => setFade('fadeOut', e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} /> s
       </label>
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         <button className={`btn ${warpEdit ? 'btn-primary' : 'btn-ghost'}`} style={{ fontSize: 10, padding: '1px 8px' }}
-          title="Warp markers: double-click the waveform to pin a moment of the audio, then drag it onto another beat. Alt+click deletes a marker."
-          onClick={() => onWarpEdit(!warpEdit)}>WARP</button>
+          title={tr('Warp markers: double-click the waveform to pin a moment of the audio, then drag it onto another beat. Alt+click deletes a marker.')}
+          onClick={() => onWarpEdit(!warpEdit)}>{tr('WARP')}</button>
         {(clip.warpMarkers?.length ?? 0) > 0 && (
-          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title="Remove all warp markers" onClick={() => updateClip(trackId, clip.id, { warpMarkers: [] })}>
-            Clear {clip.warpMarkers!.length}
+          <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title={tr('Remove all warp markers')} onClick={() => updateClip(trackId, clip.id, { warpMarkers: [] })}>
+            {tr('Clear')} {clip.warpMarkers!.length}
           </button>
         )}
       </span>

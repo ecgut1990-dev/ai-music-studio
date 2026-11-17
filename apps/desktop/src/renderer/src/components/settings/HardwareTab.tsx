@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { api, type CapabilityReport } from '../../lib/api'
 import { copyText } from '../../lib/clipboard'
+import { tr } from '../../i18n/tr'
 
 const card: React.CSSProperties = {
   background: 'var(--bg-panel)', border: '1px solid var(--border-mid)', borderRadius: 10, padding: 14,
@@ -47,8 +48,8 @@ export function HardwareTab(): React.ReactElement {
   }, [])
   useEffect(() => { void load(false) }, [load])
 
-  if (error) return <div style={{ padding: 24, color: 'var(--red)', fontSize: 12 }}>The AI backend is not reachable: {error}</div>
-  if (!r) return <div style={{ padding: 24, ...muted }}>Checking your computer… (a few seconds)</div>
+  if (error) return <div style={{ padding: 24, color: 'var(--red)', fontSize: 12 }}>{tr('The AI backend is not reachable:')} {error}</div>
+  if (!r) return <div style={{ padding: 24, ...muted }}>{tr('Checking your computer… (a few seconds)')}</div>
 
   const m = r.machine
   const groups = Array.from(new Set(r.features.map((f) => f.group)))
@@ -57,28 +58,27 @@ export function HardwareTab(): React.ReactElement {
       <section style={card}>
         <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{r.label}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '4px 14px', fontSize: 12 }}>
-          <span style={muted}>Processor</span><span>{m.cpu || 'unknown'} · {m.threads} threads</span>
-          <span style={muted}>Memory</span><span>{m.ram_gb} GB RAM</span>
-          <span style={muted}>Graphics</span>
+          <span style={muted}>{tr('Processor')}</span><span>{m.cpu || tr('unknown')} · {m.threads} {tr('threads')}</span>
+          <span style={muted}>{tr('Memory')}</span><span>{m.ram_gb} {tr('GB RAM')}</span>
+          <span style={muted}>{tr('Graphics')}</span>
           <span>
-            {m.gpus.length === 0 ? 'none found' : m.gpus.map((g) => `${g.name}${g.vram_gb ? ` (${g.vram_gb} GB)` : ''}`).join(', ')}
-            {m.cuda ? ' · CUDA ready' : ''}
+            {m.gpus.length === 0 ? tr('none found') : m.gpus.map((g) => `${g.name}${g.vram_gb ? ` (${g.vram_gb} GB)` : ''}`).join(', ')}
+            {m.cuda ? tr(' · CUDA ready') : ''}
           </span>
-          <span style={muted}>Free disk space</span><span>{m.disk_free_gb} GB (models drive)</span>
+          <span style={muted}>{tr('Free disk space')}</span><span>{m.disk_free_gb} {tr('GB (models drive)')}</span>
         </div>
         <div style={muted}>
-          This list tells you what to expect. Features marked “Slow here” still work, they just take longer.
-          Nothing is blocked unless the computer truly cannot run it.
+          {tr('This list tells you what to expect. Features marked “Slow here” still work, they just take longer.\n          Nothing is blocked unless the computer truly cannot run it.')}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={busy} onClick={() => void load(true)}>
-            {busy ? 'Checking…' : 'Check again'}
+            {busy ? tr('Checking…') : tr('Check again')}
           </button>
           <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void window.api.server.showLog()}>
-            Show backend log file
+            {tr('Show backend log file')}
           </button>
           <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => void copyDiagnostics()}>
-            {copied ? 'Copied: paste it into the chat' : 'Copy diagnostics'}
+            {copied ? tr('Copied: paste it into the chat') : tr('Copy diagnostics')}
           </button>
         </div>
       </section>

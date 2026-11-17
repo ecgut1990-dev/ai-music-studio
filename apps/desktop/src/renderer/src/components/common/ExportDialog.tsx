@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { api, type ExportFormat } from '../../lib/api'
 import { exportSampleRate, setExportSampleRate } from '../../lib/sampleRate'
+import { tr, trf } from '../../i18n/tr'
 
 // Export audio files (stems, loops, songs) into a folder of the user's choice: one file each, in the format
 // their DAW wants. Used by the Stem Splitter and the Library.
@@ -49,9 +50,9 @@ export function ExportDialog({ items, title, onClose }: {
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
       <div role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}
         style={{ width: 'min(480px, 100%)', background: 'var(--bg-primary)', border: '1px solid var(--border-mid)', borderRadius: 10, padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>Export {title}</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('Export')} {title}</div>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-          {items.length === 1 ? 'The file is' : `Each of the ${items.length} parts is`} saved as its own audio file in the folder you choose next.
+          {items.length === 1 ? tr('The file is') : trf('Each of the {n} parts is', { n: items.length })} {tr('saved as its own audio file in the folder you choose next.')}
         </div>
         {!done && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -60,7 +61,7 @@ export function ExportDialog({ items, title, onClose }: {
                 background: format === f.id ? 'var(--bg-hover)' : 'transparent', border: `1px solid ${format === f.id ? 'var(--accent)' : 'var(--border-mid)'}` }}>
                 <input type="radio" name="export-format" checked={format === f.id} onChange={() => setFormat(f.id)} style={{ marginTop: 2 }} />
                 <span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{f.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{tr(f.label)}</span>
                   <span style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)' }}>{f.hint}</span>
                 </span>
               </label>
@@ -69,33 +70,33 @@ export function ExportDialog({ items, title, onClose }: {
         )}
         {!done && (
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
-            Sample rate
+            {tr('Sample rate')}
             <select value={String(rate)} onChange={(e) => setRate(Number(e.target.value))} style={{ fontSize: 12 }}>
-              <option value="44100">44.1 kHz (streaming platforms, CD)</option>
-              <option value="48000">48 kHz (video)</option>
-              <option value="88200">88.2 kHz</option>
-              <option value="96000">96 kHz</option>
-              <option value="0">Keep the file's own rate</option>
+              <option value="44100">{tr('44.1 kHz (streaming platforms, CD)')}</option>
+              <option value="48000">{tr('48 kHz (video)')}</option>
+              <option value="88200">{tr('88.2 kHz')}</option>
+              <option value="96000">{tr('96 kHz')}</option>
+              <option value="0">{tr('Keep the file\'s own rate')}</option>
             </select>
           </label>
         )}
         {error && <div style={{ color: 'var(--red)', fontSize: 12 }}>{error}</div>}
         {done && (
           <div style={{ fontSize: 12, color: 'var(--green)', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span>{done.length} file{done.length === 1 ? '' : 's'} exported:</span>
+            <span>{done.length} {tr('file')}{done.length === 1 ? '' : 's'} {tr('exported:')}</span>
             {done.map((f) => <span key={f} style={{ fontFamily: 'monospace', fontSize: 11, color: 'var(--text-secondary)', wordBreak: 'break-all' }}>{f}</span>)}
           </div>
         )}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           {done ? (
             <>
-              <button className="btn btn-ghost" onClick={() => void window.api.files.showItem(done[0])}>Show in folder</button>
-              <button className="btn btn-primary" onClick={onClose}>Close</button>
+              <button className="btn btn-ghost" onClick={() => void window.api.files.showItem(done[0])}>{tr('Show in folder')}</button>
+              <button className="btn btn-primary" onClick={onClose}>{tr('Close')}</button>
             </>
           ) : (
             <>
-              <button className="btn btn-ghost" onClick={onClose} disabled={busy}>Cancel</button>
-              <button className="btn btn-primary" onClick={() => void run()} disabled={busy || items.length === 0}>{busy ? 'Exporting…' : 'Choose folder and export'}</button>
+              <button className="btn btn-ghost" onClick={onClose} disabled={busy}>{tr('Cancel')}</button>
+              <button className="btn btn-primary" onClick={() => void run()} disabled={busy || items.length === 0}>{busy ? tr('Exporting…') : tr('Choose folder and export')}</button>
             </>
           )}
         </div>

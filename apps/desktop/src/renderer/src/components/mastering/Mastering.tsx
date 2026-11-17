@@ -15,6 +15,7 @@ import { MasterAssistant } from './MasterAssistant'
 import { MasterEdit } from './MasterEdit'
 import { MasterFader } from './MasterFader'
 import { applyEdits, type EditOp } from '../../audio/master/edit'
+import { tr } from '../../i18n/tr'
 
 // edits of each open song (this session): the original file is never changed
 const editsByPath = new Map<string, { ops: EditOp[]; redo: EditOp[] }>()
@@ -183,7 +184,7 @@ export function Mastering(): React.ReactElement {
   const onDrop = (e: React.DragEvent): void => {
     e.preventDefault(); setDropping(false)
     const paths = [...e.dataTransfer.files].filter((f) => AUDIO.test(f.name)).map((f) => (f as File & { path?: string }).path).filter((p): p is string => !!p)
-    if (!paths.length) { setError('Drop audio files (WAV, MP3, FLAC, OGG, M4A, AIFF).'); return }
+    if (!paths.length) { setError(tr('Drop audio files (WAV, MP3, FLAC, OGG, M4A, AIFF).')); return }
     for (const p of paths) open({ path: p, name: '' })
   }
 
@@ -231,25 +232,25 @@ export function Mastering(): React.ReactElement {
       onDrop={onDrop}>
       {dropping && (
         <div style={{ position: 'absolute', inset: 8, border: '2px dashed var(--accent)', borderRadius: 12, background: 'rgba(124,58,237,0.12)', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, pointerEvents: 'none' }}>
-          Release to open in Mastering
+          {tr('Release to open in Mastering')}
         </div>
       )}
 
       {/* files */}
       <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 15, fontWeight: 700, marginRight: 6 }}>Mastering</span>
+        <span style={{ fontSize: 15, fontWeight: 700, marginRight: 6 }}>{tr('Mastering')}</span>
         {files.map((f) => (
           <span key={f.path} title={f.path} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, padding: '3px 4px 3px 10px', borderRadius: 6, cursor: 'pointer',
             background: f.path === current ? 'var(--accent-dim)' : 'var(--bg-tertiary)', border: `1px solid ${f.path === current ? 'var(--accent)' : 'var(--border-subtle)'}` }}
             onClick={() => select(f.path)}>
             <span className="truncate" style={{ maxWidth: 180 }}>{f.name}</span>
-            <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 5px' }} title="Close" onClick={(e) => { e.stopPropagation(); close(f.path) }}>×</button>
+            <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 5px' }} title={tr('Close')} onClick={(e) => { e.stopPropagation(); close(f.path) }}>×</button>
           </span>
         ))}
-        <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={openFiles}>Open…</button>
+        <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={openFiles}>{tr('Open…')}</button>
         {recent.length > 0 && (
           <select value="" onChange={(e) => { const r = recent.find((x) => x.path === e.target.value); if (r) open(r) }} style={{ fontSize: 11 }}>
-            <option value="">Recent…</option>
+            <option value="">{tr('Recent…')}</option>
             {recent.map((r) => <option key={r.path} value={r.path}>{r.name}</option>)}
           </select>
         )}
@@ -257,38 +258,38 @@ export function Mastering(): React.ReactElement {
 
       {!current && (
         <div style={{ border: '2px dashed var(--border-mid)', borderRadius: 12, padding: 40, textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.7 }}>
-          Drag a song here from the Explorer, or press <b>Open…</b>.<br />
-          From the <b>Library</b>, <b>Create music</b> and the <b>Studio</b> (File → Send song to Mastering) a song comes here with one click.
+          {tr('Drag a song here from the Explorer, or press')} <b>{tr('Open…')}</b>.<br />
+          {tr('From the')} <b>{tr('Library')}</b>, <b>{tr('Create music')}</b> {tr('and the')} <b>{tr('Studio')}</b> {tr('(File → Send song to Mastering) a song comes here with one click.')}
         </div>
       )}
       {error && <div style={{ color: 'var(--red)', fontSize: 12 }}>{error}</div>}
-      {loading && <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Opening {name}…</div>}
+      {loading && <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{tr('Opening')} {name}…</div>}
 
       {buffer && (
         <>
           {/* transport */}
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary" style={{ minWidth: 70 }} onClick={play}>{masterPlayer.playing ? '❚❚ Pause' : '▶ Play'}</button>
-            <button className="btn btn-ghost" onClick={() => { masterPlayer.pause(); masterPlayer.seek(0) }} title="Back to the start">⏮</button>
+            <button className="btn btn-primary" style={{ minWidth: 70 }} onClick={play}>{masterPlayer.playing ? tr('❚❚ Pause') : tr('▶ Play')}</button>
+            <button className="btn btn-ghost" onClick={() => { masterPlayer.pause(); masterPlayer.seek(0) }} title={tr('Back to the start')}>⏮</button>
             <span style={{ fontFamily: 'monospace', fontSize: 13, minWidth: 120 }}>{clock(pos)} / {clock(buffer.duration)}</span>
-            <div style={{ display: 'inline-flex', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border-mid)' }} title="A/B: hear the original (at the same loudness) or the master">
-              <button className="btn" style={{ borderRadius: 0, background: masterPlayer.bypass ? 'var(--bg-elevated)' : 'var(--accent)', color: '#fff' }} onClick={() => masterPlayer.setBypass(false)}>After</button>
-              <button className="btn" style={{ borderRadius: 0, background: masterPlayer.bypass ? 'var(--accent)' : 'var(--bg-elevated)', color: '#fff' }} onClick={() => masterPlayer.setBypass(true)}>Before</button>
+            <div style={{ display: 'inline-flex', borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border-mid)' }} title={tr('A/B: hear the original (at the same loudness) or the master')}>
+              <button className="btn" style={{ borderRadius: 0, background: masterPlayer.bypass ? 'var(--bg-elevated)' : 'var(--accent)', color: '#fff' }} onClick={() => masterPlayer.setBypass(false)}>{tr('After')}</button>
+              <button className="btn" style={{ borderRadius: 0, background: masterPlayer.bypass ? 'var(--accent)' : 'var(--bg-elevated)', color: '#fff' }} onClick={() => masterPlayer.setBypass(true)}>{tr('Before')}</button>
             </div>
             <label style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'inline-flex', gap: 4, alignItems: 'center' }}
-              title={'On: the louder of the two is turned down while listening, so you hear only what the chain does to the sound (the meters and the export are not changed). Off: both at their real level, so you also hear how much louder the master is.'}>
+              title={tr('On: the louder of the two is turned down while listening, so you hear only what the chain does to the sound (the meters and the export are not changed). Off: both at their real level, so you also hear how much louder the master is.')}>
               <input type="checkbox" checked={masterPlayer.matchOn} onChange={(e) => masterPlayer.setMatchOn(e.target.checked)} />
-              Same loudness{masterPlayer.matchOn && aAfter && Number.isFinite(masterPlayer.matchDb) && Math.abs(masterPlayer.matchDb) >= 0.1
+              {tr('Same loudness')}{masterPlayer.matchOn && aAfter && Number.isFinite(masterPlayer.matchDb) && Math.abs(masterPlayer.matchDb) >= 0.1
                 ? ` (${masterPlayer.matchDb > 0 ? '"After"' : '"Before"'} played ${Math.abs(masterPlayer.matchDb).toFixed(1)} dB quieter)` : ''}
             </label>
-            <button className={`btn ${masterPlayer.loopOn ? 'btn-primary' : 'btn-ghost'}`} disabled={!masterPlayer.loop} title="Loop the marked region (drag in the waveform to mark one)"
-              onClick={() => masterPlayer.setLoop(masterPlayer.loop, !masterPlayer.loopOn)}>⟲ Loop</button>
-            {masterPlayer.loop && <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => masterPlayer.setLoop(null, false)}>Clear region</button>}
+            <button className={`btn ${masterPlayer.loopOn ? 'btn-primary' : 'btn-ghost'}`} disabled={!masterPlayer.loop} title={tr('Loop the marked region (drag in the waveform to mark one)')}
+              onClick={() => masterPlayer.setLoop(masterPlayer.loop, !masterPlayer.loopOn)}>{tr('⟲ Loop')}</button>
+            {masterPlayer.loop && <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => masterPlayer.setLoop(null, false)}>{tr('Clear region')}</button>}
             <span style={{ flex: 1 }} />
-            <select value={show} onChange={(e) => setShow(e.target.value as typeof show)} style={{ fontSize: 11 }} title="Which waveform to show">
-              <option value="follow">Waveform: follows Before / After</option><option value="both">Waveform: before + after</option><option value="after">Waveform: after</option><option value="before">Waveform: before</option>
+            <select value={show} onChange={(e) => setShow(e.target.value as typeof show)} style={{ fontSize: 11 }} title={tr('Which waveform to show')}>
+              <option value="follow">{tr('Waveform: follows Before / After')}</option><option value="both">{tr('Waveform: before + after')}</option><option value="after">{tr('Waveform: after')}</option><option value="before">{tr('Waveform: before')}</option>
             </select>
-            <button className="btn btn-primary" onClick={() => { setResults(null); setOutput(loadOutput(name)) }}>Export…</button>
+            <button className="btn btn-primary" onClick={() => { setResults(null); setOutput(loadOutput(name)) }}>{tr('Export…')}</button>
           </div>
 
           {/* while "after" is computed again (after an edit or a change), the edited song is shown instead of nothing */}
@@ -335,15 +336,15 @@ function ReferenceMatch({ open, setOpen, target, onDone }: { open: boolean; setO
   }
   return (
     <div style={{ background: 'var(--bg-tertiary)', borderRadius: 8, padding: 10 }}>
-      <div style={{ fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => setOpen(!open)}>{open ? '▾' : '▸'} Reference match (sound like another song)</div>
+      <div style={{ fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => setOpen(!open)}>{open ? '▾' : '▸'} {tr('Reference match (sound like another song)')}</div>
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8, fontSize: 11 }}>
-          <span style={{ color: 'var(--text-muted)' }}>Matches loudness, tone balance and stereo width to a song you like (Matchering). The result opens as a new file here; you can then work on it with the chain.</span>
+          <span style={{ color: 'var(--text-muted)' }}>{tr('Matches loudness, tone balance and stereo width to a song you like (Matchering). The result opens as a new file here; you can then work on it with the chain.')}</span>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={async () => { const p = await window.api.dialog.openAudio(); if (p[0]) setReference(p[0]) }}>Reference song…</button>
-            <span className="truncate" style={{ color: 'var(--text-secondary)' }}>{reference || 'none chosen'}</span>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={async () => { const p = await window.api.dialog.openAudio(); if (p[0]) setReference(p[0]) }}>{tr('Reference song…')}</button>
+            <span className="truncate" style={{ color: 'var(--text-secondary)' }}>{reference || tr('none chosen')}</span>
           </div>
-          <div><button className="btn btn-primary" style={{ fontSize: 11 }} disabled={!reference || busy} onClick={run}>{busy ? 'Matching…' : 'Match to the reference'}</button></div>
+          <div><button className="btn btn-primary" style={{ fontSize: 11 }} disabled={!reference || busy} onClick={run}>{busy ? tr('Matching…') : tr('Match to the reference')}</button></div>
           {error && <span style={{ color: 'var(--red)' }}>{error}</span>}
         </div>
       )}

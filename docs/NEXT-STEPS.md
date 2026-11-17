@@ -1,6 +1,6 @@
 # Next steps and working notes
 
-Kept for the next working session (also read by Claude: see CLAUDE.md). State: version 0.17.0, 2026-11-11.
+Kept for the next working session (also read by Claude: see CLAUDE.md). State: version 0.40.0, 2026-11-17 (almost 1000 downloads).
 
 ## Where things are
 
@@ -34,6 +34,15 @@ Kept for the next working session (also read by Claude: see CLAUDE.md). State: v
 3. Prepare the emails to the blogs (short: what it is, why it is different – local, free, open source –, video link,
    download link, one screenshot).
 
+## Plan (owner, 17.11.2026)
+
+- **0.50.0: VST plugins, VST3 and VST2 at the same time:** host, scan, Settings → Plugins list with ticks, plugin
+  windows, plugins in the Studio inserts, on the master and in the Mastering chain.
+- **Translations:** Japanese and Korean tables (`i18n/ui/ja.json`, `ko.json`) are still empty: only the menu is
+  translated. The mastering assistant writes its suggestions in German or English only. See `docs/TRANSLATING.md`.
+- **Help in the app:** the manual / wiki inside the app, in the chosen language (owner's idea).
+- **New promo video** once VST is in (the owner plans it soon).
+
 ## Open technical items
 
 - **Beat sync, ideas from the projects the owner linked (studied 12.11.2026):**
@@ -65,7 +74,7 @@ Kept for the next working session (also read by Claude: see CLAUDE.md). State: v
   voice (male / female / style), language, tempo and key; result trimmed to the sung part (no silence), saved to the
   Library with tags so it can be dragged into the Studio. Note: ACE-Step 1.5 sings little or nothing with a one-line
   text in a 60–90 s song, so short vocals need their own approach (short length, the word repeated, then cut).
-- **Where we stopped (13.11.2026, 0.30.7):** area 7 (Mastering 0.30.x) tested by the owner; 6c.19 (ACE-Step 1.5 LoRA) and 6c.20 (Stem Splitter button) passed with 0.30.8; open: 6c.21 (0.30.9 load/download text). Mastering step 4 is in 0.31.0 (test plan 7c); next is step 5 (VST3) when the owner wants it.
+- **Where we stopped (13.11.2026, 0.30.7):** area 7 (Mastering 0.30.x) tested by the owner; 6c.19 (ACE-Step 1.5 LoRA) and 6c.20 (Stem Splitter button) passed with 0.30.8; open: 6c.21 (0.30.9 load/download text). Mastering step 4 is in 0.31.x and tested (test plan 7c, 17.11.2026); next is step 5 (VST3) when the owner wants it. Open idea: translate the rest of the Mastering page to German.
 - **Mastering:** steps 1–3 of `docs/MASTERING-PLAN.md` are in 0.30.0 (test plan area 7). Next, step by step with the
   owner: 4 (assistant, editing), 5 (VST3 host), 6 (album). AI Chat and the rest (test plan 7b): ask what is missing.
 

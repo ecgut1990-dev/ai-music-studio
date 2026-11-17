@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useUIStore } from '../stores/ui.store'
 import { GRID_OPTIONS, gridOf } from './grid'
 import { QUANTIZE_DIALOG_EVENT, defaultGridId, loadOptions, openQuantizeDialog, quantizeSelection, saveOptions, type QuantizeOptions } from './quantize'
+import { tr } from '../i18n/tr'
 
 // Grid size, snap switch and quantize: shown in the timeline and in the piano roll.
 export function GridControls({ compact = false }: { compact?: boolean }): React.ReactElement {
@@ -19,23 +20,23 @@ export function GridControls({ compact = false }: { compact?: boolean }): React.
 
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Grid</span>
-      <select value={grid} onChange={(e) => { setGrid(e.target.value); e.target.blur() }} style={{ fontSize: 11 }} title="Grid size (Ctrl+1 narrower, Ctrl+2 wider)">
+      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('Grid')}</span>
+      <select value={grid} onChange={(e) => { setGrid(e.target.value); e.target.blur() }} style={{ fontSize: 11 }} title={tr('Grid size (Ctrl+1 narrower, Ctrl+2 wider)')}>
         {GRID_OPTIONS.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
       </select>
       <button
         className={`btn ${snap && gridOf(grid).beats > 0 ? 'btn-primary' : 'btn-ghost'}`} style={{ fontSize: 11, padding: '3px 10px' }}
-        onClick={toggleSnap} title="Snap to the grid on / off (Ctrl+4). Hold Alt while dragging to move freely."
+        onClick={toggleSnap} title={tr('Snap to the grid on / off (Ctrl+4). Hold Alt while dragging to move freely.')}
       >
-        Snap {snap && gridOf(grid).beats > 0 ? 'on' : 'off'}
+        {tr('Snap')} {snap && gridOf(grid).beats > 0 ? tr('on') : tr('off')}
       </button>
       {!compact && (
         <button className="btn btn-ghost" style={{ fontSize: 11, padding: '3px 10px' }}
-          onClick={() => setMsg(quantizeSelection().what)} title="Quantize the selected clip or notes with the saved settings (Ctrl+U)">
-          Quantize
+          onClick={() => setMsg(quantizeSelection().what)} title={tr('Quantize the selected clip or notes with the saved settings (Ctrl+U)')}>
+          {tr('Quantize')}
         </button>
       )}
-      <button className="btn btn-ghost" style={{ fontSize: 11, padding: '3px 8px' }} onClick={openQuantizeDialog} title="Quantize settings (Ctrl+Shift+U)">⚙</button>
+      <button className="btn btn-ghost" style={{ fontSize: 11, padding: '3px 8px' }} onClick={openQuantizeDialog} title={tr('Quantize settings (Ctrl+Shift+U)')}>⚙</button>
       {msg && <span style={{ fontSize: 11, color: 'var(--green)', maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={msg}>{msg}</span>}
     </span>
   )
@@ -58,30 +59,29 @@ export function QuantizeDialog(): React.ReactElement | null {
   return (
     <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 9650, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(400px, 100%)', background: 'var(--bg-primary)', border: '1px solid var(--border-mid)', borderRadius: 10, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>Quantize</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('Quantize')}</div>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
-          MIDI: the notes of the selected clip (or the selected note) move toward the grid. Audio: the clip start is snapped to the grid
-          (the rhythm inside the recording is not changed).
+          {tr('MIDI: the notes of the selected clip (or the selected note) move toward the grid. Audio: the clip start is snapped to the grid\n          (the rhythm inside the recording is not changed).')}
         </div>
-        <label style={row}>Grid
+        <label style={row}>{tr('Grid')}
           <select value={o.grid} onChange={(e) => setO({ ...o, grid: e.target.value })}>
             {GRID_OPTIONS.filter((g) => g.beats > 0 && g.beats < 4).map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
           </select>
         </label>
-        <label style={row}>Strength {Math.round(o.strength * 100)} %
+        <label style={row}>{tr('Strength')} {Math.round(o.strength * 100)} %
           <input type="range" min={0} max={1} step={0.05} value={o.strength} onChange={(e) => setO({ ...o, strength: Number(e.target.value) })} />
         </label>
-        <label style={row}>Swing {Math.round(o.swing * 100)} %
+        <label style={row}>{tr('Swing')} {Math.round(o.swing * 100)} %
           <input type="range" min={0} max={1} step={0.05} value={o.swing} onChange={(e) => setO({ ...o, swing: Number(e.target.value) })} />
         </label>
         <label style={{ ...row, justifyContent: 'flex-start', gap: 8 }}>
           <input type="checkbox" checked={o.ends} onChange={(e) => setO({ ...o, ends: e.target.checked })} />
-          Quantize note ends as well (notes change length)
+          {tr('Quantize note ends as well (notes change length)')}
         </label>
         {msg && <div style={{ fontSize: 12, color: 'var(--green)' }}>{msg}</div>}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button className="btn btn-ghost" onClick={() => setOpen(false)}>Close</button>
-          <button className="btn btn-primary" onClick={apply}>Apply</button>
+          <button className="btn btn-ghost" onClick={() => setOpen(false)}>{tr('Close')}</button>
+          <button className="btn btn-primary" onClick={apply}>{tr('Apply')}</button>
         </div>
       </div>
     </div>

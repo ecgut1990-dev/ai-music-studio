@@ -7,7 +7,7 @@ in-app update right away. For every new version:
 
 1. Bump `apps/desktop/package.json` `version`, run `pnpm test` and `pnpm typecheck` in `apps/desktop`.
    Add a section `## <version>` at the top of `CHANGELOG.md` (English, user-facing: what is new, what was fixed).
-   The release workflow fails without it and puts it on the GitHub release page. Keep the README's "New in" list in step.
+   The release workflow fails without it and puts it on the GitHub release page. The README's "What's new" section shows only the newest version (replace it, do not add a list of old versions; the full history is the changelog).
 2. Bring the change into `main` (from a cloud session: push the work branch, open a pull request and switch on
    auto-merge (merge commit) so it merges itself as soon as its checks are green; if auto-merge is not possible, merge
    it yourself as soon as they are green).
