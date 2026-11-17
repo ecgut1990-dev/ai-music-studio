@@ -236,6 +236,7 @@ Object.assign(DE, {
   'Apply all ticked': 'Alle angehakten übernehmen',
   'Analyse the master again': 'Master noch einmal analysieren',
   'Master gain': 'Master-Gain',
+  'Click: play from there · drag: mark a region · drag the white line or the time ruler: move through the song · Ctrl + wheel: zoom, wheel: scroll': 'Klick: ab dort abspielen · ziehen: Bereich markieren · weiße Linie oder Zeitleiste ziehen: durch den Song fahren · Strg + Mausrad: zoomen, Mausrad: scrollen',
   'AI assistant': 'KI-Assistent', 'Open the AI assistant': 'KI-Assistent öffnen',
   'Drag, wheel (Shift: fine) or arrow keys; double-click: 0 dB. The sound goes through the limiter, so it does not clip.': 'Ziehen, Mausrad (Umschalt: fein) oder Pfeiltasten; Doppelklick: 0 dB. Der Ton läuft durch den Limiter und übersteuert deshalb nicht.',
   'Makes the master louder or quieter. Through the limiter: louder without clipping (orange: how much it holds back).': 'Macht den Master lauter oder leiser. Über den Limiter: lauter ohne Übersteuern (orange: wie viel er zurückhält).',

@@ -18,7 +18,7 @@ plugin needed); what you hear while playing is exactly what is written to the fi
   purple with a dot.
 - **Same loudness** (on by default): while comparing, the louder of the two is turned down, so you judge the sound,
   not the volume. Switch it off to hear how much louder the master really is. The meters always show the real level.
-- **Waveform:** follows Before / After (or both, grey and purple), clipping in red. Click to play from there, **drag to mark a region**,
+- **Waveform:** follows Before / After (or both, grey and purple), clipping in red. Click to play from there; **drag the white play line (its ▼ grip) or along the time ruler** to move through the song, also while it plays; **drag elsewhere to mark a region**,
   **⟲ Loop** plays it again and again. **Ctrl + wheel** or the slider zooms, also further out than the whole song; the view always reaches past the end of the song (darker), so the end is easy to see and to mark; **⤢** shows the whole song.
 
 ## Edit (cut and more)

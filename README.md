@@ -93,6 +93,11 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 
 All changes of every version: [CHANGELOG.md](CHANGELOG.md)
 
+### New in 0.31.6
+
+- **Mastering waveform: move through the song with the mouse,** like in the Studio: drag the white play line (its ▼ grip) or along the time ruler to go back and forth, also while the song plays; a click still jumps there and dragging elsewhere marks a region. Zoomed in, the wheel scrolls and the view follows the play position.
+- **Fix: the empty room after the end of the song was not shown** (the waveform was stretched over the whole width), so zooming out showed nothing new. Now the end of the song is followed by empty room.
+
 ### New in 0.31.5
 
 - **Fix: the "✦ AI assistant" button in the top bar could not be clicked** in the installed app (the top bar is the area for moving the window). It works now, sits further left, and a **✦ AI** tab at the right edge opens the panel as well.
