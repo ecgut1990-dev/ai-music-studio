@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.40.1",
+  "version": "0.50.0",
   "description": "AI Music Studio - free, open-source music studio with local AI song and loop generation",
   "homepage": "https://github.com/pierrecinema/ai-music-studio",
   "author": "pierrecinema",
@@ -58,6 +58,13 @@
       "resources/**/*"
     ],
     "extraResources": [
+      {
+        "from": "../../packages/plugin-host/dist",
+        "to": "plugin-host",
+        "filter": [
+          "*.exe"
+        ]
+      },
       {
         "from": "../server",
         "to": "server",

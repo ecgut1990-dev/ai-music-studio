@@ -15,6 +15,7 @@ import { MAX_STRETCH_SECONDS, stretchBuffer } from './stretch'
 import { beatToSec, bpmAt, barAt, isDownbeat, secToBeat } from './timemap'
 import { hasAutomation, scheduleLane } from './automation'
 import { makeEffect, makeInsert } from './fx'
+import { prepareVst, prepareVstOffline, projectHasVst, pumpOffline, releaseVstOffline, vstDelaySeconds } from './vst/host'
 import { loadWorklets } from './master/worklets'
 import { exportSampleRate } from '../lib/sampleRate'
 import { beatOfSrc, renderWarped } from './warp'
@@ -237,6 +238,7 @@ interface Strip {
   pan: StereoPannerNode
   analyser: AnalyserNode
   sends: Map<string, GainNode>
+  dispose: Array<() => void>  // plugin inserts: tell them to stop when the track is freed
 }
 
 function makeStrip(ctx: BaseAudioContext, dest: AudioNode, inserts: InsertFx[] = [], secPerBeat = 0.5): Strip {
@@ -248,13 +250,15 @@ function makeStrip(ctx: BaseAudioContext, dest: AudioNode, inserts: InsertFx[] =
   analyser.fftSize = 1024
   // the track's effects (inserts) sit between its sound and the fader
   let head: AudioNode = bus
+  const dispose: Array<() => void> = []
   for (const fx of inserts) {
     const ins = makeInsert(ctx, fx, secPerBeat)
     head.connect(ins.input)
     head = ins.output
+    if (ins.dispose) dispose.push(ins.dispose)
   }
   head.connect(mute).connect(gain).connect(pan).connect(analyser).connect(dest)
-  return { bus, mute, gain, pan, analyser, sends: new Map() }
+  return { bus, mute, gain, pan, analyser, sends: new Map(), dispose }
 }
 
 // the envelope of one audio clip: fade in, fade out (linear, or equal power for crossfades), starting
@@ -317,6 +321,15 @@ export function scheduleProject(
     returnInputs.set(r.id, fx.input)
   }
 
+  // a track with VST plugins is delayed by them (the round trip to the plugin host and the plugins' own latency):
+  // its sound is started that much earlier, so it stays in time with the others. Tracks in a group add the
+  // group's delay.
+  const ownDelay = (t: Track): number => (t.fx ?? []).filter((f) => f.type === 'vst').reduce((a, f) => a + vstDelaySeconds(ctx, f), 0)
+  const lookahead = (t: Track, depth = 0): number => {
+    const parent = t.parentId && depth < 8 ? project.tracks.find((x) => x.id === t.parentId) : undefined
+    return ownDelay(t) + (parent ? lookahead(parent, depth + 1) : 0)
+  }
+
   const ordered = [...project.tracks].sort((a, b) => (a.type === 'group' ? 0 : 1) - (b.type === 'group' ? 0 : 1))
   for (const track of ordered) {
     if (track.type !== 'group' && track.clips.length === 0) continue
@@ -341,6 +354,8 @@ export function scheduleProject(
     }
     if (track.type === 'group') continue
     const timbre = timbreOf(track)
+    const la = lookahead(track)
+    const TT = (beat: number): number => T(beat) - la
 
     // crossfades: where two audio clips of the track overlap, both fade over the overlap (equal power)
     const audio = track.clips.filter((c) => c.audioFile).sort((a, b) => a.startTime - b.startTime)
@@ -359,7 +374,7 @@ export function scheduleProject(
     for (const clip of track.clips) {
       const clipEnd = Math.min(clip.startTime + clip.duration, until)
       if (clipEnd <= fromBeat || clip.startTime >= until) continue
-      const clipStart = T(clip.startTime) - when                 // seconds from `when`
+      const clipStart = TT(clip.startTime) - when                // seconds from `when` (earlier by the plugins' delay)
       const clipLen = T(clipEnd) - T(clip.startTime)
       const skip = Math.max(0, -clipStart)                        // playing from the middle of the clip
 
@@ -408,7 +423,7 @@ export function scheduleProject(
           const nb = clip.startTime + n.startTime
           const ne = Math.min(nb + n.duration, clipEnd)
           if (ne <= fromBeat || nb >= clipEnd) continue
-          const nStart = T(nb) - when
+          const nStart = TT(nb) - when
           const nLen = T(ne) - T(nb)
           const at = when + Math.max(0, nStart)
           const dur = nStart < 0 ? nLen + nStart : nLen
@@ -432,7 +447,7 @@ export function scheduleProject(
       }
       const kill = (): void => {
         for (const n of nodes) { try { n.stop() } catch { /* not started */ } }
-        for (const s of all()) { try { s.bus.disconnect() } catch { /* gone */ } }
+        for (const s of all()) { try { s.bus.disconnect() } catch { /* gone */ } for (const d of s.dispose) d() }
       }
       if (fade) window.setTimeout(kill, 40)
       else kill()
@@ -441,7 +456,7 @@ export function scheduleProject(
       for (const n of nodes) { try { n.stop(time) } catch { /* already stopped */ } }
       // return tracks keep their tail (reverb, echoes) for a moment, then everything is freed
       const free = Math.max(0, time - ((ctx as AudioContext).currentTime ?? 0)) * 1000 + 6000
-      window.setTimeout(() => { for (const s of all()) { try { s.bus.disconnect() } catch { /* gone */ } } }, free)
+      window.setTimeout(() => { for (const s of all()) { try { s.bus.disconnect() } catch { /* gone */ } for (const d of s.dispose) d() } }, free)
     }
   }
 }
@@ -486,6 +501,9 @@ function ensureContext(): AudioContext {
   }
   return ctx
 }
+
+/** the sample rate of live playback (plugins are loaded at this rate) */
+export function liveSampleRate(): number { return ensureContext().sampleRate }
 
 export function isPlaying(): boolean {
   return playing
@@ -537,7 +555,7 @@ function structureSignature(p: Project): string {
   return JSON.stringify([
     p.bpm, p.tempoMap ?? [], p.returns?.map((r) => [r.id, r.effect, r.decay, r.delayBeats, r.feedback]) ?? [],
     p.tracks.map((t) => [
-      t.id, t.type, t.name, t.parentId ?? '', t.automation ?? {}, Object.keys(t.sends ?? {}).filter((k) => (t.sends?.[k] ?? 0) > 0), t.fx ?? [],
+      t.id, t.type, t.name, t.parentId ?? '', t.automation ?? {}, Object.keys(t.sends ?? {}).filter((k) => (t.sends?.[k] ?? 0) > 0), (t.fx ?? []).map((f) => (f.vst ? { ...f, vst: { ...f.vst, state: undefined } } : f)),
       t.clips.map((c) => [c.id, c.startTime, c.duration, c.offset ?? 0, c.audioFile ?? '', c.gain ?? 1, c.warpBpm ?? 0, c.fadeIn ?? 0, c.fadeOut ?? 0,
         c.warpMarkers ?? [], (c.notes ?? []).map((n) => `${n.pitch}/${n.startTime}/${n.duration}/${n.velocity}`).join(';')])
     ])
@@ -564,6 +582,7 @@ async function startAt(beat: number, countInBars = 0): Promise<void> {
   useAudioStore.setState({ loading: true })
   await loadWorklets(c)                                       // Mastering processors as track effects
   await loadAllFiles(project)
+  await prepareVst(project, c.sampleRate).catch((e) => console.warn('[vst]', e))   // plugins (starts the host if needed)
   useAudioStore.setState({ loading: false })
   if (my !== epoch) return                                        // stopped or restarted meanwhile
   const latest = useProjectStore.getState().project
@@ -974,8 +993,11 @@ export async function renderMix(opts: { bits: 16 | 24; normalize: boolean; tailS
   const out = off.createGain()
   out.gain.value = useAudioStore.getState().masterVolume
   out.connect(off.destination)
+  const vst = projectHasVst(project) && await prepareVstOffline(off, project)
   scheduleProject(off, out, project, 0, 0)
-  const rendered = await off.startRendering()
+  if (vst) pumpOffline(off, seconds)
+  let rendered: AudioBuffer
+  try { rendered = await off.startRendering() } finally { if (vst) await releaseVstOffline(off) }
   const peak = peakOf(rendered)
   const gain = opts.normalize && peak > 0 ? 0.891 / peak : 1                 // -1 dBFS
   return { wav: encodeWav(rendered, opts.bits, gain), seconds, peak: peak * gain }

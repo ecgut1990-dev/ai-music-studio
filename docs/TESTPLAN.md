@@ -191,18 +191,40 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 
 ## 8. Neu in 0.40.0: Übersetzung, Speichern beim Schließen
 
-| Nr. | Test | Erwartet |
-|---|---|---|
-| 8.1 | Einstellungen → Allgemein → Sprache **Deutsch**, dann durch alle Seiten gehen (Musik erstellen, Bibliothek, Studio, Mastering, Stem-Trenner, Einstellungen) | Alles auf Deutsch; nur Namen (ACE-Step, LUFS, WAV …) bleiben englisch. Notiere Stellen, die noch englisch sind (Screenshot) |
-| 8.2 | Mastering: Song öffnen, Assistent, Kette, Schneiden, Export-Fenster | Knöpfe, Tooltips und Meldungen auf Deutsch |
-| 8.3 | Sprache **Français**, dann **Español**, **中文** kurz durchklicken | Die ganze App in der Sprache; nichts abgeschnitten oder verrutscht |
-| 8.4 | Sprache **日本語** | Menü links auf Japanisch, der Rest englisch (so gewollt, kommt später) |
-| 8.5 | Etwas im Studio ändern (Spur hinzufügen), dann das Fenster mit **X** schließen | Frage „Projekt vor dem Schließen speichern?“ mit Speichern / Nicht speichern / Abbrechen |
-| 8.6 | Bei der Frage **Abbrechen** | App bleibt offen, nichts geht verloren |
-| 8.7 | Nochmal schließen, **Speichern** (neues Projekt: Speicherort wählen) | Projekt wird gespeichert, dann schließt die App. Beim Speichern-Dialog auf Abbrechen: App bleibt offen |
-| 8.8 | Nochmal ändern, schließen, **Nicht speichern** | App schließt sofort |
-| 8.9 | Ohne Änderungen schließen | Keine Frage, App schließt sofort |
-| 8.10 | Bibliothek mit geschlossenem KI-Fenster | Liste nutzt die ganze Breite, voller Songname sichtbar, Knöpfe in eigener Zeile darunter |
+| Nr. | Test | Erwartet | Ergebnis | Notiz | Version |
+|---|---|---|---|---|---|
+| 8.1 | Einstellungen → Allgemein → Sprache **Deutsch**, dann durch alle Seiten gehen (Musik erstellen, Bibliothek, Studio, Mastering, Stem-Trenner, Einstellungen) | Alles auf Deutsch; nur Namen (ACE-Step, LUFS, WAV …) bleiben englisch. Notiere Stellen, die noch englisch sind (Screenshot) | ✅ | | 0.40.1 |
+| 8.2 | Mastering: Song öffnen, Assistent, Kette, Schneiden, Export-Fenster | Knöpfe, Tooltips und Meldungen auf Deutsch | ✅ | | 0.40.1 |
+| 8.3 | Sprache **Français**, dann **Español**, **中文** kurz durchklicken | Die ganze App in der Sprache; nichts abgeschnitten oder verrutscht | ✅ | | 0.40.1 |
+| 8.4 | Sprache **日本語** | Menü links auf Japanisch, der Rest englisch (so gewollt, kommt später) | ✅ | | 0.40.1 |
+| 8.5 | Etwas im Studio ändern (Spur hinzufügen), dann das Fenster mit **X** schließen | Frage „Projekt vor dem Schließen speichern?“ mit Speichern / Nicht speichern / Abbrechen | ✅ | | 0.40.1 |
+| 8.6 | Bei der Frage **Abbrechen** | App bleibt offen, nichts geht verloren | ✅ | | 0.40.1 |
+| 8.7 | Nochmal schließen, **Speichern** (neues Projekt: Speicherort wählen) | Projekt wird gespeichert, dann schließt die App. Beim Speichern-Dialog auf Abbrechen: App bleibt offen | ✅ | | 0.40.1 |
+| 8.8 | Nochmal ändern, schließen, **Nicht speichern** | App schließt sofort | ✅ | | 0.40.1 |
+| 8.9 | Ohne Änderungen schließen | Keine Frage, App schließt sofort | ✅ | | 0.40.1 |
+| 8.10 | Bibliothek mit geschlossenem KI-Fenster | Liste nutzt die ganze Breite, voller Songname sichtbar, Knöpfe in eigener Zeile darunter | ✅ | | 0.40.1 |
+| 8.11 | neu (0.40.1): Feedback-Fenster (unten rechts) | Kein „Beta“ mehr; dort heißt es „Ausführliches Log“. Das Willkommensfenster erscheint nur beim allerersten Start (oder nach einem Absturz mit Sicherung), darum war es nicht zu sehen: so gewollt | ✅ | Willkommensfenster nicht erschienen (so gewollt) | 0.40.1 |
+
+## 9. Neu in 0.50.0: VST-Plugins
+
+Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 32-Bit-Plugin, z. B. ein kostenloser Hall oder EQ. Falls keiner da ist: „Valhalla Supermassive“ oder „TDR Nova“ (beide kostenlos).
+
+| Nr. | Test | Erwartet | Ergebnis | Notiz | Version |
+|---|---|---|---|---|---|
+| 9.1 | Nach dem Update die App starten, dann Einstellungen → **Plugins** | Die Suche ist beim ersten Start von selbst gelaufen (oder läuft noch: Fortschritt „x von y“). Deine Plugins stehen in der Liste mit Hersteller, Typ, Format | | | |
+| 9.2 | **Search for plugins** drücken | Suche läuft mit Fortschritt; danach „Letzte Suche: … · n Plugins“. Nicht nutzbare Dateien (z. B. beim Prüfen abgestürzt) stehen unten aufklappbar; Spalte „Bits“ zeigt 64 oder 32 | | | |
+| 9.2b | Ein **32-Bit-Plugin** (z. B. aus *C:\\Programme (x86)\\VSTPlugins*) auf eine Spur legen, Fenster öffnen, abspielen | Es steht im Menü mit „32-bit“, öffnet sein Fenster und klingt wie ein 64-Bit-Plugin | | | |
+| 9.2c | Einstellungen → Plugins → **Ordner hinzufügen…** mit einem eigenen Plugin-Ordner, dann suchen | Die Plugins aus dem Ordner erscheinen in der Liste | | | |
+| 9.3 | Bei einem Plugin das Häkchen entfernen | Es erscheint nicht mehr im Studio unter „+ Effekt…“ | | | |
+| 9.4 | Studio: Spur mit Song, **FX** → **+ Effekt…** → unter *VST-Plugins* ein Plugin wählen | Plugin erscheint in der Effekt-Zeile, sein Fenster öffnet sich und bleibt über der App | | | |
+| 9.5 | Abspielen, im Plugin-Fenster Regler drehen (z. B. Hall stark) | Man hört das Plugin sofort; keine Aussetzer oder Knackser | | | |
+| 9.6 | ⏻ am Plugin aus und wieder an, während der Song läuft | Ohne / mit Plugin; die Spur bleibt im Takt mit den anderen Spuren | | | |
+| 9.7 | Zwei Spuren, eine mit Plugin: zusammen abspielen | Beide laufen genau im Takt (kein Versatz, kein Echo-Effekt zwischen den Spuren) | | | |
+| 9.8 | Regler im Plugin ändern, Projekt speichern, App schließen und Projekt wieder öffnen, **Open** am Plugin | Das Plugin hat die geänderten Einstellungen | | | |
+| 9.9 | Nur im Plugin-Fenster etwas ändern (sonst nichts), dann App schließen | Die Frage „Projekt vor dem Schließen speichern?“ kommt | | | |
+| 9.10 | Datei → Export audio (WAV) | Die exportierte Datei klingt mit dem Plugin wie beim Abspielen | | | |
+| 9.11 | Mehrere Plugins auf einer Spur und auf verschiedenen Spuren | Alles hörbar, Reihenfolge mit ◀ ▶ änderbar; Rechner bleibt bedienbar | | | |
+| 9.12 | Projekt ohne Plugins abspielen | Wie bisher; kein Unterschied (der Plugin-Host läuft dann nicht) | | | |
 
 ## Ergebnisse
 

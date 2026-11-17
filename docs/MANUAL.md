@@ -1,6 +1,6 @@
 # AI Music Studio – Handbuch
 
-Stand: Version 0.40. Windows 10/11, 64 Bit.
+Stand: Version 0.50. Windows 10/11, 64 Bit.
 
 ## 1. Installation
 
@@ -71,7 +71,8 @@ Nach der Installation die App neu starten, damit sie die neuen Programme im PATH
 
 ### Schritt 5: Weiteres
 
-- **Einstellungen → Allgemein**: Sprache, VST-Suchpfade. Ab 0.40 ist die ganze App übersetzt: Deutsch, Englisch, Französisch, Spanisch, Italienisch, Portugiesisch und Chinesisch. Bei Japanisch und Koreanisch ist vorerst nur das Menü übersetzt, der Rest bleibt Englisch.
+- **Einstellungen → Plugins** (ab 0.50): VST3- und VST2-Plugins mit 64 und 32 Bit (ein 32-Bit-Plugin läuft in einem eigenen 32-Bit-Plugin-Host; welches ein Plugin braucht, erkennt die App selbst). Die üblichen Ordner werden immer durchsucht, auch die unter *Programme (x86)*; eigene Ordner kommen mit *Add folder…* dazu. **Search for plugins** sucht (beim ersten Start einmal von selbst). In der Liste bestimmt das Häkchen, welche Plugins in der App erscheinen. Jedes Plugin wird einzeln geprüft; stürzt eines dabei ab, wird es übersprungen und unten aufgeführt.
+- **Einstellungen → Allgemein**: Sprache. Ab 0.40 ist die ganze App übersetzt: Deutsch, Englisch, Französisch, Spanisch, Italienisch, Portugiesisch und Chinesisch. Bei Japanisch und Koreanisch ist vorerst nur das Menü übersetzt, der Rest bleibt Englisch.
 - **Einstellungen → Darstellung**: dunkles oder helles Design.
 
 ## 3. Funktionen
@@ -185,6 +186,12 @@ Du kannst ACE-Step einen eigenen Stil beibringen. Du brauchst Songs, an denen du
 **Rank und Überanpassung.** Eine wissenschaftliche Arbeit (Applied Sciences 2025, 15(15), 8646; AudioLDM mit LoRA auf nur 193 Beispielen) fand: Mit höherem Rank und Alpha passt das Ergebnis besser zum Text, entfernt sich aber vom echten Klang, die Überanpassung steigt. Die besten Werte für die Ähnlichkeit zu echter Musik hatten kleine Ränge (1 bis 8) und frühe Zwischenstände. Das gilt für ein anderes Modell und lässt sich nicht eins zu eins auf ACE-Step übertragen. Als Faustregel für uns: Bei wenigen Songs lieber Rank 16 oder 32 und die Länge *test* oder *normal* wählen, statt *thorough* mit Rank 256.
 
 Das fertige LoRA erscheint automatisch in deiner Liste. Hinweis: Das Training selbst wurde in dieser Version nur mit einem Ersatz-Trainer getestet, nicht mit einer echten NVIDIA-Karte.
+
+## VST-Plugins im Studio (ab 0.50)
+
+**FX** an der Spur öffnet die Effekt-Zeile. Unter **+ Effect…** stehen nach den eingebauten Effekten deine VST-Plugins (die in *Einstellungen → Plugins* angehakten). Beim Hinzufügen öffnet sich das Fenster des Plugins; **Open** öffnet es wieder. Es bleibt über der App. Ein/Aus, Reihenfolge und Entfernen gehen wie bei den eingebauten Effekten. Die Einstellungen im Plugin-Fenster werden mit dem Projekt gespeichert (die App fragt beim Schließen nach, wenn du dort etwas geändert hast), und der Export enthält das Plugin.
+
+Die Plugins laufen in einem eigenen kleinen Programm (Plugin-Host), das nur läuft, solange ein Plugin benutzt wird. Stürzt ein Plugin ab, läuft die App weiter; beim nächsten Abspielen werden die Plugins mit ihren zuletzt gespeicherten Einstellungen neu geladen. Spuren mit Plugins bleiben im Takt (die Verzögerung durch die Plugins wird ausgeglichen). 64- und 32-Bit-Plugins funktionieren. Plugins auf dem Master, im Mastering und Instrument-Plugins kommen in den nächsten Versionen.
 
 ## Studio (früher Zeitleiste), Mixer, Klaviatur-Editor, Projekte (Grundfunktionen)
 

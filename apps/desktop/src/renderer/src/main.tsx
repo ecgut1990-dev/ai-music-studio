@@ -17,9 +17,9 @@ void initDiagLog()
 
 // test hook: a test page sets __AMS_TEST__ before the app starts to reach the engine and the stores
 if ((window as unknown as { __AMS_TEST__?: boolean }).__AMS_TEST__) {
-  void Promise.all([import('./audio/engine'), import('./stores/project.store'), import('./stores/audio.store'), import('./shortcuts/history'), import('./project/io'), import('./shortcuts/handlers'), import('./components/common/Feedback'), import('./edit/quantize'), import('./edit/grid'), import('./stores/ui.store'), import('./beatmatch/store')])
-    .then(([engine, project, audio, history, io, handlers, feedback, quantize, grid, ui, beatmatch]) => {
-      ;(window as unknown as { __ams: unknown }).__ams = { engine, project, audio, history, io, handlers, feedback, quantize, grid, ui, beatmatch }
+  void Promise.all([import('./audio/engine'), import('./stores/project.store'), import('./stores/audio.store'), import('./shortcuts/history'), import('./project/io'), import('./shortcuts/handlers'), import('./components/common/Feedback'), import('./edit/quantize'), import('./edit/grid'), import('./stores/ui.store'), import('./beatmatch/store'), import('./audio/vst/host')])
+    .then(([engine, project, audio, history, io, handlers, feedback, quantize, grid, ui, beatmatch, vst]) => {
+      ;(window as unknown as { __ams: unknown }).__ams = { engine, project, audio, history, io, handlers, feedback, quantize, grid, ui, beatmatch, vst }
     })
 }
 

@@ -39,13 +39,25 @@ export interface Track {
 export type AutoParam = 'volume' | 'pan' | `send:${string}`
 export interface AutoPoint { beat: number; value: number }     // value: volume/send 0..1, pan -1..1
 
-// an effect in a track (insert): built in now, VST3 plugins later
-export type InsertType = 'eq' | 'compressor' | 'delay' | 'reverb' | 'filter' | 'limiter' | 'saturation' | 'stereo' | 'dyneq'
+// an effect in a track (insert): a built-in effect, or a VST plugin ('vst', see audio/vst/host.ts)
+export type InsertType = 'eq' | 'compressor' | 'delay' | 'reverb' | 'filter' | 'limiter' | 'saturation' | 'stereo' | 'dyneq' | 'vst'
 export interface InsertFx {
   id: string
   type: InsertType
   on: boolean
-  p: Record<string, number>               // the settings, see INSERT_PARAMS in audio/fx.ts
+  p: Record<string, number>               // the settings, see INSERT_PARAMS in audio/fx.ts (empty for a plugin)
+  vst?: VstRef
+}
+
+// a VST plugin in a project: which plugin (the host's description, so it can be loaded again) and its settings
+export interface VstRef {
+  pluginId: string                        // the host's identifier of the plugin (format, name, file)
+  name: string
+  vendor: string
+  format: string                          // VST3 or VST2
+  xml: string                             // the host's plugin description
+  state?: string                          // the plugin's own settings (base64), saved with the project
+  arch?: 'x64' | 'x86'                    // a 32-bit plugin runs in the 32-bit plugin host
 }
 
 export interface TakeLane { id: string; name: string; clips: Clip[] }

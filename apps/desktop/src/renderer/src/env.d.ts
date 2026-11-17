@@ -101,6 +101,15 @@ declare global {
         autosaveRead: () => Promise<{ text: string; mtime: number } | null>
         autosaveClear: () => Promise<void>
       }
+      plugins?: {
+        available: () => Promise<boolean>
+        host: (arch?: 'x64' | 'x86') => Promise<{ port: number; token: string }>
+        release: (arch?: 'x64' | 'x86') => Promise<void>
+        windowHandle: () => Promise<string>
+        listRead: () => Promise<unknown>
+        listWrite: (data: unknown) => Promise<void>
+        onHostExit: (cb: (info: { code: number | null; signal: string | null; arch?: string }) => void) => () => void
+      }
       app?: {
         onCloseRequest: (cb: () => void) => () => void
         closeConfirmed: () => Promise<void>

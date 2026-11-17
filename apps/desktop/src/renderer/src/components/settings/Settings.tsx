@@ -1,3 +1,4 @@
+import { PluginsTab } from './PluginsTab'
 import logo from '../../assets/logo.png'
 import { exportSampleRate, setExportSampleRate } from '../../lib/sampleRate'
 import React, { useState } from 'react'
@@ -91,7 +92,10 @@ function ModelPicker({ models, value, onChange }: {
   )
 }
 
-type SettingsTab = 'general' | 'ai' | 'engines' | 'hardware' | 'models' | 'shortcuts' | 'audio' | 'appearance' | 'updates' | 'about'
+// tab names translated through the tables (the older locale files lack the newer tabs)
+const TAB_EN: Partial<Record<string, string>> = { plugins: 'Plugins', engines: 'AI Engines', hardware: 'Hardware', models: 'Models', shortcuts: 'Shortcuts', audio: 'Audio', updates: 'Updates', about: 'About' }
+
+type SettingsTab = 'general' | 'plugins' | 'ai' | 'engines' | 'hardware' | 'models' | 'shortcuts' | 'audio' | 'appearance' | 'updates' | 'about'
 
 type UpdatePhase = 'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error'
 
@@ -237,7 +241,7 @@ export function Settings(): React.ReactElement {
       {/* Tab nav */}
       <div style={{ width: 160, background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)', padding: 10 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 10, padding: '0 6px' }}>{t('settings.title')}</div>
-        {(['general', 'ai', 'engines', 'hardware', 'models', 'shortcuts', 'audio', 'appearance', 'updates', 'about'] as SettingsTab[]).map(tab2 => (
+        {(['general', 'plugins', 'ai', 'engines', 'hardware', 'models', 'shortcuts', 'audio', 'appearance', 'updates', 'about'] as SettingsTab[]).map(tab2 => (
           <button
             key={tab2}
             onClick={() => setTab(tab2)}
@@ -254,7 +258,7 @@ export function Settings(): React.ReactElement {
               fontWeight: tab === tab2 ? 600 : 400
             }}
           >
-            {t(`settings.${tab2}`, { defaultValue: tab2 === 'engines' ? 'AI Engines' : tab2 === 'hardware' ? 'Hardware' : tab2 === 'models' ? 'Models' : tab2 === 'shortcuts' ? 'Shortcuts' : tab2 === 'updates' ? 'Updates' : tab2 === 'about' ? 'About' : tab2 })}
+            {TAB_EN[tab2] ? tr(TAB_EN[tab2]) : t(`settings.${tab2}`)}
           </button>
         ))}
       </div>
@@ -276,11 +280,7 @@ export function Settings(): React.ReactElement {
             </div>
             <div>
               <label style={labelStyle}>{t('settings.vstPaths')}</label>
-              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 6, padding: 10, fontSize: 12, color: 'var(--text-muted)' }}>
-                {tr('C:\\Program Files\\VSTPlugins')}<br />
-                {tr('C:\\Program Files\\Steinberg\\VSTPlugins')}
-              </div>
-              <button style={{ marginTop: 8, ...smallBtnStyle }}>{t('settings.scanVst')}</button>
+              <button style={smallBtnStyle} onClick={() => setTab('plugins')}>{tr('VST plugins: folders and search →')}</button>
             </div>
           </div>
         )}
@@ -496,6 +496,7 @@ export function Settings(): React.ReactElement {
         )}
 
         {tab === 'updates' && <UpdatesTab />}
+        {tab === 'plugins' && <PluginsTab />}
         {tab === 'about' && <AboutTab />}
         {tab === 'engines' && <EnginesTab />}
         {tab === 'hardware' && <HardwareTab />}

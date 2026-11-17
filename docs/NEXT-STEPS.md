@@ -40,6 +40,11 @@ Kept for the next working session (also read by Claude: see CLAUDE.md). State: v
   windows, plugins in the Studio inserts, on the master and in the Mastering chain.
 - **Translations:** Japanese and Korean tables (`i18n/ui/ja.json`, `ko.json`) are still empty: only the menu is
   translated. The mastering assistant writes its suggestions in German or English only. See `docs/TRANSLATING.md`.
+- **0.60.0: Settings → Audio, sound cards (owner, 17.11.2026):** more options for the audio output: choose the sound card
+  / output device, other driver types such as **ASIO** (also WASAPI exclusive), buffer size and sample rate per device,
+  and a **test tone** button to check that the right card plays. Idea: the JUCE plugin host already has JUCE's audio
+  device layer (ASIO needs the ASIO SDK, which Steinberg now publishes under GPL-3), so it could play the app's output;
+  plain outputs also work in the page (setSinkId). Plan it first and let the owner add to it.
 - **Help in the app:** the manual / wiki inside the app, in the chosen language (owner's idea).
 - **New promo video** once VST is in (the owner plans it soon).
 

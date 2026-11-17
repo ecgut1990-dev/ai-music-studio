@@ -3,6 +3,14 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.50.0
+
+- **VST plugins:** your own VST3 and VST2 effects in the Studio. *Settings → Plugins* searches your plugin folders (by itself on the first start, afterwards when you press **Search for plugins**), lists every plugin with vendor, type and format, and a tick decides which ones appear in the app. In the Studio, **+ Effect…** on a track lists them under the built-in effects; adding one opens the plugin's own window, **Open** opens it again. Plugin settings are saved with the project, and the export (WAV / MP3) includes the plugins.
+- Plugins run in their own small program (the plugin host). If a plugin crashes, the app keeps running and loads it again with its last saved settings. The host only runs while a plugin is in use.
+- Tracks with plugins stay in time with the others (the plugins' delay is made up for).
+- **64-bit and 32-bit plugins:** a 32-bit plugin runs in its own 32-bit plugin host (the app finds out by itself which one a plugin needs). The search also covers the usual folders under *Program Files (x86)*, and **Add folder…** adds your own. Plugins on the master and in Mastering, and instrument plugins on MIDI tracks, come in the next versions.
+- The small **✦ AI** tab at the right edge of the window is gone: the **✦ AI assistant** button in the top bar opens the AI panel. The top bar shows the default project name in your language.
+
 ## 0.40.1
 
 - **AI Music Studio is no longer labelled beta:** the welcome window, the Feedback dialog, the release notes and the documentation no longer call it a test version. Feedback stays as welcome as before (Feedback button at the bottom right).

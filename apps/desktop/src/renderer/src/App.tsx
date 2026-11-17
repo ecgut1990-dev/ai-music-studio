@@ -1,3 +1,6 @@
+import { useAudioStore } from './stores/audio.store'
+import { usePluginsStore } from './stores/plugins.store'
+import { host, host32, onVstSettingsChanged, vstInUse } from './audio/vst/host'
 import { CloseGuard } from './components/common/CloseGuard'
 import React, { useEffect, useState } from 'react'
 import { UpdateToast } from './components/updater/UpdateToast'
@@ -99,11 +102,26 @@ function StatusBar({ hw, base, onSetup }: {
   )
 }
 
+// VST plugins: the list (and the first search after installing), unsaved plugin settings, a crashed host
+function usePluginWatch(): void {
+  useEffect(() => {
+    void usePluginsStore.getState().load()
+    const offChanged = onVstSettingsChanged(() => { if (!useProjectStore.getState().dirty) useProjectStore.setState({ dirty: true }) })
+    const warn = (): void => {
+      if (!vstInUse() && !useAudioStore.getState().isPlaying) return
+      window.alert(tr('The plugin host stopped (a plugin may have crashed). Press Play again: the plugins are loaded again with their last saved settings.'))
+    }
+    const offExit = [host.onExit(warn), host32.onExit(warn)]
+    return () => { offChanged(); offExit.forEach((o) => o()) }
+  }, [])
+}
+
 export default function App(): React.ReactElement {
   const { theme } = useUIStore()
   // an older version may have stored the removed 'music-gen' view
   const activeView = useUIStore((s) => ((s.activeView as string) === 'music-gen' ? 'create' : s.activeView))
   const [hw, setHw] = useState<HardwareInfo | null>(null)
+  usePluginWatch()
   const chatOpen = useUIStore((s) => s.chatOpen)
   const setChatOpen = useUIStore((s) => s.setChatOpen)
   const [base, setBase] = useState('')
@@ -204,14 +222,6 @@ export default function App(): React.ReactElement {
           </div>
         </div>
 
-        {/* also at the right edge, near the top: always reachable, even when the top bar is too narrow */}
-        {!chatOpen && (
-          <button onClick={() => setChatOpen(true)} title={tr('AI')}
-            style={{ position: 'absolute', right: 0, top: 8, zIndex: 30, background: 'var(--accent)', border: 'none', cursor: 'pointer',
-              color: '#fff', fontSize: 11, fontWeight: 700, padding: '8px 4px', borderRadius: '6px 0 0 6px', writingMode: 'vertical-rl', letterSpacing: '0.06em' }}>
-            {tr('✦ AI')}
-          </button>
-        )}
       </div>
 
       <StatusBar hw={hw} base={base} onSetup={() => { sessionStorage.setItem('ams-settings-tab', 'engines'); setActiveView('settings') }} />

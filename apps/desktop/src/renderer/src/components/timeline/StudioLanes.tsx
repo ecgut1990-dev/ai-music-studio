@@ -1,12 +1,15 @@
 // Extra lanes of the Studio: automation (Ableton automation lanes / Cubase automation tracks), the tempo
 // track, take lanes for comping, and the return tracks with their effects.
-import React, { useRef } from 'react'
+import { usePluginsStore } from '../../stores/plugins.store'
+import { onVstChange, showVstEditor, vstFailure } from '../../audio/vst/host'
+import { liveSampleRate } from '../../audio/engine'
+import React, { useEffect, useRef, useState } from 'react'
 import { useProjectStore } from '../../stores/project.store'
 import { snapBeat } from '../../edit/grid'
 import { rangeOf, sortedPoints, valueAt, AUTO_LABEL } from '../../audio/automation'
 import { tempoPoints } from '../../audio/timemap'
 import { trackLevel } from '../../audio/engine'
-import type { AutoParam, InsertType, ReturnTrack, TakeLane, Track } from '../../types'
+import type { AutoParam, InsertFx, InsertType, ReturnTrack, TakeLane, Track } from '../../types'
 import { AUTO_HEIGHT, AUTO_MIN_HEIGHT, FX_HEIGHT, HEADER_WIDTH, openLanes, RETURN_HEIGHT, TAKE_HEIGHT, TEMPO_HEIGHT, trackPointer } from './studioLayout'
 import { INSERT_LABEL, INSERT_PARAMS, insertDefaults } from '../../audio/fx'
 import { nanoid } from 'nanoid'
@@ -116,16 +119,35 @@ const FX_TYPES: InsertType[] = ['eq', 'compressor', 'delay', 'reverb', 'filter',
 
 export function FxHeader({ track }: { track: Track }): React.ReactElement {
   const { updateTrack } = useProjectStore.getState()
+  const plugins = usePluginsStore((s) => s.plugins.filter((p) => !p.isInstrument && !s.off.includes(p.id)))
+  const loadedList = usePluginsStore((s) => s.loaded)
+  useEffect(() => { if (!loadedList) void usePluginsStore.getState().load() }, [loadedList])
   const add = (type: InsertType): void =>
     updateTrack(track.id, { fx: [...(track.fx ?? []), { id: nanoid(), type, on: true, p: insertDefaults(type) }] })
+  const addPlugin = (id: string): void => {
+    const p = plugins.find((x) => x.id === id)
+    if (!p) return
+    const fx: InsertFx = { id: nanoid(), type: 'vst', on: true, p: {}, vst: { pluginId: p.id, name: p.name, vendor: p.vendor, format: p.format, xml: p.xml, arch: p.arch } }
+    updateTrack(track.id, { fx: [...(track.fx ?? []), fx], showFx: true })
+    void openPlugin(fx, track.name)                    // the plugin window opens right away
+  }
   return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '4px 8px 4px 18px', fontSize: 10, color: 'var(--text-muted)' }}>
       <span style={{ flex: 1 }}>{tr('Effects (')}{track.fx?.length ?? 0})</span>
-      <select value="" style={{ fontSize: 10 }} title={tr('Add an effect to this track (VST3 plugins will appear here too)')}
-        onChange={(e) => { if (e.target.value) add(e.target.value as InsertType); e.target.value = ''; e.target.blur() }}>
+      <select value="" style={{ fontSize: 10 }} title={tr('Add an effect to this track: a built-in effect or one of your VST plugins')}
+        onChange={(e) => {
+          const v = e.target.value
+          if (v.startsWith('vst:')) addPlugin(v.slice(4)); else if (v) add(v as InsertType)
+          e.target.value = ''; e.target.blur()
+        }}>
         <option value="">{tr('+ Effect…')}</option>
-        {FX_TYPES.map((t) => <option key={t} value={t}>{tr(INSERT_LABEL[t])}</option>)}
-        <option value="" disabled>{tr('VST3 plugins: coming')}</option>
+        <optgroup label={tr('Built in')}>
+          {FX_TYPES.map((t) => <option key={t} value={t}>{tr(INSERT_LABEL[t])}</option>)}
+        </optgroup>
+        <optgroup label={tr('VST plugins')}>
+          {plugins.map((p) => <option key={p.id} value={`vst:${p.id}`}>{p.name}{p.vendor ? ` (${p.vendor})` : ''} · {p.format}{p.arch === 'x86' ? ' · 32-bit' : ''}</option>)}
+          {!plugins.length && <option value="" disabled>{tr('None yet: Settings → Plugins')}</option>}
+        </optgroup>
       </select>
       <button className="btn btn-ghost" style={small} title={tr('Close the effects lane (the effects keep playing)')} onClick={() => updateTrack(track.id, { showFx: false })}>×</button>
     </div>
@@ -151,7 +173,8 @@ export function FxLane({ track }: { track: Track }): React.ReactElement {
       {list.map((f, i) => (
         <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 6px', borderRadius: 6, border: `1px solid ${f.on ? track.color : 'var(--border-mid)'}`, background: 'var(--bg-secondary)', opacity: f.on ? 1 : 0.55, fontSize: 10, color: 'var(--text-secondary)', flexShrink: 0 }}>
           <button className="btn btn-ghost" style={{ ...small, padding: '0 4px', color: f.on ? 'var(--green)' : 'var(--text-muted)' }} title={f.on ? tr('On: click to bypass') : tr('Bypassed: click to switch on')} onClick={() => set(f.id, { on: !f.on })}>⏻</button>
-          <b style={{ color: 'var(--text-primary)' }}>{tr(INSERT_LABEL[f.type])}</b>
+          <b style={{ color: 'var(--text-primary)' }}>{f.type === 'vst' ? f.vst?.name ?? tr('VST plugin') : tr(INSERT_LABEL[f.type])}</b>
+          {f.type === 'vst' && <VstControls fx={f} track={track} />}
           {INSERT_PARAMS[f.type].map((d) => {
             const v = f.p[d.key] ?? d.def
             return d.key === 'mode' ? (
@@ -177,6 +200,29 @@ export function FxLane({ track }: { track: Track }): React.ReactElement {
       ))}
     </div>
   )
+}
+
+// a plugin in the effects lane: its window, and why it does not play if it could not be loaded
+function VstControls({ fx, track }: { fx: InsertFx; track: Track }): React.ReactElement {
+  const [, tick] = useState(0)
+  const [busy, setBusy] = useState(false)
+  useEffect(() => onVstChange(() => tick((n) => n + 1)), [])
+  const failure = vstFailure(fx.id)
+  const open = async (): Promise<void> => { setBusy(true); try { await openPlugin(fx, track.name) } finally { setBusy(false) } }
+  return (
+    <>
+      <span style={{ color: 'var(--text-muted)' }}>{fx.vst?.format}</span>
+      <button className="btn btn-ghost" style={{ ...small, padding: '0 6px' }} disabled={busy} title={tr('Open the plugin window')} onClick={() => void open()}>
+        {busy ? tr('Loading…') : tr('Open')}
+      </button>
+      {failure && <span style={{ color: 'var(--red)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={failure}>⚠ {tr('not loaded: plays without it')}</span>}
+    </>
+  )
+}
+
+async function openPlugin(fx: InsertFx, trackName: string): Promise<void> {
+  try { await showVstEditor(fx, liveSampleRate(), trackName) }
+  catch (e) { window.alert(trf('The plugin could not be opened: {m}', { m: (e as Error).message })) }
 }
 
 // ── tempo track ──────────────────────────────────────────────────────────────

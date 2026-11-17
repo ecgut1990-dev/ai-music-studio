@@ -75,6 +75,19 @@ const api = {
     autosaveRead: () => ipcRenderer.invoke('project:autosave-read'),
     autosaveClear: () => ipcRenderer.invoke('project:autosave-clear')
   },
+  plugins: {
+    available: () => ipcRenderer.invoke('plugins:available'),
+    host: (arch?: 'x64' | 'x86') => ipcRenderer.invoke('plugins:host', arch),
+    release: (arch?: 'x64' | 'x86') => ipcRenderer.invoke('plugins:release', arch),
+    windowHandle: () => ipcRenderer.invoke('plugins:window-handle'),
+    listRead: () => ipcRenderer.invoke('plugins:list-read'),
+    listWrite: (data: unknown) => ipcRenderer.invoke('plugins:list-write', data),
+    onHostExit: (cb: (info: { code: number | null; signal: string | null; arch?: string }) => void): (() => void) => {
+      const h = (_: unknown, i: { code: number | null; signal: string | null; arch?: string }): void => cb(i)
+      ipcRenderer.on('plugins:host-exit', h)
+      return () => ipcRenderer.removeListener('plugins:host-exit', h)
+    }
+  },
   app: {
     // the window is about to close: the page asks about unsaved work, then calls closeConfirmed()
     onCloseRequest: (cb: () => void): (() => void) => {

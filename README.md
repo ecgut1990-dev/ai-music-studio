@@ -29,7 +29,11 @@ AI Music Studio is free and stays free, made in my spare time. If it saves you t
 
 ## What's new
 
-### New in 0.40
+### New in 0.50
+
+- **VST plugins (VST3 and VST2):** your own effects in the Studio. *Settings → Plugins* finds them (64-bit and 32-bit plugins), **+ Effect…** on a track adds them and opens their window; their settings are saved with the project and the export includes them. Plugins run in a separate plugin host, so a crashing plugin does not take the app down. Master, Mastering and instrument plugins follow.
+
+### Earlier: 0.40
 
 - **The app speaks your language:** every screen (Studio, Mastering, Library, Create music, Stem Splitter, Settings, dialogs and messages) is now translated into **German, French, Spanish, Italian, Portuguese and Chinese**. Switch in *Settings → General → Language*. Japanese and Korean show the menu in their language and the rest in English for now.
 - **Save before closing:** closing the app with unsaved changes asks whether to save the project first (Save / Don't save / Cancel).
@@ -49,6 +53,7 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 - **Arrangement:** audio and MIDI tracks, drag and drop from the Library or Explorer, multi-select, copy / cut / paste, duplicate (Ctrl+D lines up loops without a gap), split, consolidate, crossfades
 - **Timing:** loop range in the ruler, markers and cycle markers, tempo and time-signature track, snap to grid, warp markers, AUTO SYNC of imported audio to the project tempo
 - **Recording:** count-in, punch in / out, loop recording into take lanes with comping
+- **VST plugins:** your VST3 and VST2 effects (64-bit and 32-bit) on every track, with their own windows; Settings → Plugins finds them
 - **Mixing:** mixer with faders, pan, mute, solo and live level meters, volume and pan automation lanes, reverb and delay return tracks with sends, group tracks, a channel tab per track
 - **Piano Roll:** draw, move and quantize MIDI notes
 - **Right in the Studio:** split a clip into stems from the right-click menu, quick export of the song
@@ -72,7 +77,7 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 
 | Feature | What it will do |
 |---|---|
-| **VST3 plugins** | Your own instruments and effects in the Studio (bridge in JUCE C++, in development) |
+| **Instrument plugins, plugins on the master and in Mastering** | VST effects work in the Studio tracks since 0.50; instruments and the master follow |
 | **Vocal Editor** | AI singing from notes and lyrics, voice cloning |
 | **AI Instruments** | AI-played instruments for your MIDI tracks |
 | **Karaoke Export** | Word timing, .lrc files and lyric videos |
@@ -107,7 +112,7 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 | <img src="docs/screenshots/ai-chat.png" alt="AI Chat" width="100%"><br>**AI Chat** – Claude, ChatGPT, Gemini, Grok or a local model as a music assistant that can also make songs | <img src="docs/screenshots/settings-ai-engines.png" alt="Settings → AI Engines" width="100%"><br>**Settings → AI Engines** – install the local AI models with one click |
 | <img src="docs/screenshots/settings-hardware.png" alt="Settings → Hardware" width="100%"><br>**Settings → Hardware** – what this PC can run, and how fast | <img src="docs/screenshots/settings-models.png" alt="Settings → Models" width="100%"><br>**Settings → Models** – downloaded models, sizes and the models folder |
 | <img src="docs/screenshots/settings-shortcuts.png" alt="Settings → Shortcuts" width="100%"><br>**Settings → Shortcuts** – Ableton Live 12 or Cubase key layout | <img src="docs/screenshots/settings-ai.png" alt="Settings → AI" width="100%"><br>**Settings → AI** – Claude, ChatGPT, Gemini, Grok, Ollama or a local server for the AI chat |
-| <img src="docs/screenshots/settings-general.png" alt="Settings → General" width="100%"><br>**Settings → General** – language and VST plugin folders | <img src="docs/screenshots/settings-audio.png" alt="Settings → Audio" width="100%"><br>**Settings → Audio** – export sample rate (44.1 kHz for platforms) and buffer size |
+| <img src="docs/screenshots/settings-general.png" alt="Settings → General" width="100%"><br>**Settings → General** – language (VST plugins: Settings → Plugins) | <img src="docs/screenshots/settings-audio.png" alt="Settings → Audio" width="100%"><br>**Settings → Audio** – export sample rate (44.1 kHz for platforms) and buffer size |
 | <img src="docs/screenshots/settings-appearance.png" alt="Settings → Appearance" width="100%"><br>**Settings → Appearance** – dark or light theme | <img src="docs/screenshots/settings-updates.png" alt="Settings → Updates" width="100%"><br>**Settings → Updates** – automatic updates from GitHub releases |
 
 **Found a problem?** ([guide, German](docs/TESTING.md)) Reports are very welcome, especially from PCs with **NVIDIA cards**: open *Feedback → Record a detailed log*, reproduce the problem, then attach the saved log to a GitHub issue. Nothing is sent automatically.
@@ -137,7 +142,7 @@ ai-music-studio/
 │   ├── desktop/      # Electron app (TypeScript + React)
 │   └── server/       # FastAPI backend (Python)
 ├── packages/
-│   ├── audio-engine/ # JUCE C++ audio engine
+│   ├── plugin-host/  # JUCE C++ host for VST3 / VST2 plugins
 │   └── vst-bridge/   # VST3 Bridge Plugin (JUCE C++)
 ```
 
@@ -149,7 +154,7 @@ ai-music-studio/
 
 - Node.js 20+ and pnpm
 - Python 3.11+
-- CMake 3.22+ (for JUCE audio engine / VST bridge)
+- CMake 3.22+ (for the JUCE plugin host / VST bridge)
 - JUCE 7.x (auto-downloaded via CMake)
 
 ### Install & Run

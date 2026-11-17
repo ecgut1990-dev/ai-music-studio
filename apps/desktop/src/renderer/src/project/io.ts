@@ -1,4 +1,5 @@
 // Saving, opening and autosaving projects (.ams = JSON), recent projects, and the window title.
+import { collectVstStates } from '../audio/vst/host'
 import { tr } from '../i18n/tr'
 import { askText } from '../components/common/AskText'
 import { useProjectStore } from '../stores/project.store'
@@ -71,7 +72,8 @@ function fileNameOf(path: string): string {
 
 async function writeTo(path: string): Promise<void> {
   const store = useProjectStore.getState()
-  const project = { ...store.project, name: store.project.name === 'Untitled Project' ? fileNameOf(path) : store.project.name }
+  const withPlugins = await collectVstStates(store.project)          // the plugins' current settings go into the file
+  const project = { ...withPlugins, name: withPlugins.name === 'Untitled Project' ? fileNameOf(path) : withPlugins.name }
   await window.api.project.write(path, serialize(project))
   useProjectStore.getState().markSaved(project, path)
   remember(path)
@@ -148,7 +150,9 @@ export function startAutosave(): void {
   started = true
   window.setInterval(() => {
     const { dirty, project } = useProjectStore.getState()
-    if (dirty && project.tracks.length) void window.api.project.autosaveWrite(serialize(project)).catch(() => undefined)
+    if (dirty && project.tracks.length) {
+      void collectVstStates(project).then((p) => window.api.project.autosaveWrite(serialize(p))).catch(() => undefined)
+    }
   }, 30000)
 }
 
