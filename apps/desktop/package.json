@@ -59,6 +59,13 @@
     ],
     "extraResources": [
       {
+        "from": "../../packages/plugin-host/dist",
+        "to": "plugin-host",
+        "filter": [
+          "*.exe"
+        ]
+      },
+      {
         "from": "../server",
         "to": "server",
         "filter": [

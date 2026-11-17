@@ -137,7 +137,7 @@ ai-music-studio/
 │   ├── desktop/      # Electron app (TypeScript + React)
 │   └── server/       # FastAPI backend (Python)
 ├── packages/
-│   ├── audio-engine/ # JUCE C++ audio engine
+│   ├── plugin-host/  # JUCE C++ host for VST3 / VST2 plugins
 │   └── vst-bridge/   # VST3 Bridge Plugin (JUCE C++)
 ```
 

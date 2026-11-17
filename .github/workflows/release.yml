@@ -102,6 +102,27 @@ jobs:
         run: pnpm typecheck
         continue-on-error: true
 
+      # ── VST plugin host (C++, JUCE): ams-plugin-host.exe goes into the installer (resources/plugin-host) ──
+      - name: Get the free VST2 headers (FST)
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          git clone --depth 1 https://git.iem.at/zmoelnig/FST.git "$env:RUNNER_TEMP/FST"
+          if ($LASTEXITCODE -ne 0) { Write-Warning "FST not available: the plugin host is built for VST3 only" }
+
+      - name: Build the plugin host
+        shell: pwsh
+        run: |
+          $fst = if (Test-Path "$env:RUNNER_TEMP/FST") { "$env:RUNNER_TEMP/FST" } else { "" }
+          cmake -S packages/plugin-host -B "$env:RUNNER_TEMP/phbuild" -DAMS_FST_DIR="$fst"
+          if ($LASTEXITCODE -ne 0) { throw "cmake configure failed" }
+          cmake --build "$env:RUNNER_TEMP/phbuild" --config Release --target AMSPluginHost
+          if ($LASTEXITCODE -ne 0) { throw "plugin host build failed" }
+          $exe = Get-ChildItem "$env:RUNNER_TEMP/phbuild" -Recurse -Filter ams-plugin-host.exe | Select-Object -First 1
+          if (-not $exe) { throw "ams-plugin-host.exe not found" }
+          Copy-Item $exe.FullName packages/plugin-host/dist/ams-plugin-host.exe -Force
+          Get-Item packages/plugin-host/dist/ams-plugin-host.exe | Select-Object Name, Length
+
       - name: Build Electron app + NSIS installer
         run: pnpm build
         env:
