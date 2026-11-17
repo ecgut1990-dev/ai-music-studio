@@ -278,7 +278,7 @@ export function TopBar(): React.ReactElement {
 
       {/* Project name */}
       <div className="tb-section" style={{ color: 'var(--text-muted)', fontSize: 11 }}>
-        {dirty ? '• ' : ''}{project.name}
+        {dirty ? '• ' : ''}{project.name === 'Untitled Project' ? tr('Untitled Project') : project.name}
       </div>
 
       <div className="tb-divider" />

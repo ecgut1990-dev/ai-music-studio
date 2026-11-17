@@ -9,6 +9,7 @@ on its GitHub release page, so every version needs a `## <version>` section here
 - Plugins run in their own small program (the plugin host). If a plugin crashes, the app keeps running and loads it again with its last saved settings. The host only runs while a plugin is in use.
 - Tracks with plugins stay in time with the others (the plugins' delay is made up for).
 - Only 64-bit plugins work; 32-bit plugins are not supported. Plugins on the master and in Mastering, and instrument plugins on MIDI tracks, come in the next versions.
+- The small **✦ AI** tab at the right edge of the window is gone: the **✦ AI assistant** button in the top bar opens the AI panel. The top bar shows the default project name in your language.
 
 ## 0.40.1
 
