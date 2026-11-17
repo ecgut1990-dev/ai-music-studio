@@ -1,13 +1,14 @@
 // Loads the mastering processors (dsp.ts) into an AudioContext or OfflineAudioContext as AudioWorklets. The worklet
 // code is made from the source text of the same classes, so live playback and the export run identical code.
 import { BiquadBank, CompressorCore, DynEqCore, LimiterCore, MeterCore, MultibandCore, SaturationCore, StereoCore } from './dsp'
+import { VstLink } from '../vst/link'
 
 function workletSource(): string {
   const cls = (name: string, c: { toString(): string }): string => `const ${name} = (${c.toString()});\n`
   return [
     cls('BiquadBank', BiquadBank), cls('CompressorCore', CompressorCore), cls('LimiterCore', LimiterCore),
     cls('MultibandCore', MultibandCore), cls('StereoCore', StereoCore), cls('MeterCore', MeterCore),
-    cls('DynEqCore', DynEqCore), cls('SaturationCore', SaturationCore),
+    cls('DynEqCore', DynEqCore), cls('SaturationCore', SaturationCore), cls('VstLink', VstLink),
     `
 class AmsFx extends AudioWorkletProcessor {
   constructor(options) {
@@ -61,6 +62,44 @@ class AmsFx extends AudioWorkletProcessor {
   }
 }
 registerProcessor('ams-fx', AmsFx)
+
+// a VST insert: blocks go to the plugin host through the audio worker (see audio/vst/host.ts) and come back delayed
+class AmsVst extends AudioWorkletProcessor {
+  constructor(options) {
+    super()
+    const o = options.processorOptions || {}
+    this.alive = true
+    this.first = true
+    this.wport = null
+    this.lastUnder = 0
+    this.link = new VstLink({ block: o.block, delay: o.delay, on: o.on, send: (seq, b) => this.toWorker(seq, b) })
+    this.port.onmessage = (e) => {
+      const d = e.data || {}
+      if (d.link) {
+        this.wport = d.link
+        this.wport.onmessage = (ev) => {
+          const m = ev.data
+          if (m.sync !== undefined) { this.wport.postMessage({ synced: m.sync }); return }
+          this.link.receive(m.seq, m.block)
+        }
+      }
+      if ('on' in d) this.link.on = !!d.on
+      if (d.dispose) { this.alive = false; if (this.wport) this.wport.close() }
+    }
+  }
+  toWorker(seq, b) {
+    if (!this.wport) return
+    this.wport.postMessage({ seq, block: b, reset: this.first }, b.map((x) => x.buffer))
+    this.first = false
+  }
+  process(inputs, outputs) {
+    const out = outputs[0]
+    this.link.process(inputs[0] || [], out, out[0].length)
+    if (this.link.underruns !== this.lastUnder && this.link.t % 12288 < 128) { this.lastUnder = this.link.underruns; this.port.postMessage({ underruns: this.lastUnder }) }
+    return this.alive
+  }
+}
+registerProcessor('ams-vst', AmsVst)
 `,
   ].join('\n')
 }

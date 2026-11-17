@@ -14,6 +14,7 @@ import { autoStructure } from '../src/renderer/src/lib/lyrics'
 import { measureBalance, PROFILES, suggest, bassWidth } from '../src/renderer/src/audio/master/assistant'
 import { defaultChain } from '../src/renderer/src/audio/master/chain'
 import { applyEdits, applyOp, copyPart, fadeShape } from '../src/renderer/src/audio/master/edit'
+import { VstLink, packBlock, unpackBlock } from '../src/renderer/src/audio/vst/link'
 import { analyze, BiquadBank, CompressorCore, crossover, LimiterCore, MultibandCore, truePeakTaps } from '../src/renderer/src/audio/master/dsp'
 
 let failed = 0
@@ -281,6 +282,44 @@ check('search by stem name and several words', matchesQuery(stemT, 'vocals midni
   const eq = c?.slots.find((x) => x.type === 'eq') as { p: { lowG: number } } | undefined
   check('assistant turns the bass down with the low shelf', !!eq && eq.p.lowG < 0, JSON.stringify(sug.map((x) => x.id)))
   check('assistant always proposes the loudness target', sug.some((x) => x.id === 'loud' && x.reach))
+}
+
+// ── VST link (worklet side of a plugin insert) ──
+{
+  // a "plugin" that halves the sound and answers at once: the output is the input * 0.5, exactly `delay` later
+  const sent: Array<[number, Float32Array[]]> = []
+  const link = new VstLink({ block: 256, delay: 512, send: (seq, b) => sent.push([seq, b]) })
+  const total = 128 * 40
+  const inp = new Float32Array(total).map((_, i) => Math.sin(i * 0.01))
+  const out = new Float32Array(total)
+  for (let p = 0; p < total; p += 128) {
+    const o = [new Float32Array(128), new Float32Array(128)]
+    link.process([inp.subarray(p, p + 128), inp.subarray(p, p + 128)], o, 128)
+    while (sent.length) { const [seq, b] = sent.shift()!; link.receive(seq, b.map((c) => c.map((x) => x * 0.5))) }
+    out.set(o[0], p)
+  }
+  check('vst link: silent for the delay', out.slice(0, 512).every((x) => x === 0))
+  check('vst link: processed and delayed exactly', [600, 1000, 3000, 5000].every((i) => near(out[i], inp[i - 512] * 0.5, 1e-6)))
+  check('vst link: no underruns when answers come in time', link.underruns === 0, String(link.underruns))
+  // answers that never come: silence and counted, no drift afterwards
+  const lost = new VstLink({ block: 256, delay: 512, send: () => {} })
+  const o2 = [new Float32Array(128), new Float32Array(128)]
+  for (let k = 0; k < 20; k++) lost.process([inp.subarray(0, 128)], o2, 128)
+  check('vst link: missing blocks play silence and are counted', lost.underruns > 0 && o2[0].every((x) => x === 0))
+  // switched off: plays the dry sound with the same delay
+  const off = new VstLink({ block: 256, delay: 512, on: false, send: () => { throw new Error('sent while off') } })
+  const o3 = new Float32Array(total)
+  for (let p = 0; p < total; p += 128) { const o = [new Float32Array(128), new Float32Array(128)]; off.process([inp.subarray(p, p + 128)], o, 128); o3.set(o[0], p) }
+  check('vst link: off keeps the timing (dry, delayed)', near(o3[2000], inp[2000 - 512]))
+  // a late block is dropped instead of being played at the wrong time
+  const late = new VstLink({ block: 256, delay: 256, send: () => {} })
+  for (let k = 0; k < 8; k++) late.process([inp.subarray(0, 128)], o2, 128)
+  late.receive(0, [new Float32Array(256).fill(1)])
+  check('vst link: late block dropped', !late.done.has(0))
+  // the binary frame round trip
+  const buf = packBlock(7, 42, [new Float32Array([1, 2, 3]), new Float32Array([4, 5, 6])], true)
+  const u = unpackBlock(buf)
+  check('vst frame round trip', !!u && u.instance === 7 && u.seq === 42 && u.block[1][2] === 6 && new DataView(buf).getUint16(14, true) === 1)
 }
 
 console.log(`${passed} passed, ${failed} failed`)

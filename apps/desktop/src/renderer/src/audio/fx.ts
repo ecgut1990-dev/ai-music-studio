@@ -1,6 +1,7 @@
 // The effects of return tracks (Ableton "Return tracks", Cubase "FX channels"): a reverb and a tempo delay.
 import type { InsertFx, InsertType, ReturnTrack } from '../types'
 import { crossover, truePeakTaps } from './master/dsp'
+import { makeVstInsert } from './vst/host'
 
 const irCache = new Map<string, AudioBuffer>()
 
@@ -112,11 +113,13 @@ export const INSERT_PARAMS: Record<InsertType, ParamDef[]> = {
     { key: 'freq', label: 'Frequency', min: 20, max: 20000, step: 10, def: 8000, unit: 'Hz' },
     { key: 'q', label: 'Resonance', min: 0.1, max: 12, step: 0.1, def: 0.7 },
   ],
+  vst: [],                                          // a plugin has its own window instead
 }
 
 export const INSERT_LABEL: Record<InsertType, string> = {
   eq: 'EQ', compressor: 'Compressor', delay: 'Delay', reverb: 'Reverb', filter: 'Filter',
   limiter: 'Limiter (true peak)', saturation: 'Saturation / exciter', stereo: 'Stereo / mono bass', dyneq: 'Dynamic EQ',
+  vst: 'VST plugin',
 }
 
 export function insertDefaults(type: InsertType): Record<string, number> {
@@ -126,7 +129,11 @@ export function insertDefaults(type: InsertType): Record<string, number> {
 const dbToGain = (db: number): number => Math.pow(10, db / 20)
 
 // one insert: input -> effect -> output. Delay and reverb mix their wet sound with the dry one (Mix).
-export function makeInsert(ctx: BaseAudioContext, fx: InsertFx, secPerBeat: number): { input: AudioNode; output: AudioNode } {
+export function makeInsert(ctx: BaseAudioContext, fx: InsertFx, secPerBeat: number): { input: AudioNode; output: AudioNode; dispose?: () => void } {
+  // a VST plugin: through the plugin host; switched off it still keeps its delay, so the track stays in time
+  if (fx.type === 'vst') {
+    try { return makeVstInsert(ctx, fx) } catch { const g = ctx.createGain(); return { input: g, output: g } }
+  }
   const p = { ...insertDefaults(fx.type), ...fx.p }
   const input = ctx.createGain()
   const output = ctx.createGain()
