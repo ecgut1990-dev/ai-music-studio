@@ -3,8 +3,10 @@
 // Linux needs a display for the editor part (xvfb-run).
 import { spawn } from 'node:child_process'
 import assert from 'node:assert/strict'
+import { resolve } from 'node:path'
 
-const [exe, folder] = process.argv.slice(2)
+const [exe, folderArg] = process.argv.slice(2)
+const folder = resolve(folderArg)            // the host only searches absolute folders
 const token = 'test-' + Math.random().toString(36).slice(2)
 const host = spawn(exe, [], { env: { ...process.env, AMS_HOST_TOKEN: token }, stdio: ['pipe', 'pipe', 'inherit'] })
 const port = await new Promise((res, rej) => {
