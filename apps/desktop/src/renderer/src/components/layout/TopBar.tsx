@@ -1,3 +1,5 @@
+import { useUIStore } from '../../stores/ui.store'
+import { tr } from '../../i18n/tr'
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAudioStore } from '../../stores/audio.store'
@@ -64,6 +66,8 @@ function PositionDisplay(): React.ReactElement {
 }
 
 export function TopBar(): React.ReactElement {
+  const chatOpen = useUIStore((s) => s.chatOpen)
+  const setChatOpen = useUIStore((s) => s.setChatOpen)
   const { t } = useTranslation()
   const {
     isPlaying, isRecording, bpm, loading,
@@ -282,6 +286,18 @@ export function TopBar(): React.ReactElement {
           {Math.round(masterVolume * 100)}%
         </span>
       </div>
+
+      {/* the AI assistant panel, when it is closed: open it again */}
+      {!chatOpen && (
+        <>
+          <div className="tb-divider" />
+          <button onClick={() => setChatOpen(true)} title={tr('Open the AI assistant')}
+            style={{ background: 'var(--accent)', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 12, fontWeight: 700,
+              padding: '6px 12px', borderRadius: 8, margin: '0 6px', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            ✦ {tr('AI assistant')}
+          </button>
+        </>
+      )}
 
       {/* Right window drag padding */}
       <div style={{ width: 80, WebkitAppRegion: 'drag' } as React.CSSProperties} />
