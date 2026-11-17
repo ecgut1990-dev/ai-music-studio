@@ -21,6 +21,17 @@ plugin needed); what you hear while playing is exactly what is written to the fi
 - **Waveform:** follows Before / After (or both, grey and purple), clipping in red. Click to play from there, **drag to mark a region**,
   **⟲ Loop** plays it again and again. **Ctrl + wheel** or the slider zooms.
 
+## Edit (cut and more)
+Drag in the waveform to mark a region, then in the **Edit** bar:
+- **✂ Cut** (Ctrl+X), **Copy** (Ctrl+C), **Paste** at the play position (Ctrl+V), **Delete** (Del), **Crop** (keep only the region), **Silence**.
+- **Fade in / Fade out** over the region with an **S-curve**, **linear** or **logarithmic** shape.
+- **Gain dB** and **Normalise** (peak −1 dBFS or −14 LUFS) for the region, or the whole song when nothing is marked; **Trim silence** at start and end; **DC** removes a DC offset.
+- **↶ / ↷** (Ctrl+Z / Ctrl+Y) undo and redo; **n steps ▸** lists them. **+ Marker** at the play position (names can be edited, click the time to jump there).
+- The original file is never changed: the steps are applied when you export. They are kept while the app runs.
+
+## Assistant
+**✨ Analyse & suggest** measures the song: tone balance in eight bands (sub bass to air), dynamics (crest factor), stereo (bass width, correlation), clipping and silence. It compares the tone balance with a **Style** (Techno / House, Afro House, Trance / EDM, Pop, Hip-hop, Rock, Soul / R&B, Funk, Acoustic, Podcast) or with a **Reference song**, shows the bands (purple: song, green: target) and lists proposals with their reason (e.g. "Low mids +8 dB above Techno: band 1 at 300 Hz −4 dB"). Tick what you want and press **Apply ticked**; the loudness target is reached afterwards. **↶ Undo suggestions** brings the chain from before back. It works with measurements and rules, without internet, in a few seconds.
+
 ## The chain
 Slots are processed from top to bottom: **⏻** switches one off (bypass), **↑ ↓** moves it, **↺** resets it, **×** removes
 it, **+ Add…** adds one (also a second EQ or compressor). Click a name to open its controls.
@@ -31,7 +42,11 @@ it, **+ Add…** adds one (also a second EQ or compressor). Click a name to open
 | **Compressor (glue)** | threshold, ratio, attack, release, knee, make-up |
 | **Multiband compressor** | three bands (two split frequencies), each with its own compressor and level |
 | **Stereo / mono bass** | width (0 % mono … 200 %), bass below a frequency in mono, balance |
+| **Dynamic EQ** | turns one frequency down only while it is too loud (sharp highs, booming bass): frequency, width, threshold, ratio, max. cut, attack, release; add it twice for two bands |
+| **Saturation / exciter** | warmth (soft tape-like saturation: drive, mix) and air (new harmonics above a frequency), output level |
 | **Limiter / maximizer** (always last) | **Louder** drives the song into it; **Ceiling** is the highest true peak allowed (4x oversampled, look-ahead), **Release** |
+
+Each song keeps its own chain: opening it again brings its settings back.
 
 **Target** (Streaming −14 LUFS, Apple −16, Loud −9, Broadcast −23, Podcast −16) and **Reach … LUFS** set *Louder* and
 the ceiling so the song reaches that loudness. **Load preset…** offers built-in starting points; **Save** keeps your

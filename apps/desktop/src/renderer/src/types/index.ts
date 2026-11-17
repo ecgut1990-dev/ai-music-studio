@@ -40,7 +40,7 @@ export type AutoParam = 'volume' | 'pan' | `send:${string}`
 export interface AutoPoint { beat: number; value: number }     // value: volume/send 0..1, pan -1..1
 
 // an effect in a track (insert): built in now, VST3 plugins later
-export type InsertType = 'eq' | 'compressor' | 'delay' | 'reverb' | 'filter'
+export type InsertType = 'eq' | 'compressor' | 'delay' | 'reverb' | 'filter' | 'limiter' | 'saturation' | 'stereo' | 'dyneq'
 export interface InsertFx {
   id: string
   type: InsertType

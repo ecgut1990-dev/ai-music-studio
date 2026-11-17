@@ -18,7 +18,7 @@ function Row({ name, before, after, unit, warn, warnBefore, title }: { name: str
     ? { fontWeight: 700, fontSize: 13, color: (s === 'after' ? warn : warnBefore) ? 'var(--red)' : 'var(--text-primary)' }
     : { fontWeight: 400, fontSize: 11, color: 'var(--text-muted)' }
   return (
-    <div title={title} style={{ display: 'grid', gridTemplateColumns: '1fr 58px 14px 58px', alignItems: 'baseline', fontSize: 12 }}>
+    <div title={title} style={{ display: 'grid', gridTemplateColumns: '1fr 58px 14px 82px', alignItems: 'baseline', fontSize: 12 }}>
       <span style={{ color: 'var(--text-secondary)' }}>{name}</span>
       <span style={{ textAlign: 'right', ...on('before') }}>{fmt(before)}</span>
       <span style={{ textAlign: 'center', color: 'var(--text-muted)' }}>→</span>
@@ -78,6 +78,7 @@ export function MasterMeters({ before, after, target, busy, active }: { before: 
         <div style={label}>Gain reduction</div>
         <Bar value={-limDb} min={0} max={12} color="var(--orange)" text={`Limiter ${fmt(limDb)} dB`} />
         <Bar value={red.comp} min={0} max={12} color="var(--yellow)" text={`Compressor −${fmt(red.comp)} dB`} />
+        {red.dyneq > 0.05 && <Bar value={red.dyneq} min={0} max={12} color="var(--teal)" text={`Dynamic EQ −${fmt(red.dyneq)} dB`} />}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
           {red.bands.map((b, i) => <Bar key={i} value={b} min={0} max={12} color="var(--yellow)" text={`${['Low', 'Mid', 'High'][i]} −${fmt(b)}`} />)}
         </div>

@@ -11,6 +11,9 @@ import { matchesQuery } from '../src/renderer/src/lib/librarySearch'
 import type { LibraryTrack } from '../src/renderer/src/lib/api'
 import { alignStarts, leadBeats, phaseAlign } from '../src/renderer/src/beatmatch/store'
 import { autoStructure } from '../src/renderer/src/lib/lyrics'
+import { measureBalance, PROFILES, suggest, bassWidth } from '../src/renderer/src/audio/master/assistant'
+import { defaultChain } from '../src/renderer/src/audio/master/chain'
+import { applyEdits, applyOp, copyPart, fadeShape } from '../src/renderer/src/audio/master/edit'
 import { analyze, BiquadBank, CompressorCore, crossover, LimiterCore, MultibandCore, truePeakTaps } from '../src/renderer/src/audio/master/dsp'
 
 let failed = 0
@@ -211,6 +214,73 @@ check('search by stem name and several words', matchesQuery(stemT, 'vocals midni
     worst = Math.max(worst, Math.abs(10 * Math.log10(e / ei)))
   }
   check('multiband with no compression sums flat (±0.05 dB)', worst < 0.05, worst.toFixed(3))
+}
+
+// mastering edits: cut, crop, paste, silence, fades, gain, normalise, DC, trim
+{
+  const sr = 1000
+  const ramp = (): Float32Array[] => [Float32Array.from({ length: 1000 }, (_, i) => i / 1000), Float32Array.from({ length: 1000 }, (_, i) => -i / 1000)]
+  const src = ramp()
+  const cut = applyOp(src, sr, { type: 'delete', start: 0.2, end: 0.5 })
+  check('cut removes the part and joins the rest', cut[0].length === 700 && Math.abs(cut[0][200] - 0.5) < 1e-6 && Math.abs(cut[1][200] + 0.5) < 1e-6, String(cut[0][200]))
+  check('the original is not changed', src[0].length === 1000 && src[0][300] > 0.29)
+  const crop = applyOp(src, sr, { type: 'crop', start: 0.1, end: 0.3 })
+  check('crop keeps only the part', crop[0].length === 200 && Math.abs(crop[0][0] - 0.1) < 1e-6)
+  const clip = copyPart(src, sr, 0.0, 0.1)
+  const pasted = applyOp(src, sr, { type: 'paste', at: 0.5, clip })
+  check('paste inserts the copied part', pasted[0].length === 1100 && Math.abs(pasted[0][500]) < 1e-6 && Math.abs(pasted[0][600] - 0.5) < 1e-6)
+  const sil = applyOp(src, sr, { type: 'silence', start: 0.4, end: 0.6 })
+  check('silence makes a part quiet, length stays', sil[0].length === 1000 && sil[0][500] === 0 && sil[0][700] > 0)
+  const fin = applyOp([new Float32Array(1000).fill(1)], sr, { type: 'fade', start: 0, end: 1, dir: 'in', curve: 'linear' })
+  check('fade in starts silent and ends at full level', fin[0][0] === 0 && Math.abs(fin[0][999] - 1) < 1e-6 && Math.abs(fin[0][500] - 0.5) < 0.01)
+  check('fade curves: smooth is 0.5 in the middle, log quieter than linear', Math.abs(fadeShape(0.5, 'smooth') - 0.5) < 1e-9 && fadeShape(0.5, 'log') < 0.5)
+  const g = applyOp([new Float32Array(10).fill(0.5)], sr, { type: 'gain', start: 0, end: 0.01, db: 6.0206 })
+  check('gain +6 dB doubles the level', Math.abs(g[0][5] - 1) < 1e-4)
+  const pk = applyOp([Float32Array.from({ length: 100 }, (_, i) => Math.sin(i) * 0.25)], sr, { type: 'normalize', start: 0, end: 0.1, mode: 'peak', target: -1 })
+  const peak = Math.max(...Array.from(pk[0], Math.abs))
+  check('normalise to -1 dBFS peak', Math.abs(20 * Math.log10(peak) + 1) < 0.01, String(peak))
+  const dc = applyOp([new Float32Array(100).fill(0.2)], sr, { type: 'dc' })
+  check('DC offset removed', Math.abs(dc[0][50]) < 1e-6)
+  const padded = [new Float32Array(1000)]; padded[0].fill(0.5, 300, 600)
+  const tr = applyOp(padded, sr, { type: 'trim', thresholdDb: -60 })
+  check('trim removes silence at start and end', tr[0].length < 400 && tr[0].length >= 300, String(tr[0].length))
+  const all = applyEdits(src, sr, [{ type: 'delete', start: 0, end: 0.1 }, { type: 'crop', start: 0, end: 0.5 }])
+  check('steps apply in order', all[0].length === 500 && Math.abs(all[0][0] - 0.1) < 1e-6)
+}
+
+// mastering assistant: pink noise measures flat; too much bass is found and turned down
+{
+  const sr = 48000, n = sr * 8
+  let seed = 7
+  const rnd = (): number => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff * 2 - 1 }
+  const pink = new Float32Array(n)
+  let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0
+  for (let i = 0; i < n; i++) {            // Paul Kellet's pink filter
+    const w = rnd()
+    b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.96900 * b2 + w * 0.1538520
+    b3 = 0.86650 * b3 + w * 0.3104856; b4 = 0.55000 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.0168980
+    pink[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.05; b6 = w * 0.115926
+  }
+  const flat = measureBalance([pink, pink], sr)
+  // the test's pink filter is only pink up to about 10 kHz (above, its white part shows): bands 20 Hz–12 kHz
+  const worst = Math.max(...Object.entries(flat).filter(([k]) => k !== 'air').map(([, v]) => Math.abs(v)))
+  check('pink noise measures flat (±1.5 dB, 20 Hz–12 kHz)', worst < 1.5, JSON.stringify(flat))
+  check('mono material has no bass width', bassWidth([pink, pink], sr) < 0.01)
+  // +8 dB below 150 Hz
+  const xo = { b: 0, y: 0 }
+  const boosted = new Float32Array(n)
+  const k = 1 - Math.exp(-2 * Math.PI * 150 / sr)
+  for (let i = 0; i < n; i++) { xo.y += k * (pink[i] - xo.y); boosted[i] = pink[i] + xo.y * 1.5 }
+  const bal = measureBalance([boosted, boosted], sr)
+  check('extra bass is measured', bal.bass > flat.bass + 3, JSON.stringify(bal))
+  const flatProfile = { ...PROFILES[3], balance: flat }
+  const a = analyze([boosted, boosted], sr)
+  const sug = suggest(a, bal, 0, flatProfile)
+  const low = sug.find((x) => x.id === 'low')
+  const c = low?.apply?.(defaultChain())
+  const eq = c?.slots.find((x) => x.type === 'eq') as { p: { lowG: number } } | undefined
+  check('assistant turns the bass down with the low shelf', !!eq && eq.p.lowG < 0, JSON.stringify(sug.map((x) => x.id)))
+  check('assistant always proposes the loudness target', sug.some((x) => x.id === 'loud' && x.reach))
 }
 
 console.log(`${passed} passed, ${failed} failed`)

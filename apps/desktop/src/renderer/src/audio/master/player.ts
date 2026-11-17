@@ -32,7 +32,7 @@ class MasterPlayer {
   goniR: AnalyserNode | null = null
   meter: AudioWorkletNode | null = null
   report: MeterReport | null = null
-  reduction = { limiter: 1, comp: 0, bands: [0, 0, 0] }
+  reduction = { limiter: 1, comp: 0, bands: [0, 0, 0], dyneq: 0 }
   listeners = new Set<Listener>()
 
   on(l: Listener): () => void { this.listeners.add(l); return () => this.listeners.delete(l) }

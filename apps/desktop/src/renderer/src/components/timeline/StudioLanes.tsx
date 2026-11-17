@@ -111,7 +111,7 @@ export { valueAt }
 
 // ── effects in a track (inserts) ─────────────────────────────────────────────
 
-const FX_TYPES: InsertType[] = ['eq', 'compressor', 'delay', 'reverb', 'filter']
+const FX_TYPES: InsertType[] = ['eq', 'compressor', 'delay', 'reverb', 'filter', 'dyneq', 'saturation', 'stereo', 'limiter']
 
 export function FxHeader({ track }: { track: Track }): React.ReactElement {
   const { updateTrack } = useProjectStore.getState()

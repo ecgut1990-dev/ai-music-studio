@@ -424,6 +424,112 @@ export class StereoCore {
   }
 }
 
+/** Dynamic EQ, one band: a bell filter that only turns its frequency down while that band is too loud (harsh highs,
+ *  booming bass), by up to `rangeDb`. The level is measured in the band itself (band-pass on the mid signal). */
+export class DynEqCore {
+  constructor(opts: { sr: number; channels: number }) {
+    this.sr = opts.sr
+    this.chs = opts.channels
+    this.env = 0
+    this.gr = 0
+    this.reduction = 0
+    this.det = [0, 0, 0, 0]
+    this.st = []
+    for (let c = 0; c < this.chs; c++) this.st.push([0, 0, 0, 0])
+    this.count = 0
+    this.set({ freq: 3500, q: 1.5, thresholdDb: -24, ratio: 3, rangeDb: 6, attackMs: 5, releaseMs: 120 })
+  }
+
+  set(p: { freq?: number; q?: number; thresholdDb?: number; ratio?: number; rangeDb?: number; attackMs?: number; releaseMs?: number }): void {
+    if (p.freq !== undefined) this.freq = Math.max(20, Math.min(p.freq, this.sr * 0.45))
+    if (p.q !== undefined) this.q = Math.max(0.2, p.q)
+    if (p.thresholdDb !== undefined) this.th = p.thresholdDb
+    if (p.ratio !== undefined) this.ratio = Math.max(1, p.ratio)
+    if (p.rangeDb !== undefined) this.range = Math.max(0, p.rangeDb)
+    if (p.attackMs !== undefined) this.att = Math.exp(-1 / (Math.max(0.1, p.attackMs) * this.sr / 1000))
+    if (p.releaseMs !== undefined) this.rel = Math.exp(-1 / (Math.max(1, p.releaseMs) * this.sr / 1000))
+    // band-pass for the detector (RBJ, 0 dB at the centre)
+    const w = 2 * Math.PI * this.freq / this.sr, al = Math.sin(w) / (2 * this.q), a0 = 1 + al
+    this.bp = [al / a0, 0, -al / a0, -2 * Math.cos(w) / a0, (1 - al) / a0]
+    this.peak(-this.gr)
+  }
+
+  /** bell filter coefficients for a gain in dB (RBJ peaking EQ) */
+  peak(db: number): void {
+    const A = Math.pow(10, db / 40), w = 2 * Math.PI * this.freq / this.sr, al = Math.sin(w) / (2 * this.q), cs = Math.cos(w)
+    const a0 = 1 + al / A
+    this.k = [(1 + al * A) / a0, -2 * cs / a0, (1 - al * A) / a0, -2 * cs / a0, (1 - al / A) / a0]
+  }
+
+  process(inp: Float32Array[], out: Float32Array[], frames: number): void {
+    const b = this.bp, d = this.det
+    let most = 0
+    for (let i = 0; i < frames; i++) {
+      const L = inp[0][i], R = inp[1] ? inp[1][i] : L
+      const x = (L + R) * 0.5
+      const y = b[0] * x + b[1] * d[0] + b[2] * d[1] - b[3] * d[2] - b[4] * d[3]
+      d[1] = d[0]; d[0] = x; d[3] = d[2]; d[2] = y
+      const a = Math.abs(y)
+      this.env = a > this.env ? a + (this.env - a) * this.att : a + (this.env - a) * this.rel
+      if ((this.count++ & 31) === 0) {                        // new filter every 32 samples
+        const lvl = this.env > 1e-9 ? 20 * Math.log10(this.env) : -180
+        const over = lvl - this.th
+        this.gr = over > 0 ? Math.min(this.range, over * (1 - 1 / this.ratio)) : 0
+        this.peak(-this.gr)
+        if (this.gr > most) most = this.gr
+      }
+      const k = this.k
+      for (let c = 0; c < this.chs; c++) {
+        const s = this.st[c], v = c === 0 ? L : R
+        const o = k[0] * v + k[1] * s[0] + k[2] * s[1] - k[3] * s[2] - k[4] * s[3]
+        s[1] = s[0]; s[0] = v; s[3] = s[2]; s[2] = o
+        out[c][i] = o
+      }
+    }
+    if (most > this.reduction) this.reduction = most
+  }
+}
+
+/** Saturation and exciter: soft tape-like clipping (tanh) mixed with the dry sound, and harmonics added above a
+ *  frequency for "air" and presence. Peaks stay where they were (the curve is scaled to 0 dBFS). */
+export class SaturationCore {
+  constructor(opts: { sr: number; channels: number }) {
+    this.sr = opts.sr
+    this.chs = opts.channels
+    this.hp = []
+    for (let c = 0; c < this.chs; c++) this.hp.push([0, 0, 0, 0])
+    this.set({ driveDb: 6, mix: 0.5, exciteFreq: 6000, excite: 0, outDb: 0 })
+  }
+
+  set(p: { driveDb?: number; mix?: number; exciteFreq?: number; excite?: number; outDb?: number }): void {
+    if (p.driveDb !== undefined) { this.drive = Math.pow(10, p.driveDb / 20); this.norm = 1 / Math.tanh(this.drive) }
+    if (p.mix !== undefined) this.mix = Math.max(0, Math.min(1, p.mix))
+    if (p.excite !== undefined) this.excite = Math.max(0, Math.min(1, p.excite))
+    if (p.outDb !== undefined) this.out = Math.pow(10, p.outDb / 20)
+    if (p.exciteFreq !== undefined) {
+      const w = 2 * Math.PI * Math.min(p.exciteFreq, this.sr * 0.45) / this.sr, cs = Math.cos(w), al = Math.sin(w) / (2 * Math.SQRT1_2), a0 = 1 + al
+      this.k = [(1 + cs) / 2 / a0, -(1 + cs) / a0, (1 + cs) / 2 / a0, -2 * cs / a0, (1 - al) / a0]
+    }
+  }
+
+  process(inp: Float32Array[], out: Float32Array[], frames: number): void {
+    const k = this.k, dr = this.drive, nm = this.norm, mx = this.mix, ex = this.excite, g = this.out
+    for (let c = 0; c < this.chs; c++) {
+      const x = inp[c] ?? inp[0], o = out[c], s = this.hp[c]
+      for (let i = 0; i < frames; i++) {
+        const v = x[i]
+        let y = v * (1 - mx) + Math.tanh(v * dr) * nm * mx
+        if (ex > 0) {
+          const h = k[0] * v + k[1] * s[0] + k[2] * s[1] - k[3] * s[2] - k[4] * s[3]
+          s[1] = s[0]; s[0] = v; s[3] = s[2]; s[2] = h
+          y += Math.tanh(h * 4) * 0.25 * ex                   // new harmonics of the highs only
+        }
+        o[i] = y * g
+      }
+    }
+  }
+}
+
 // ── whole-file analysis ─────────────────────────────────────────────────────────────────────────────────────────
 
 export interface Analysis {
@@ -511,3 +617,5 @@ export interface CompressorCore { [k: string]: any }
 export interface BiquadBank { [k: string]: any }
 export interface MultibandCore { [k: string]: any }
 export interface StereoCore { [k: string]: any }
+export interface DynEqCore { [k: string]: any }
+export interface SaturationCore { [k: string]: any }

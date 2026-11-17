@@ -31,11 +31,12 @@ function computePeaks(buf: AudioBuffer, from: number, to: number, cols: number):
   return out
 }
 
-export function MasterWave({ before, after, clips, show }: {
+export function MasterWave({ before, after, clips, show, markers = [] }: {
   before: AudioBuffer | null
   after: AudioBuffer | null
   clips: number[]                    // seconds where the shown version reaches 0 dBFS
   show: 'both' | 'before' | 'after'
+  markers?: Array<{ t: number; name: string }>
 }): React.ReactElement {
   const canvas = useRef<HTMLCanvasElement>(null)
   const wrap = useRef<HTMLDivElement>(null)
@@ -77,6 +78,8 @@ export function MasterWave({ before, after, clips, show }: {
       g.fillStyle = 'rgba(255,255,255,0.12)'; g.fillRect(0, mid, W, 1)
       g.fillStyle = '#ef4444'
       for (const c of clips) if (c >= from && c <= to) g.fillRect(x(c), 0, 1.5, H)
+      g.font = '10px system-ui'
+      for (const m of markers) if (m.t >= from && m.t <= to) { g.fillStyle = '#eab308'; g.fillRect(x(m.t), 0, 1.5, H); g.fillText(m.name, x(m.t) + 3, 11) }
       // time ruler
       g.fillStyle = '#6b7280'; g.font = '10px system-ui'
       const stepS = [1, 2, 5, 10, 15, 30, 60].find((s) => (s / (to - from)) * W > 60) ?? 60

@@ -45,7 +45,7 @@ The blue line shows where the song plays. **Click or double-click** any empty pl
 **A** on the track (Ableton: A; or right-click → *Show automation*) opens **volume and pan** as two lanes below the track. In each lane: click adds a point, drag moves it (Shift: only in time, Alt: off the grid), double-click deletes it, **Clear** removes all. **▾ / ▸** makes a lane small, the selector switches it to another value (pan, a send), **+** adds a lane, **×** closes it (the points stay). Playback and export follow the curves.
 
 ## Effects (FX)
-**FX** on the track opens its effects lane: **+ Effect…** adds an **EQ** (low / mid / high), **compressor**, **delay** (in beats), **reverb** or **filter** (low-pass / high-pass). Every effect has its settings as sliders (double-click: default), ⏻ on / bypass, ◀ ▶ for the order and × to remove it. The sound goes through them in order, before the fader. VST3 plugins will appear here later.
+**FX** on the track opens its effects lane: **+ Effect…** adds an **EQ** (low / mid / high), **compressor**, **delay** (in beats), **reverb**, **filter** (low-pass / high-pass), and the processors of [[Mastering]]: **dynamic EQ**, **saturation / exciter**, **stereo / mono bass** and the **true-peak limiter**. Every effect has its settings as sliders (double-click: default), ⏻ on / bypass, ◀ ▶ for the order and × to remove it. The sound goes through them in order, before the fader. VST3 plugins will appear here later.
 
 ## Track colour
 Right-click a track header, or click the colour strip at its left: pick a colour from the palette or any colour.

@@ -1,3 +1,4 @@
+import { sendToMastering } from '../../stores/mastering.store'
 import React, { useEffect, useRef, useState } from 'react'
 import { nanoid } from 'nanoid'
 import { api } from '../../lib/api'
@@ -212,6 +213,8 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
                   {busy === n ? 'Converting…' : '→ MIDI'}
                 </button>
               )}
+              <button className="btn btn-ghost" style={{ fontSize: 11 }} title="Open this stem in Mastering (e.g. the instrumental)"
+                onClick={() => sendToMastering(stems[n], `${title} – ${labels[n] ?? n}`)}>Mastering</button>
             </div>
           )
         })}

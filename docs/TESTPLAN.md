@@ -131,8 +131,8 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 | 6c.16 | neu (0.20.4): Studio, MIDI-Clip anklicken → Strg+R; Piano Roll → Strg+R | MIDI-Aufnahme startet (● Recording…), Strg+R stoppt | ✅ | | 0.20.4: Rec-Knopf ✅, Strg+R ❌ (Ableton und Cubase) → 0.20.6 ✅ |
 | 6c.17 | neu (0.20.5): Create mit 2 oder mehr Songs / Versionen | neuester Song oben, der erste unten | ✅ | | |
 | 6c.18 | neu (0.30.4): Create, ACE-Step 1.5, Länge 240 s (oder 360 s) | kein Abbruch nach 600 s; der Song wird fertig (auf dem Prozessor dauert das lange) | ✅ | | 0.30.4: 300 s fertig nach etwa 47 min (PC i7-3930K, CPU) |
-| 6c.19 | neu (0.30.6): Create, ACE-Step 1.5 Turbo, LoRA „ACE-STEP-1.5v-rain-techno“ (Stärke 1), kurzer Song (30 s) | LoRA ist wählbar (nicht grau); Hinweis „LoRA … is used at strength 1.00“, keine Meldung „not an ACE-Step 1.5 LoRA“; Stil hörbar techno | | | 0.30.7: „module name can't contain .“ und „not enough memory“ → 0.30.8 neu testen (auch mit techno-acestep1.5-v1) |
-| 6c.20 | neu (0.30.7): fertiger Song in Create → **Stem Splitter**; Library → **Stem Splitter** | Stem Splitter öffnet sich mit dem Song und seinem Namen, „Split Stems“ startet | | | |
+| 6c.19 | neu (0.30.6): Create, ACE-Step 1.5 Turbo, LoRA „ACE-STEP-1.5v-rain-techno“ (Stärke 1), kurzer Song (30 s) | LoRA ist wählbar (nicht grau); Hinweis „LoRA … is used at strength 1.00“, keine Meldung „not an ACE-Step 1.5 LoRA“; Stil hörbar techno | ✅ | | 0.30.8: techno-acestep1.5-v1 geladen (Stärke 0.75), 60-s-Song ohne Speicherfehler |
+| 6c.20 | neu (0.30.7): fertiger Song in Create → **Stem Splitter**; Library → **Stem Splitter** | Stem Splitter öffnet sich mit dem Song und seinem Namen, „Split Stems“ startet | ✅ | | 0.30.8: Stems direkt aus dem fertigen Song |
 | 6c.21 | neu (0.30.9): Create mit ACE-Step 1.5, auf die Fortschrittsanzeige am Anfang achten | „Loading ACE-Step 1.5 from the disk (already downloaded …)“; falls „Downloading … missing: …“ erscheint: Text an Claude schicken | | | |
 
 ## 7. Mastering (neu in 0.30.0)
@@ -152,6 +152,27 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 | 7.11 | neu (0.30.2): beim Abspielen **Before** / **After** drücken | Wellenform, Zahlen (groß/hell), Spektrum und Lautheitskurve springen auf Original bzw. Master | ✅ | | 0.30.2: Regler sollen mitspringen → 7.13 |
 | 7.12 | neu (0.30.2): **Same loudness** aus, dann Before / After | After ist jetzt deutlich lauter (so laut wie exportiert); mit Häkchen wieder gleich laut, ohne Verzerrung | ✅ | |  |
 | 7.13 | neu (0.30.3): EQ / Kompressor / Louder verstellen, dann **Before** und **After** drücken | Before: alle Regler auf Ausgangsstellung (grau), EQ-Kurve flach; After: deine Einstellung, verstellte Regler lila mit • | | | |
+
+## 7c. Mastering 0.31.0: Assistent, Schneiden, neue Effekte
+
+| # | Test | Erwartet | A | B | Notiz |
+|---|---|---|---|---|---|
+| 7c.1 | Mastering: Song öffnen, Stil wählen (z. B. Techno / House), **✨ Analyse & suggest** | nach wenigen Sekunden: Balken der 8 Bänder (lila Song, grüne Linie Ziel) und Vorschläge mit Begründung | | | |
+| 7c.2 | Vorschläge anhaken / abhaken, **Apply ticked** | Kette ändert sich (EQ, Kompressor …), danach Loudness ≈ Ziel des Stils (Techno −9, Pop −11 …), True Peak ≤ Ceiling | | | |
+| 7c.3 | **↶ Undo suggestions** | Kette wie vorher | | | |
+| 7c.4 | Stil **Soul / R&B** und **Funk**; dann **Reference song…** wählen und neu analysieren | andere Ziellinie und andere Vorschläge; mit Referenz steht „above / below the reference“ | | | |
+| 7c.5 | In der Wellenform einen Bereich ziehen → **✂ Cut** (oder Strg+X) | Bereich ist weg, Song kürzer, Zeit oben passt | | | |
+| 7c.6 | Strg+Z, dann Strg+Y | Schnitt rückgängig, dann wieder da | | | |
+| 7c.7 | Bereich → **Copy**, Abspielposition woanders hin → **Paste** (Strg+V) | Stück an der Position eingefügt | | | |
+| 7c.8 | **Delete**, **Crop**, **Silence**, **Fade in / out** (S-curve, linear, log) | tut jeweils das Erwartete; Fades hörbar | | | |
+| 7c.9 | **Gain dB**, **Normalise** (Peak / LUFS), **Trim silence**, **DC** | Werte „vorher“ ändern sich passend | | | |
+| 7c.10 | **+ Marker**, Namen ändern, auf die Zeit klicken | gelbe Linie mit Namen in der Wellenform; Klick springt dorthin | | | |
+| 7c.11 | Nach Schnitten **Export…** | exportierte Datei hat die Schnitte; Originaldatei unverändert | | | |
+| 7c.12 | **+ Add… → Dynamic EQ** (z. B. 3,5 kHz) und **Saturation / exciter** | beim Abspielen hörbar; Gain Reduction zeigt „Dynamic EQ“ | | | |
+| 7c.13 | Zwei Songs öffnen, bei jedem andere Kette, zwischen den Tabs wechseln | jeder Song behält seine Kette | | | |
+| 7c.14 | Studio: Spur → **FX → + Effect…** → Dynamic EQ, Saturation, Stereo, Limiter | Effekte erscheinen mit Reglern, hörbar, auch im Export | | | |
+| 7c.15 | Stem Splitter: Stems erstellen → bei einem Stem **Mastering** | Stem öffnet sich im Mastering | | | |
+| 7c.16 | **File → New project** (oder Strg+N) | Fenster fragt nach dem Namen; der Name steht oben und beim Speichern | | | |
 
 ## 7b. AI Chat, Sonstiges
 
