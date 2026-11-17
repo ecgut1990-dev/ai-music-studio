@@ -20,6 +20,8 @@ interface UIState {
   snap: boolean         // snap to the grid while moving, trimming and drawing
   libraryTab: 'tracks' | 'stems' | 'samples'   // open tab of the Library (other views can open it on a tab)
   panelHeight: number   // the panel under the Studio (mixer, piano roll, ...): drag its top edge
+  chatOpen: boolean     // the AI assistant panel on the right
+  setChatOpen: (open: boolean) => void
   setPanelHeight: (h: number) => void
 
   setLibraryTab: (tab: 'tracks' | 'stems' | 'samples') => void
@@ -64,6 +66,8 @@ export const useUIStore = create<UIState>()(
 
       setGrid: (grid) => set({ grid }),
       toggleSnap: () => set((s) => ({ snap: !s.snap })),
+      chatOpen: true,
+      setChatOpen: (chatOpen) => set({ chatOpen }),
       setShortcutPreset: (shortcutPreset) => set({ shortcutPreset }),
       setPianoTool: (pianoTool) => set({ pianoTool }),
       setPianoZoom: (pianoZoom) => set({ pianoZoom: Math.min(4, Math.max(0.25, pianoZoom)) }),

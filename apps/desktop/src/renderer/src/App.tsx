@@ -102,7 +102,8 @@ export default function App(): React.ReactElement {
   // an older version may have stored the removed 'music-gen' view
   const activeView = useUIStore((s) => ((s.activeView as string) === 'music-gen' ? 'create' : s.activeView))
   const [hw, setHw] = useState<HardwareInfo | null>(null)
-  const [chatOpen, setChatOpen] = useState(true)
+  const chatOpen = useUIStore((s) => s.chatOpen)
+  const setChatOpen = useUIStore((s) => s.setChatOpen)
   const [base, setBase] = useState('')
   const setActiveView = useUIStore(s => s.setActiveView)
 

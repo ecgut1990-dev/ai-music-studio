@@ -7,10 +7,11 @@ import { tr } from '../../i18n/tr'
 // master gets louder without going over the ceiling. Next to it the live level (true peak and short-term loudness).
 // Drag, mouse wheel (Shift: fine), arrow keys; double-click: 0 dB.
 
-const MIN = -12, MAX = 24, H = 220
+const MIN = -12, MAX = 24
 const marks = [24, 18, 12, 6, 0, -6, -12]
 
-export function MasterFader({ chain, onChange }: { chain: Chain; onChange: (c: Chain) => void }): React.ReactElement {
+export function MasterFader({ chain, onChange, height = 220 }: { chain: Chain; onChange: (c: Chain) => void; height?: number }): React.ReactElement {
+  const H = height
   const [, tick] = useState(0)
   const track = useRef<HTMLDivElement>(null)
   const drag = useRef<{ y0: number; v0: number } | null>(null)
