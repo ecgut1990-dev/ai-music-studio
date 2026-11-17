@@ -3,6 +3,13 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.31.1
+
+- **Mastering assistant in your language:** its proposals, bands and buttons are in German when the app is set to German.
+- **You see what the assistant changed:** after *Apply* a green box lists what was applied, the app switches to "After" so you hear the result, and it shows when the loudness target is being set. It says what the song is compared with; a new style or reference song measures again at once.
+- **Fix: after a cut the waveform disappeared for a few seconds;** it now stays while the song is measured again.
+- **The edit bar shows the song's values** (length, loudness, peak, RMS) and the last step, so you see what Gain, Normalise or Trim did.
+
 ## 0.31.0
 
 **Mastering: assistant, cutting and new effects.**

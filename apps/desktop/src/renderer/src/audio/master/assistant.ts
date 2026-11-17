@@ -128,74 +128,95 @@ const withSlot = (c: Chain, type: Slot['type'], f: (s: Slot) => Slot): Chain => 
 }
 const r1 = (v: number): number => Math.round(v * 2) / 2
 
-/** The proposals for a song. `ref` (a reference song's balance) replaces the profile's balance when given. */
-export function suggest(a: Analysis, bal: Balance, width: number, profile: Profile, ref?: Balance | null, silence?: { start: number; end: number }): Suggestion[] {
+const BAND_DE: Record<BandId, string> = {
+  sub: 'Sub-Bass', bass: 'Bass', lowmid: 'Untere Mitten', mid: 'Mitten', upmid: 'Obere Mitten', presence: 'Präsenz', brilliance: 'Brillanz', air: 'Luft',
+}
+const PROFILE_DE: Record<string, string> = { acoustic: 'Akustik / Singer-Songwriter', podcast: 'Podcast / Sprache' }
+/** Names in the language of the app ("de" or English). */
+export const bandLabel = (id: BandId, lang = 'en'): string => (lang === 'de' ? BAND_DE[id] : BANDS.find((b) => b.id === id)!.label)
+export const profileLabel = (p: Profile, lang = 'en'): string => (lang === 'de' ? PROFILE_DE[p.id] ?? p.label : p.label)
+
+/** The proposals for a song. `ref` (a reference song's balance) replaces the profile's balance when given.
+ *  `lang`: "de" for German texts, anything else English. */
+export function suggest(a: Analysis, bal: Balance, width: number, profile: Profile, ref?: Balance | null,
+  silence?: { start: number; end: number }, lang = 'en'): Suggestion[] {
+  const de = lang === 'de'
+  const T = (en: string, d: string): string => (de ? d : en)
+  const n1 = (v: number): string => (de ? v.toFixed(1).replace('.', ',') : v.toFixed(1))
+  const sg = (v: number): string => `${v > 0 ? '+' : ''}${n1(v)}`
   const out: Suggestion[] = []
   const target = ref ?? profile.balance
   const diff = (b: BandId): number => bal[b] - target[b]
   const amount = (d: number): number => -Math.max(-4, Math.min(4, r1(d * 0.6)))    // move 60 % of the way, at most 4 dB
-  const what = ref ? 'the reference' : profile.label
-  const say = (b: BandId, d: number): string => `${BANDS.find((x) => x.id === b)!.label} ${d > 0 ? '+' : ''}${d.toFixed(1)} dB ${d > 0 ? 'above' : 'below'} ${what}`
+  const pl = profileLabel(profile, lang)
+  const what = ref ? T('the reference', 'der Referenz') : pl
+  const say = (b: BandId, d: number): string => de
+    ? `${bandLabel(b, lang)} ${sg(d)} dB ${d > 0 ? 'über' : 'unter'} ${ref ? 'der Referenz' : pl}`
+    : `${bandLabel(b)} ${sg(d)} dB ${d > 0 ? 'above' : 'below'} ${what}`
 
   // tone: low end (shelf), boxiness (300 Hz), mids, harshness (dynamic EQ), air (shelf), rumble (low cut)
   const low = (diff('sub') + diff('bass')) / 2
   if (Math.abs(low) > 2) {
     const g = amount(low)
-    out.push({ id: 'low', area: 'tone', on: true, text: `${say('bass', low)}: low shelf at 100 Hz ${g > 0 ? '+' : ''}${g} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, lowF: 100, lowG: g })) })
+    out.push({ id: 'low', area: 'tone', on: true, text: `${say('bass', low)}: ${T('low shelf at 100 Hz', 'Low Shelf bei 100 Hz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, lowF: 100, lowG: g })) })
   }
   if (diff('sub') > 4 && bal.sub > bal.bass) {
-    out.push({ id: 'rumble', area: 'tone', on: true, text: `Much energy below 60 Hz (${diff('sub').toFixed(1)} dB above ${what}): low cut at 28 Hz removes rumble you cannot hear but that eats loudness.`, apply: (c) => withEq(c, (p) => ({ ...p, lowCut: 28 })) })
+    out.push({ id: 'rumble', area: 'tone', on: true, text: T(`Much energy below 60 Hz (${n1(diff('sub'))} dB above ${what}): low cut at 28 Hz removes rumble you cannot hear but that eats loudness.`,
+      `Viel Energie unter 60 Hz (${n1(diff('sub'))} dB über ${ref ? 'der Referenz' : pl}): Low Cut bei 28 Hz entfernt Rumpeln, das man nicht hört, das aber Lautheit kostet.`), apply: (c) => withEq(c, (p) => ({ ...p, lowCut: 28 })) })
   }
   if (diff('lowmid') > 2) {
     const g = amount(diff('lowmid'))
-    out.push({ id: 'box', area: 'tone', on: true, text: `${say('lowmid', diff('lowmid'))} (sounds muddy or boxy): band 1 at 300 Hz ${g} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p1F: 300, p1G: g, p1Q: 1.2 })) })
+    out.push({ id: 'box', area: 'tone', on: true, text: `${say('lowmid', diff('lowmid'))} ${T('(sounds muddy or boxy): band 1 at 300 Hz', '(klingt mulmig oder pappig): Band 1 bei 300 Hz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p1F: 300, p1G: g, p1Q: 1.2 })) })
   }
   const mids = (diff('mid') + diff('upmid')) / 2
   if (Math.abs(mids) > 2) {
     const g = amount(mids)
-    out.push({ id: 'mids', area: 'tone', on: true, text: `${say('mid', mids)}: band 2 at 1.2 kHz ${g > 0 ? '+' : ''}${g} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p2F: 1200, p2G: g, p2Q: 0.8 })) })
+    out.push({ id: 'mids', area: 'tone', on: true, text: `${say('mid', mids)}: ${T('band 2 at 1.2 kHz', 'Band 2 bei 1,2 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p2F: 1200, p2G: g, p2Q: 0.8 })) })
   }
   if (diff('presence') > 2) {
     const range = Math.min(6, r1(diff('presence')))
-    out.push({ id: 'harsh', area: 'tone', on: true, text: `${say('presence', diff('presence'))} (can sound sharp): dynamic EQ at 3.5 kHz turns it down by up to ${range} dB only where it is loud.`, apply: (c) => withSlot(c, 'dyneq', (s) => ({ ...s, p: { ...(slotDefaults('dyneq', s.id).p), freq: 3500, q: 1.2, thresholdDb: -30, ratio: 3, rangeDb: range } } as Slot)) })
+    out.push({ id: 'harsh', area: 'tone', on: true, text: `${say('presence', diff('presence'))} ${T(`(can sound sharp): dynamic EQ at 3.5 kHz turns it down by up to ${range} dB only where it is loud.`, `(kann scharf klingen): Dynamischer EQ bei 3,5 kHz senkt nur dort, wo es laut wird, um bis zu ${n1(range)} dB.`)}`, apply: (c) => withSlot(c, 'dyneq', (x) => ({ ...x, p: { ...(slotDefaults('dyneq', x.id).p), freq: 3500, q: 1.2, thresholdDb: -30, ratio: 3, rangeDb: range } } as Slot)) })
   } else if (diff('presence') < -2) {
     const g = amount(diff('presence'))
-    out.push({ id: 'presence', area: 'tone', on: true, text: `${say('presence', diff('presence'))} (voice and snare lack presence): band 3 at 4 kHz +${g} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p3F: 4000, p3G: g, p3Q: 1 })) })
+    out.push({ id: 'presence', area: 'tone', on: true, text: `${say('presence', diff('presence'))} ${T('(voice and snare lack presence): band 3 at 4 kHz', '(Stimme und Snare fehlt Präsenz): Band 3 bei 4 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, p3F: 4000, p3G: g, p3Q: 1 })) })
   }
   const highs = (diff('brilliance') + diff('air')) / 2
   if (Math.abs(highs) > 2) {
     const g = amount(highs)
-    out.push({ id: 'air', area: 'tone', on: true, text: `${say('air', highs)}: high shelf at 10 kHz ${g > 0 ? '+' : ''}${g} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, highF: 10000, highG: g })) })
+    out.push({ id: 'air', area: 'tone', on: true, text: `${say('air', highs)}: ${T('high shelf at 10 kHz', 'High Shelf bei 10 kHz')} ${sg(g)} dB.`, apply: (c) => withEq(c, (p) => ({ ...p, highF: 10000, highG: g })) })
   }
   if (highs < -4) {
-    out.push({ id: 'excite', area: 'tone', on: false, text: 'The highs are very dull: a little exciter above 7 kHz adds air that a shelf alone cannot (try it, judge by ear).', apply: (c) => withSlot(c, 'saturation', (s) => ({ ...s, p: { ...(slotDefaults('saturation', s.id).p), mix: 0, driveDb: 0, exciteFreq: 7000, excite: 0.25 } } as Slot)) })
+    out.push({ id: 'excite', area: 'tone', on: false, text: T('The highs are very dull: a little exciter above 7 kHz adds air that a shelf alone cannot (try it, judge by ear).', 'Die Höhen sind sehr dumpf: etwas Exciter über 7 kHz bringt Luft, die ein Shelf allein nicht schafft (ausprobieren, nach Gehör entscheiden).'), apply: (c) => withSlot(c, 'saturation', (x) => ({ ...x, p: { ...(slotDefaults('saturation', x.id).p), mix: 0, driveDb: 0, exciteFreq: 7000, excite: 0.25 } } as Slot)) })
   }
 
   // dynamics
   const [lo, hi] = profile.crest
   if (a.crest > hi + 1) {
     const th = r1(Math.max(-40, Math.min(-6, a.rms + 6)))
-    out.push({ id: 'glue', area: 'dynamics', on: true, text: `Very dynamic (crest factor ${a.crest.toFixed(1)} dB, ${profile.label} usually ${lo}–${hi}): compressor 2:1 from ${th} dB, slow attack, holds the mix together.`, apply: (c) => withSlot(c, 'comp', (s) => ({ ...s, p: { thresholdDb: th, ratio: 2, attackMs: 30, releaseMs: 200, kneeDb: 6, makeupDb: 0 } } as Slot)) })
+    out.push({ id: 'glue', area: 'dynamics', on: true, text: T(`Very dynamic (crest factor ${n1(a.crest)} dB, ${pl} usually ${lo}–${hi}): compressor 2:1 from ${th} dB, slow attack, holds the mix together.`,
+      `Sehr dynamisch (Crest-Faktor ${n1(a.crest)} dB, bei ${pl} meist ${lo}–${hi}): Kompressor 2:1 ab ${n1(th)} dB, langsame Attack, hält den Mix zusammen.`), apply: (c) => withSlot(c, 'comp', (x) => ({ ...x, p: { thresholdDb: th, ratio: 2, attackMs: 30, releaseMs: 200, kneeDb: 6, makeupDb: 0 } } as Slot)) })
   } else if (a.crest < lo - 1) {
-    out.push({ id: 'squashed', area: 'dynamics', on: true, text: `Already strongly compressed (crest factor ${a.crest.toFixed(1)} dB): the compressor is switched off so the song keeps its punch.`, apply: (c) => ({ ...c, slots: c.slots.map((s) => (s.type === 'comp' || s.type === 'multiband' ? { ...s, on: false } : s)) as Slot[] }) })
+    out.push({ id: 'squashed', area: 'dynamics', on: true, text: T(`Already strongly compressed (crest factor ${n1(a.crest)} dB): the compressor is switched off so the song keeps its punch.`, `Schon stark komprimiert (Crest-Faktor ${n1(a.crest)} dB): der Kompressor wird ausgeschaltet, damit der Song seinen Punch behält.`), apply: (c) => ({ ...c, slots: c.slots.map((x) => (x.type === 'comp' || x.type === 'multiband' ? { ...x, on: false } : x)) as Slot[] }) })
   }
 
   // stereo
   if (width > 0.35) {
-    out.push({ id: 'monobass', area: 'stereo', on: true, text: `The bass is wide (side signal ${Math.round(width * 100)} % of the middle below 150 Hz): mono below ${profile.monoBelow} Hz gives a tighter low end that works on club systems and phones.`, apply: (c) => withSlot(c, 'stereo', (s) => ({ ...s, p: { ...(s.p as object), width: (s.p as { width?: number }).width ?? 1, balance: (s.p as { balance?: number }).balance ?? 0, monoBelow: profile.monoBelow } } as Slot)) })
+    out.push({ id: 'monobass', area: 'stereo', on: true, text: T(`The bass is wide (side signal ${Math.round(width * 100)} % of the middle below 150 Hz): mono below ${profile.monoBelow} Hz gives a tighter low end that works on club systems and phones.`,
+      `Der Bass ist breit (Seitensignal ${Math.round(width * 100)} % der Mitte unter 150 Hz): Mono unter ${profile.monoBelow} Hz gibt einen festeren Bass, der auf Club-Anlagen und Handys funktioniert.`), apply: (c) => withSlot(c, 'stereo', (x) => ({ ...x, p: { ...(x.p as object), width: (x.p as { width?: number }).width ?? 1, balance: (x.p as { balance?: number }).balance ?? 0, monoBelow: profile.monoBelow } } as Slot)) })
   }
   if (a.correlation < 0.2) {
-    out.push({ id: 'phase', area: 'stereo', on: true, text: `The stereo correlation is low (${a.correlation.toFixed(2)}): parts may cancel in mono. Width 85 % makes it safer.`, apply: (c) => withSlot(c, 'stereo', (s) => ({ ...s, p: { ...(s.p as object), width: 0.85 } } as Slot)) })
+    out.push({ id: 'phase', area: 'stereo', on: true, text: T(`The stereo correlation is low (${a.correlation.toFixed(2)}): parts may cancel in mono. Width 85 % makes it safer.`, `Die Stereo-Korrelation ist niedrig (${n1(a.correlation)}): in Mono können Teile verschwinden. Breite 85 % macht es sicherer.`), apply: (c) => withSlot(c, 'stereo', (x) => ({ ...x, p: { ...(x.p as object), width: 0.85 } } as Slot)) })
   }
 
   // file
-  if (a.clips.length > 0) out.push({ id: 'clips', area: 'note', on: false, text: `The original already reaches 0 dBFS in ${a.clips.length} places: that distortion is in the file and cannot be removed here. If you can, export the mix 1–3 dB quieter.` })
+  if (a.clips.length > 0) out.push({ id: 'clips', area: 'note', on: false, text: T(`The original already reaches 0 dBFS in ${a.clips.length} places: that distortion is in the file and cannot be removed here. If you can, export the mix 1–3 dB quieter.`, `Das Original erreicht schon an ${a.clips.length} Stellen 0 dBFS: diese Verzerrung steckt in der Datei und lässt sich hier nicht entfernen. Wenn möglich, den Mix 1–3 dB leiser exportieren.`) })
   if (silence && (silence.start > 0.3 || silence.end > 1)) {
-    out.push({ id: 'trim', area: 'edit', on: true, text: `Silence at the start (${silence.start.toFixed(1)} s) or end (${silence.end.toFixed(1)} s): trim it.`, edit: { type: 'trim', thresholdDb: -60 } })
+    out.push({ id: 'trim', area: 'edit', on: true, text: T(`Silence at the start (${n1(silence.start)} s) or end (${n1(silence.end)} s): trim it.`, `Stille am Anfang (${n1(silence.start)} s) oder Ende (${n1(silence.end)} s): abschneiden.`), edit: { type: 'trim', thresholdDb: -60 } })
   }
 
   // loudness last
-  out.push({ id: 'loud', area: 'loudness', on: true, reach: true, text: `Loudness: ${profile.label} is usually around ${profile.lufs} LUFS; the target is set and "Louder" is adjusted to reach it (true peak stays below the ceiling).` })
+  out.push({ id: 'loud', area: 'loudness', on: true, reach: true, text: T(`Loudness: ${pl} is usually around ${profile.lufs} LUFS; the target is set and "Louder" is adjusted to reach it (true peak stays below the ceiling).`,
+    `Lautheit: ${pl} liegt meist bei etwa ${profile.lufs} LUFS; das Ziel wird gesetzt und „Louder“ so eingestellt, dass es erreicht wird (der True Peak bleibt unter der Grenze).`) })
   return out
 }
 

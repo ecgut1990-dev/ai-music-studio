@@ -279,13 +279,14 @@ export function Mastering(): React.ReactElement {
             <button className="btn btn-primary" onClick={() => { setResults(null); setOutput(loadOutput(name)) }}>Export…</button>
           </div>
 
-          <MasterWave before={buffer} after={after} clips={shown === 'before' ? aBefore?.clips ?? [] : aAfter?.clips ?? []} show={shown}
+          {/* while "after" is computed again (after an edit or a change), the edited song is shown instead of nothing */}
+          <MasterWave before={buffer} after={after ?? buffer} clips={shown === 'before' ? aBefore?.clips ?? [] : aAfter?.clips ?? []} show={shown}
             markers={useMasteringStore.getState().markers[current!] ?? []} />
-          <MasterEdit buffer={buffer} ops={edits.ops} canRedo={edits.redo.length > 0} onEdit={pushEdit} onUndo={undoEdit} onRedo={redoEdit} path={current!} />
+          <MasterEdit buffer={buffer} stats={aBefore} ops={edits.ops} canRedo={edits.redo.length > 0} onEdit={pushEdit} onUndo={undoEdit} onRedo={redoEdit} path={current!} />
 
           <MasterAssistant buffer={buffer} before={aBefore} chain={chain} onApply={setChain} onEdit={pushEdit}
             onTarget={(t) => { setTarget(t); try { localStorage.setItem('ams-master-target', t) } catch { /* */ } }}
-            onReach={(t) => void reachTarget(t)} />
+            onReach={(t) => void reachTarget(t)} reaching={reaching} />
 
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(340px, 1fr) minmax(320px, 420px)', minWidth: 0, gap: 14, alignItems: 'start' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
