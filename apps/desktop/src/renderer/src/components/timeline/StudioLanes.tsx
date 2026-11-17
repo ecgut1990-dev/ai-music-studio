@@ -117,7 +117,8 @@ export { valueAt }
 
 const FX_TYPES: InsertType[] = ['eq', 'compressor', 'delay', 'reverb', 'filter', 'dyneq', 'saturation', 'stereo', 'limiter']
 
-export function FxHeader({ track }: { track: Track }): React.ReactElement {
+// "+ Effect…": a built-in effect or one of the ticked VST plugins (effects lane and channel tab)
+export function FxAddSelect({ track, style }: { track: Track; style?: React.CSSProperties }): React.ReactElement {
   const { updateTrack } = useProjectStore.getState()
   const plugins = usePluginsStore((s) => s.plugins.filter((p) => !p.isInstrument && !s.off.includes(p.id)))
   const loadedList = usePluginsStore((s) => s.loaded)
@@ -128,27 +129,34 @@ export function FxHeader({ track }: { track: Track }): React.ReactElement {
     const p = plugins.find((x) => x.id === id)
     if (!p) return
     const fx: InsertFx = { id: nanoid(), type: 'vst', on: true, p: {}, vst: { pluginId: p.id, name: p.name, vendor: p.vendor, format: p.format, xml: p.xml, arch: p.arch } }
-    updateTrack(track.id, { fx: [...(track.fx ?? []), fx], showFx: true })
+    updateTrack(track.id, { fx: [...(track.fx ?? []), fx] })
     void openPlugin(fx, track.name)                    // the plugin window opens right away
   }
   return (
+    <select value="" style={{ fontSize: 10, ...style }} title={tr('Add an effect to this track: a built-in effect or one of your VST plugins')}
+      onChange={(e) => {
+        const v = e.target.value
+        if (v.startsWith('vst:')) addPlugin(v.slice(4)); else if (v) add(v as InsertType)
+        e.target.value = ''; e.target.blur()
+      }}>
+      <option value="">{tr('+ Effect…')}</option>
+      <optgroup label={tr('Built in')}>
+        {FX_TYPES.map((t) => <option key={t} value={t}>{tr(INSERT_LABEL[t])}</option>)}
+      </optgroup>
+      <optgroup label={tr('VST plugins')}>
+        {plugins.map((p) => <option key={p.id} value={`vst:${p.id}`}>{p.name}{p.vendor ? ` (${p.vendor})` : ''} · {p.format}{p.arch === 'x86' ? ' · 32-bit' : ''}</option>)}
+        {!plugins.length && <option value="" disabled>{tr('None yet: Settings → Plugins')}</option>}
+      </optgroup>
+    </select>
+  )
+}
+
+export function FxHeader({ track }: { track: Track }): React.ReactElement {
+  const { updateTrack } = useProjectStore.getState()
+  return (
     <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '4px 8px 4px 18px', fontSize: 10, color: 'var(--text-muted)' }}>
       <span style={{ flex: 1 }}>{tr('Effects (')}{track.fx?.length ?? 0})</span>
-      <select value="" style={{ fontSize: 10 }} title={tr('Add an effect to this track: a built-in effect or one of your VST plugins')}
-        onChange={(e) => {
-          const v = e.target.value
-          if (v.startsWith('vst:')) addPlugin(v.slice(4)); else if (v) add(v as InsertType)
-          e.target.value = ''; e.target.blur()
-        }}>
-        <option value="">{tr('+ Effect…')}</option>
-        <optgroup label={tr('Built in')}>
-          {FX_TYPES.map((t) => <option key={t} value={t}>{tr(INSERT_LABEL[t])}</option>)}
-        </optgroup>
-        <optgroup label={tr('VST plugins')}>
-          {plugins.map((p) => <option key={p.id} value={`vst:${p.id}`}>{p.name}{p.vendor ? ` (${p.vendor})` : ''} · {p.format}{p.arch === 'x86' ? ' · 32-bit' : ''}</option>)}
-          {!plugins.length && <option value="" disabled>{tr('None yet: Settings → Plugins')}</option>}
-        </optgroup>
-      </select>
+      <FxAddSelect track={track} />
       <button className="btn btn-ghost" style={small} title={tr('Close the effects lane (the effects keep playing)')} onClick={() => updateTrack(track.id, { showFx: false })}>×</button>
     </div>
   )
@@ -220,7 +228,7 @@ function VstControls({ fx, track }: { fx: InsertFx; track: Track }): React.React
   )
 }
 
-async function openPlugin(fx: InsertFx, trackName: string): Promise<void> {
+export async function openPlugin(fx: InsertFx, trackName: string): Promise<void> {
   try { await showVstEditor(fx, liveSampleRate(), trackName) }
   catch (e) { window.alert(trf('The plugin could not be opened: {m}', { m: (e as Error).message })) }
 }

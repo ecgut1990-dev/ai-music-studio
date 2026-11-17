@@ -47,6 +47,8 @@ The blue line shows where the song plays. **Click or double-click** any empty pl
 ## Effects (FX)
 **FX** on the track opens its effects lane: **+ Effect…** adds an **EQ** (low / mid / high), **compressor**, **delay** (in beats), **reverb**, **filter** (low-pass / high-pass), and the processors of [[Mastering]]: **dynamic EQ**, **saturation / exciter**, **stereo / mono bass** and the **true-peak limiter**. Every effect has its settings as sliders (double-click: default), ⏻ on / bypass, ◀ ▶ for the order and × to remove it. The sound goes through them in order, before the fader.
 
+The **Channel** panel on the right (button *Channel*) shows the same effects of the selected track: ⏻ on / off, **Open** (plugin window) or **Edit** (built-in effect: its sliders in the effects lane), ▲ ▼ order, × remove, and **+ Effect…** to add one.
+
 **VST plugins:** your own VST3 and VST2 effects are listed in **+ Effect…** under *VST plugins* (the ones ticked in [[Settings]] → *Plugins*). Adding one opens the plugin's own window; **Open** opens it again (it stays above the app). ⏻ bypasses it, ◀ ▶ and × work as with the built-in effects. The plugin's settings are saved with the project and the export includes the plugin. A plugin that cannot be loaded (for example after moving the project to another PC) is marked *not loaded* and the track plays without it; its settings stay in the project. 64-bit and 32-bit plugins work (32-bit ones are marked in the menu).
 
 ## Track colour
