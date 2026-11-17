@@ -19,7 +19,7 @@ No programming, no command line: just the installer.
 
 **Updates come automatically:** the app checks for new versions and installs them with one click (Settings → Updates). The SmartScreen warning only comes with the installer downloaded in the browser.
 
-**[📖 Wiki: every menu and function explained](https://github.com/pierrecinema/ai-music-studio/wiki)** · Manual (German, incl. first-time setup): [docs/MANUAL.md](docs/MANUAL.md) · Beta testing: [docs/BETA.md](docs/BETA.md) · Test plan: [docs/TESTPLAN.md](docs/TESTPLAN.md)
+**[📖 Wiki: every menu and function explained](https://github.com/pierrecinema/ai-music-studio/wiki)** · Manual (German, incl. first-time setup): [docs/MANUAL.md](docs/MANUAL.md) · Testing and reporting problems: [docs/TESTING.md](docs/TESTING.md) · Test plan: [docs/TESTPLAN.md](docs/TESTPLAN.md)
 
 ### ☕ Buy me a coffee
 
@@ -29,10 +29,11 @@ AI Music Studio is free and stays free, made in my spare time. If it saves you t
 
 ## What's new
 
-### New in 0.40.0
+### New in 0.40
 
 - **The app speaks your language:** every screen (Studio, Mastering, Library, Create music, Stem Splitter, Settings, dialogs and messages) is now translated into **German, French, Spanish, Italian, Portuguese and Chinese**. Switch in *Settings → General → Language*. Japanese and Korean show the menu in their language and the rest in English for now.
 - **Save before closing:** closing the app with unsaved changes asks whether to save the project first (Save / Don't save / Cancel).
+- **No longer labelled beta** (0.40.1): the app and its documentation no longer call it a test version.
 - **Library:** uses the whole width when the AI assistant is closed, and shows the full name of every song; the buttons sit in their own row.
 
 **Mastering (0.30 – 0.31):** a full mastering workspace with an **AI assistant** that measures the song and suggests EQ, compression and loudness for 10 genres (each with its reason), **editing** (cut, copy, paste, fades, normalise, markers, undo), a big **master gain fader**, dynamic EQ, saturation / exciter, before / after at the same loudness, and export in 8 formats.
@@ -109,7 +110,7 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 | <img src="docs/screenshots/settings-general.png" alt="Settings → General" width="100%"><br>**Settings → General** – language and VST plugin folders | <img src="docs/screenshots/settings-audio.png" alt="Settings → Audio" width="100%"><br>**Settings → Audio** – export sample rate (44.1 kHz for platforms) and buffer size |
 | <img src="docs/screenshots/settings-appearance.png" alt="Settings → Appearance" width="100%"><br>**Settings → Appearance** – dark or light theme | <img src="docs/screenshots/settings-updates.png" alt="Settings → Updates" width="100%"><br>**Settings → Updates** – automatic updates from GitHub releases |
 
-**Beta testers wanted** ([guide, German](docs/BETA.md)): we are looking for testers, especially with **NVIDIA cards**: open *Feedback → Record a detailed log*, reproduce the problem, then attach the saved log to a GitHub issue. Nothing is sent automatically.
+**Found a problem?** ([guide, German](docs/TESTING.md)) Reports are very welcome, especially from PCs with **NVIDIA cards**: open *Feedback → Record a detailed log*, reproduce the problem, then attach the saved log to a GitHub issue. Nothing is sent automatically.
 
 ## Low-resource mode (8 GB VRAM / 12 GB RAM)
 

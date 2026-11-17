@@ -1,7 +1,6 @@
-# AI Music Studio: Beta-Test
+# AI Music Studio: Testen und Fehler melden
 
-Danke, dass du testest! Das ist eine **Beta-Version**: Vieles funktioniert, aber nicht alles ist rund.
-Deine Rückmeldungen entscheiden, was als Nächstes besser wird.
+Danke, dass du hilfst! Deine Rückmeldungen entscheiden, was als Nächstes besser wird.
 
 ## Was du brauchst
 - Windows 10 oder 11. Ein Computer mit NVIDIA-Karte ist am schnellsten; AMD, Intel und reine CPU-Rechner funktionieren langsamer

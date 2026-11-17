@@ -21,7 +21,7 @@ export function logCrash(source: string, message: string): void {
   } catch { /* logging must never crash the app */ }
 }
 
-// ── diagnostic log for beta testers ───────────────────────────────────────────
+// ── diagnostic log for testers ───────────────────────────────────────────
 // Switched on in Feedback → "Record a detailed log". Then the interface writes what it does (actions,
 // warnings, errors) to diag.log. The tester copies or saves everything and sends it to us; nothing is
 // sent automatically.

@@ -86,7 +86,7 @@ export function FeedbackButton(): React.ReactElement {
   )
 }
 
-// Beta testers: record a detailed log, then copy it or save it as a file and send it to us.
+// Testers: record a detailed log, then copy it or save it as a file and send it to us.
 function DiagSection({ note }: { note: string }): React.ReactElement {
   const [on, setOn] = useState(diagIsOn())
   const [msg, setMsg] = useState<string | null>(null)
@@ -95,7 +95,7 @@ function DiagSection({ note }: { note: string }): React.ReactElement {
   return (
     <div style={{ borderTop: '1px solid var(--border-mid)', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <b style={{ fontSize: 13, color: 'var(--text-primary)', flex: 1 }}>{tr('Detailed log (beta)')}</b>
+        <b style={{ fontSize: 13, color: 'var(--text-primary)', flex: 1 }}>{tr('Detailed log')}</b>
         <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: on ? 'var(--red)' : 'var(--text-secondary)', cursor: 'pointer' }}>
           <input type="checkbox" checked={on} onChange={async (e) => { setOn(await setDiag(e.target.checked)) }} />
           {on ? tr('Recording') : tr('Record a detailed log')}

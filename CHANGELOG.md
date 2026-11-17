@@ -3,6 +3,10 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.40.1
+
+- **AI Music Studio is no longer labelled beta:** the welcome window, the Feedback dialog, the release notes and the documentation no longer call it a test version. Feedback stays as welcome as before (Feedback button at the bottom right).
+
 ## 0.40.0
 
 - **The app speaks your language:** every screen is now translated: Studio, Mastering, Library, Create music, Stem Splitter, Settings, the dialogs and the messages. Fully translated: **German, French, Spanish, Italian, Portuguese and Chinese** (Settings → General → Language). Japanese and Korean show the menu in their language and the rest in English for now.
