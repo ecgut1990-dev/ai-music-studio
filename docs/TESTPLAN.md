@@ -175,9 +175,10 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 | 7c.16 | **File → New project** (oder Strg+N) | Fenster fragt nach dem Namen; der Name steht oben und beim Speichern | ✅ | | |
 | 7c.17 | neu (0.31.2): **Master-Gain-Fader** rechts oben: ziehen, Mausrad, Doppelklick, −1 / 0 / +1 | Master wird lauter / leiser ohne Übersteuern; TP bleibt ≤ Ceiling, GR (orange) zeigt die Arbeit des Limiters | ✅ | | |
 | 7c.18 | neu (0.31.2): Assistent → bei einem Vorschlag **Übernehmen**; dann **Master noch einmal analysieren** | Vorschlag grün „übernommen“; Balken zeigen den Master (lila) mit grauer Kontur fürs Original; Runde 2 schlägt weiter vor | ✅ | | |
-| 7c.19 | neu (0.31.2): Wellenform am Ende | nach dem Songende etwas dunkler Leerraum mit Endlinie; Zoom bleibt nach einem Schnitt | | | 0.31.4: Ende am Fensterrand, nicht weiter herauszoomen → 0.31.5 |
-| 7c.20 | neu (0.31.3): Mastering, KI-Leiste rechts schließen (×), dann wieder öffnen | zu: Fader und Anzeigen rechts in eigener Spalte, immer sichtbar; offen: Layout wie bisher; nach Neustart bleibt die Leiste so | | | 0.31.4: kein Knopf zum Öffnen → 0.31.5 (Knopf war nicht klickbar) |
-| 7c.21 | neu (0.31.4): KI-Leiste zu → oben rechts **✦ KI-Assistent**; Reihenfolge rechts | Knopf öffnet die Leiste wieder; rechts: Goniometer + Spektrum, Lautheitsverlauf, Whole song, Live, Master-Gain unten | | | → 0.31.5 |
+| 7c.19 | neu (0.31.2): Wellenform am Ende | nach dem Songende etwas dunkler Leerraum mit Endlinie; Zoom bleibt nach einem Schnitt | | | 0.31.5: Leerraum fehlte (Wellenform gestreckt) → 0.31.6 |
+| 7c.20 | neu (0.31.3): Mastering, KI-Leiste rechts schließen (×), dann wieder öffnen | zu: Fader und Anzeigen rechts in eigener Spalte, immer sichtbar; offen: Layout wie bisher; nach Neustart bleibt die Leiste so | ✅ | | 0.31.5 |
+| 7c.21 | neu (0.31.4): KI-Leiste zu → oben rechts **✦ KI-Assistent**; Reihenfolge rechts | Knopf öffnet die Leiste wieder; rechts: Goniometer + Spektrum, Lautheitsverlauf, Whole song, Live, Master-Gain unten | ✅ | | 0.31.5 |
+| 7c.22 | neu (0.31.6): Mastering: weiße Abspiellinie am ▼ oben ziehen; auf der Zeitleiste unter der Wellenform ziehen (auch beim Abspielen) | Position fährt mit der Maus vor und zurück; Klick springt; Ziehen in der Wellenform markiert weiterhin einen Bereich | | | |
 
 ## 7b. AI Chat, Sonstiges
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { masterPlayer } from '../../audio/master/player'
+import { tr } from '../../i18n/tr'
 
 // The waveform of the song before (grey) and after the chain (colour), clipping marks (red), the play position and
 // the loop region. Click: jump there. Drag: mark a region to loop. Ctrl + wheel or the zoom slider: zoom.
@@ -20,10 +21,11 @@ function computePeaks(buf: AudioBuffer, from: number, to: number, cols: number):
   const out = new Float32Array(cols * 2)
   const chans = Array.from({ length: Math.min(2, buf.numberOfChannels) }, (_, c) => buf.getChannelData(c))
   const a = Math.floor(from * buf.sampleRate), b = Math.min(buf.length, Math.ceil(to * buf.sampleRate))
-  const step = Math.max(1, (b - a) / cols)
+  // one column = the same time everywhere; past the end of the song there is nothing to draw (empty room)
+  const step = Math.max(1e-6, ((to - from) * buf.sampleRate) / cols)
   for (let x = 0; x < cols; x++) {
     let lo = 0, hi = 0
-    const s = Math.floor(a + x * step), e = Math.min(b, Math.floor(a + (x + 1) * step))
+    const s = Math.floor(a + x * step), e = Math.min(b, Math.max(Math.floor(a + x * step) + 1, Math.floor(a + (x + 1) * step)))
     const inc = Math.max(1, Math.floor((e - s) / 400))
     for (const ch of chans) for (let i = s; i < e; i += inc) { const v = ch[i]; if (v < lo) lo = v; if (v > hi) hi = v }
     out[x * 2] = lo; out[x * 2 + 1] = hi
@@ -97,6 +99,9 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
       }
       const pos = masterPlayer.position()
       g.fillStyle = '#fff'; g.fillRect(x(pos), 0, 1.5, H)
+      g.beginPath(); g.moveTo(x(pos) - 6, 0); g.lineTo(x(pos) + 7, 0); g.lineTo(x(pos) + 0.75, 9); g.closePath(); g.fill()   // grip to drag
+      // zoomed in and playing: the view follows the play position
+      if (masterPlayer.playing && !drag.current && zoom > 1 && (pos > to - span * 0.03 || pos < from)) setScroll(Math.max(0, Math.min(total - span, pos - span * 0.1)))
       if (masterPlayer.playing) raf = requestAnimationFrame(draw)
     }
     draw()
@@ -117,8 +122,33 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
     return Math.max(0, Math.min(dur, scroll + ((e.clientX - r.left) / r.width) * span))
   }
 
+  // near the play line (its grip) or on the time ruler at the bottom: drag moves the play position (scrub)
+  const scrubZone = (e: React.MouseEvent): boolean => {
+    const r = canvas.current!.getBoundingClientRect()
+    const px = e.clientX - r.left, py = e.clientY - r.top
+    const xp = ((masterPlayer.position() - scroll) / span) * r.width
+    return Math.abs(px - xp) < 8 || py > r.height - 18
+  }
+  const onHover = (e: React.MouseEvent): void => { if (canvas.current) canvas.current.style.cursor = scrubZone(e) ? 'ew-resize' : 'text' }
+
   const onDown = (e: React.MouseEvent): void => {
     if (!before) return
+    if (scrubZone(e)) {
+      let last = 0
+      masterPlayer.seek(timeAt(e))
+      drag.current = { x0: e.clientX, t0: 0, moved: true }
+      const move = (ev: MouseEvent): void => {
+        const now = performance.now()
+        if (now - last < 40) return                              // at most 25 jumps a second while playing
+        last = now; masterPlayer.seek(timeAt(ev))
+      }
+      const up = (ev: MouseEvent): void => {
+        window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up)
+        masterPlayer.seek(timeAt(ev)); drag.current = null
+      }
+      window.addEventListener('mousemove', move); window.addEventListener('mouseup', up)
+      return
+    }
     const t0 = timeAt(e)
     drag.current = { x0: e.clientX, t0, moved: false }
     const move = (ev: MouseEvent): void => {
@@ -142,16 +172,16 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
       const z = Math.max(ZMIN, Math.min(200, zoom * (e.deltaY < 0 ? 1.25 : 0.8)))
       const ns = total / z
       setZoom(z); setScroll(Math.max(0, Math.min(total - ns, t - (t - scroll) * (ns / span))))
-    } else if (zoom > 1) {
+    } else if (zoom > 1) {                              // wheel (or Shift + wheel): forward and back in the song
       setScroll((s) => Math.max(0, Math.min(total - span, s + (e.deltaY + e.deltaX) / 400 * span)))
     }
   }
 
   return (
     <div ref={wrap} style={{ width: '100%', userSelect: 'none' }}>
-      <canvas ref={canvas} onMouseDown={onDown} onWheel={onWheel} style={{ display: 'block', borderRadius: 6, cursor: 'text' }} />
+      <canvas ref={canvas} onMouseDown={onDown} onMouseMove={onHover} onWheel={onWheel} style={{ display: 'block', borderRadius: 6, cursor: 'text' }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
-        <span>Click: play from there · drag: loop a region · Ctrl + wheel: zoom</span>
+        <span>{tr('Click: play from there · drag: mark a region · drag the white line or the time ruler: move through the song · Ctrl + wheel: zoom, wheel: scroll')}</span>
         <span style={{ flex: 1 }} />
         {zoom > 1 && <input type="range" min={0} max={Math.max(0, total - span)} step={0.01} value={scroll} style={{ width: 160 }}
           onChange={(e) => setScroll(Number(e.target.value))} title="Scroll" />}
