@@ -9,6 +9,6 @@ These menu items are dimmed and open a *Coming soon* page. They are in developme
 | 🎙 **Karaoke Export** | word timing, `.lrc` files and lyric videos |
 | 🎬 **Video Composer** | music that follows the cuts of your video |
 | ☁ **Cloud Rendering (Pro)** | optional: render on fast NVIDIA cards in the cloud. Everything else stays free and local |
-| **VST3 plugins** | your own instruments and effects in the [[Studio]] (bridge in development) |
+| **More VST plugins** | effects already work in the [[Studio]] tracks; plugins on the master and in [[Mastering]], and instrument plugins on MIDI tracks, come next |
 
 Ideas and wishes: [GitHub issues](https://github.com/pierrecinema/ai-music-studio/issues).

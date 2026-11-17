@@ -205,6 +205,25 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 | 8.10 | Bibliothek mit geschlossenem KI-Fenster | Liste nutzt die ganze Breite, voller Songname sichtbar, Knöpfe in eigener Zeile darunter | ✅ | | 0.40.1 |
 | 8.11 | neu (0.40.1): Feedback-Fenster (unten rechts) | Kein „Beta“ mehr; dort heißt es „Ausführliches Log“. Das Willkommensfenster erscheint nur beim allerersten Start (oder nach einem Absturz mit Sicherung), darum war es nicht zu sehen: so gewollt | ✅ | Willkommensfenster nicht erschienen (so gewollt) | 0.40.1 |
 
+## 9. Neu in 0.50.0: VST-Plugins
+
+Vorbereitung: mindestens ein VST3- oder VST2-Effekt (64 Bit) auf dem PC, z. B. ein kostenloser Hall oder EQ. Falls keiner da ist: „Valhalla Supermassive“ oder „TDR Nova“ (beide kostenlos).
+
+| Nr. | Test | Erwartet | Ergebnis | Notiz | Version |
+|---|---|---|---|---|---|
+| 9.1 | Nach dem Update die App starten, dann Einstellungen → **Plugins** | Die Suche ist beim ersten Start von selbst gelaufen (oder läuft noch: Fortschritt „x von y“). Deine Plugins stehen in der Liste mit Hersteller, Typ, Format | | | |
+| 9.2 | **Search for plugins** drücken | Suche läuft mit Fortschritt; danach „Letzte Suche: … · n Plugins“. Nicht nutzbare Dateien (32 Bit, abgestürzt) stehen unten aufklappbar | | | |
+| 9.3 | Bei einem Plugin das Häkchen entfernen | Es erscheint nicht mehr im Studio unter „+ Effekt…“ | | | |
+| 9.4 | Studio: Spur mit Song, **FX** → **+ Effekt…** → unter *VST-Plugins* ein Plugin wählen | Plugin erscheint in der Effekt-Zeile, sein Fenster öffnet sich und bleibt über der App | | | |
+| 9.5 | Abspielen, im Plugin-Fenster Regler drehen (z. B. Hall stark) | Man hört das Plugin sofort; keine Aussetzer oder Knackser | | | |
+| 9.6 | ⏻ am Plugin aus und wieder an, während der Song läuft | Ohne / mit Plugin; die Spur bleibt im Takt mit den anderen Spuren | | | |
+| 9.7 | Zwei Spuren, eine mit Plugin: zusammen abspielen | Beide laufen genau im Takt (kein Versatz, kein Echo-Effekt zwischen den Spuren) | | | |
+| 9.8 | Regler im Plugin ändern, Projekt speichern, App schließen und Projekt wieder öffnen, **Open** am Plugin | Das Plugin hat die geänderten Einstellungen | | | |
+| 9.9 | Nur im Plugin-Fenster etwas ändern (sonst nichts), dann App schließen | Die Frage „Projekt vor dem Schließen speichern?“ kommt | | | |
+| 9.10 | Datei → Export audio (WAV) | Die exportierte Datei klingt mit dem Plugin wie beim Abspielen | | | |
+| 9.11 | Mehrere Plugins auf einer Spur und auf verschiedenen Spuren | Alles hörbar, Reihenfolge mit ◀ ▶ änderbar; Rechner bleibt bedienbar | | | |
+| 9.12 | Projekt ohne Plugins abspielen | Wie bisher; kein Unterschied (der Plugin-Host läuft dann nicht) | | | |
+
 ## Ergebnisse
 
 Nach dem Test: Datei mit den Einträgen an Claude geben („hier der Testplan mit Ergebnissen“). Fehler (❌) werden zuerst

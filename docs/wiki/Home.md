@@ -4,7 +4,11 @@
 
 🎬 [2-minute tour on YouTube](https://youtu.be/F1hakwjWwEc) · ⬇ [Download the latest version](https://github.com/pierrecinema/ai-music-studio/releases/latest) · 🐞 [Report a problem](https://github.com/pierrecinema/ai-music-studio/issues)
 
-## What's new (0.40)
+## What's new (0.50)
+
+**VST plugins:** your own VST3 and VST2 effects in the [[Studio]] ([[Settings]] → Plugins finds them).
+
+## Earlier (0.40)
 
 The whole app is now available in **German, French, Spanish, Italian, Portuguese and Chinese** ([[Settings]] →
 General → Language), closing the app asks whether to save unsaved changes, and the [[Library]] uses the full width.
