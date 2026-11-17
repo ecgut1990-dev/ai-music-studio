@@ -1,4 +1,7 @@
-# Reddit drafts: beta testers for AI Music Studio
+# Reddit drafts for AI Music Studio
+
+Note (17.11.2026): posts that called the app "beta" or asked for "beta testers" were removed on some subreddits.
+Do not call it beta; present it as a free app and ask for feedback instead.
 
 Download link used below: https://github.com/pierrecinema/ai-music-studio/releases/latest
 
@@ -6,7 +9,7 @@ Download link used below: https://github.com/pierrecinema/ai-music-studio/releas
 
 ## 1) r/alphaandbetausers
 
-**Title:** [Windows] AI Music Studio – 100 % local AI, make your own loops, full DAW. Free & open-source, looking for beta testers (especially NVIDIA)
+**Title:** [Windows] AI Music Studio – 100 % local AI, make your own loops, full DAW. Free & open-source, feedback welcome (especially NVIDIA)
 
 **Body:**
 
@@ -67,4 +70,4 @@ Bug reports: Feedback button in the app → detailed log → GitHub issue.
 
 ## 3) Short version (Discord servers, r/WeAreTheMusicMakers feedback threads)
 
-> **100 % local AI + make your own loops:** free open-source music studio for Windows. Seamless loops of 1–16 bars, songs with vocals (ACE-Step, MusicGen) – all on your own PC, no cloud – plus a DAW with Ableton/Cubase shortcuts. Looking for beta testers, especially NVIDIA 8 GB+. https://github.com/pierrecinema/ai-music-studio/releases/latest – feedback via the in-app Feedback button or GitHub issues.
+> **100 % local AI + make your own loops:** free open-source music studio for Windows. Seamless loops of 1–16 bars, songs with vocals (ACE-Step, MusicGen) – all on your own PC, no cloud – plus a DAW with Ableton/Cubase shortcuts. Feedback welcome, especially from NVIDIA 8 GB+ users. https://github.com/pierrecinema/ai-music-studio/releases/latest – feedback via the in-app Feedback button or GitHub issues.

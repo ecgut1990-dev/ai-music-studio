@@ -57,7 +57,7 @@ export function Welcome(): React.ReactElement | null {
 
         <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)' }}>{tr('Welcome to AI Music Studio')}</div>
         <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          {tr('This is a test version (beta). Things can be rough: your reports make it better.')}
+          {tr('Found a problem or have an idea? Press Feedback at the bottom right: your reports make the app better.')}
           {cap
             ? <> {tr('Your computer:')} <b>{cap.label.split(':')[0]}</b>. {ready} {tr('features run well,')} {slow} {tr('run slowly (see Settings → Hardware).')}</>
             : <> {tr('Checking your computer…')}</>}

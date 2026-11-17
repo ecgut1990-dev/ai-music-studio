@@ -1,5 +1,5 @@
 ### Install
-Download `AIMusicStudio-Setup-*.exe` below and run it. Unsigned alpha: Windows SmartScreen may warn, choose "More info" then "Run anyway".
+Download `AIMusicStudio-Setup-*.exe` below and run it. The installer is not code-signed yet: Windows SmartScreen may warn, choose "More info" then "Run anyway".
 
 ### First start: AI engines
 The AI backend needs Python 3.10+ (python.org, tick "Add to PATH"). Then open **Settings → AI Engines** and click **Install selected**. The app sets up its own environment, no manual pip needed.

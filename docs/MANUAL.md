@@ -1,6 +1,6 @@
 # AI Music Studio – Handbuch
 
-Stand: Version 0.1.5 (Alpha). Windows 10/11, 64 Bit.
+Stand: Version 0.40. Windows 10/11, 64 Bit.
 
 ## 1. Installation
 
@@ -208,7 +208,7 @@ Das fertige LoRA erscheint automatisch in deiner Liste. Hinweis: Das Training se
 
 ## Studio: Arbeiten wie in Ableton und Cubase (neu in 0.13)
 
-Diese Funktionen sind neu und noch Beta. Rückmeldungen sind besonders willkommen (Feedback → *Detailed log*).
+Rückmeldungen zu diesen Funktionen sind besonders willkommen (Feedback → *Detailed log*).
 
 **Loop (Cycle).** Im oberen Streifen des Lineals ziehst du den Loop-Bereich auf. Die Klammer lässt sich verschieben, ihre Ränder ändern die Länge, ein Klick schaltet den Loop an oder aus. Mit Strg+L (Ableton) bzw. P (Cubase) legt die App den Loop um die gewählten Clips. Der Übergang am Loop-Ende ist nahtlos.
 
@@ -305,9 +305,9 @@ Unter **Library → Samples** legst du Sample-Ordner fest. Die App erkennt insta
 - **Vorhören:** Mit „Preview at project tempo“ hörst du den Loop schon im Projekttempo.
 - Grenzen: Gestreckt wird bis 90 Sekunden Länge und bei Faktoren zwischen etwa 0,6 und 1,7 klingt es gut, bei Extremen hörbar „gläsern“. Die Ableton-Analysedateien (`.asd`, Warp-Marker) werden nicht gelesen. Ableton-Packs im proprietären Format (`.alp`, `.adg`, `.adv`) sind keine Audiodateien und erscheinen nicht; nur die enthaltenen WAV/AIFF-Dateien.
 
-## Beta-Test
+## Testen und Fehler melden
 
-Wie du testest und Probleme meldest, steht in `docs/BETA.md`. Unten rechts gibt es den Knopf **Feedback**: Er sammelt Systemdaten, Engine-Status und die letzten Log-Zeilen, sendet aber nichts automatisch. Im Feedback-Fenster gibt es außerdem das **Detailed log (beta)**: einschalten, den Fehler wiederholen, dann *Copy log* oder *Save log as file…* und uns schicken. Es enthält Klicks, Warnungen und Fehler der App und das Log des KI-Backends, aber kein Audio und keine Passwörter. Es bleibt über Neustarts an, bis du es ausschaltest.
+Wie du testest und Probleme meldest, steht in `docs/TESTING.md`. Unten rechts gibt es den Knopf **Feedback**: Er sammelt Systemdaten, Engine-Status und die letzten Log-Zeilen, sendet aber nichts automatisch. Im Feedback-Fenster gibt es außerdem das **Detailed log**: einschalten, den Fehler wiederholen, dann *Copy log* oder *Save log as file…* und uns schicken. Es enthält Klicks, Warnungen und Fehler der App und das Log des KI-Backends, aber kein Audio und keine Passwörter. Es bleibt über Neustarts an, bis du es ausschaltest.
 
 ## 4. Speicherorte
 
@@ -368,7 +368,7 @@ Getestet ist die Verbindung mit dem offiziellen MCP-Python-Client (Verbindung, W
 | Update-Hinweis fehlt | Einstellungen → Updates → „Jetzt suchen“. |
 | Beim Erzeugen auf der CPU ist der Prozessor nur zum Teil ausgelastet | Seit 0.14.3 rechnet die KI mit allen Threads der CPU (auch den Hyper-Threads) und mit niedrigerer Priorität, damit App und Windows flüssig bleiben. Das Fortschrittsfeld zeigt die Zahl der Threads. MusicGen erzeugt Ton für Ton nacheinander und lastet die CPU deshalb weniger aus als ACE-Step; rechnet MusicGen über DirectML auf der Grafikkarte, ist die CPU-Last ohnehin niedrig. Eine andere Zahl: Umgebungsvariable `AMS_CPU_THREADS` setzen und die App neu starten. |
 
-## 8. Bekannte Einschränkungen (Alpha)
+## 8. Bekannte Einschränkungen
 
 - **Vocal Editor, AI Instruments, Karaoke Export und Video Composer** sind im Menü abgeblendet und zeigen „Coming soon“: Sie sind noch nicht fertig und kommen mit einem späteren Update.
 - Die Engines (ACE-Step, Matchering, Whisper, MuScriptor) sind eingebunden, aber noch nicht auf allen Hardware-Kombinationen erprobt.

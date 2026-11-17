@@ -1,4 +1,4 @@
-// The detailed log for beta testers. While it is on, console output (log, info, warn, error), uncaught
+// The detailed log for testers. While it is on, console output (log, info, warn, error), uncaught
 // errors, every keyboard/menu action and every request to the AI backend are written to diag.log
 // (through the main process). The tester then copies or saves the log in Feedback and sends it to us.
 let on = false
