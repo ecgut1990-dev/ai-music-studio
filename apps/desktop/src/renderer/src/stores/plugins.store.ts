@@ -1,0 +1,84 @@
+// The VST plugins found on this PC (Settings → Plugins): the result of the last search, which ones are ticked
+// (shown in the app), the extra folders, and the search itself. Kept in plugins.json in the app's data folder.
+// The search runs on the first start of a version with plugin support, then only when the user presses the button.
+import { create } from 'zustand'
+import { host, vstInUse, type FailedPlugin, type PluginInfo } from '../audio/vst/host'
+
+interface Saved { plugins: PluginInfo[]; failed: FailedPlugin[]; off: string[]; folders: string[]; scannedAt: number }
+
+interface PluginsState extends Saved {
+  available: boolean | null          // the plugin host is installed
+  loaded: boolean
+  scanning: { done: number; total: number; file: string } | null
+  error: string | null
+  load: () => Promise<void>
+  scan: () => Promise<void>
+  setOn: (id: string, on: boolean) => void
+  setAll: (on: boolean) => void
+  addFolder: (path: string) => void
+  removeFolder: (path: string) => void
+  enabled: () => PluginInfo[]
+}
+
+// the folders plugins are usually installed in (the host also searches its own default places)
+export const DEFAULT_FOLDERS = [
+  'C:\\Program Files\\Common Files\\VST3',
+  'C:\\Program Files\\VSTPlugins',
+  'C:\\Program Files\\Steinberg\\VSTPlugins',
+  'C:\\Program Files\\Common Files\\VST2',
+]
+
+const persist = (s: Saved): void => {
+  void window.api?.plugins?.listWrite?.({ plugins: s.plugins, failed: s.failed, off: s.off, folders: s.folders, scannedAt: s.scannedAt })
+}
+
+export const usePluginsStore = create<PluginsState>()((set, get) => ({
+  plugins: [], failed: [], off: [], folders: [], scannedAt: 0,
+  available: null, loaded: false, scanning: null, error: null,
+
+  load: async () => {
+    const available = await host.available()
+    let saved: Partial<Saved> | null = null
+    try { saved = (await window.api?.plugins?.listRead?.()) as Partial<Saved> | null } catch { saved = null }
+    set({
+      available, loaded: true,
+      plugins: saved?.plugins ?? [], failed: saved?.failed ?? [], off: saved?.off ?? [],
+      folders: saved?.folders ?? [], scannedAt: saved?.scannedAt ?? 0,
+    })
+    // first start with plugin support: search once by itself
+    if (available && !saved) void get().scan()
+  },
+
+  scan: async () => {
+    if (get().scanning) return
+    set({ scanning: { done: 0, total: 0, file: '' }, error: null })
+    const off = host.onEvent((m) => { if (m.event === 'scan') set({ scanning: { done: m.done, total: m.total, file: m.file } }) })
+    try {
+      await host.ensure()
+      const paths = [...DEFAULT_FOLDERS, ...get().folders]
+      const r = await host.call<{ plugins: PluginInfo[]; failed: FailedPlugin[] }>('scan', { paths, known: [] }, 3600000)
+      // 64-bit only: a 32-bit file is reported as "no plugin found"
+      const plugins = r.plugins.sort((a, b) => a.name.localeCompare(b.name))
+      set({ plugins, failed: r.failed, scannedAt: Date.now() })
+      persist(get())
+    } catch (e) {
+      set({ error: (e as Error).message })
+    } finally {
+      off()
+      set({ scanning: null })
+      // the host was only started for the search: stop it again unless a plugin is playing
+      if (!vstInUse()) host.release()
+    }
+  },
+
+  setOn: (id, on) => {
+    const offList = get().off.filter((x) => x !== id)
+    if (!on) offList.push(id)
+    set({ off: offList })
+    persist(get())
+  },
+  setAll: (on) => { set({ off: on ? [] : get().plugins.map((p) => p.id) }); persist(get()) },
+  addFolder: (path) => { if (!get().folders.includes(path)) { set({ folders: [...get().folders, path] }); persist(get()) } },
+  removeFolder: (path) => { set({ folders: get().folders.filter((f) => f !== path) }); persist(get()) },
+  enabled: () => get().plugins.filter((p) => !get().off.includes(p.id)),
+}))

@@ -1,3 +1,6 @@
+import { useAudioStore } from './stores/audio.store'
+import { usePluginsStore } from './stores/plugins.store'
+import { host, onVstSettingsChanged, vstInUse } from './audio/vst/host'
 import { CloseGuard } from './components/common/CloseGuard'
 import React, { useEffect, useState } from 'react'
 import { UpdateToast } from './components/updater/UpdateToast'
@@ -99,11 +102,25 @@ function StatusBar({ hw, base, onSetup }: {
   )
 }
 
+// VST plugins: the list (and the first search after installing), unsaved plugin settings, a crashed host
+function usePluginWatch(): void {
+  useEffect(() => {
+    void usePluginsStore.getState().load()
+    const offChanged = onVstSettingsChanged(() => { if (!useProjectStore.getState().dirty) useProjectStore.setState({ dirty: true }) })
+    const offExit = host.onExit(() => {
+      if (!vstInUse() && !useAudioStore.getState().isPlaying) return
+      window.alert(tr('The plugin host stopped (a plugin may have crashed). Press Play again: the plugins are loaded again with their last saved settings.'))
+    })
+    return () => { offChanged(); offExit() }
+  }, [])
+}
+
 export default function App(): React.ReactElement {
   const { theme } = useUIStore()
   // an older version may have stored the removed 'music-gen' view
   const activeView = useUIStore((s) => ((s.activeView as string) === 'music-gen' ? 'create' : s.activeView))
   const [hw, setHw] = useState<HardwareInfo | null>(null)
+  usePluginWatch()
   const chatOpen = useUIStore((s) => s.chatOpen)
   const setChatOpen = useUIStore((s) => s.setChatOpen)
   const [base, setBase] = useState('')

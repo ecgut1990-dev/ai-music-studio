@@ -233,8 +233,18 @@ const changed = (): void => { for (const l of listeners) l() }
 
 host.onExit(() => { live.clear(); changed() })
 
+/** a plugin's settings were changed in its window (the project then has unsaved changes) */
+export function onVstSettingsChanged(fn: (fxId: string) => void): () => void {
+  return host.onEvent((m) => {
+    if (m.event !== 'changed') return
+    for (const [id, l] of live) if (l.instance === m.instance) fn(id)
+  })
+}
+
 export function vstFailure(fxId: string): string | undefined { return failures.get(fxId) }
 export function vstLoaded(fxId: string): boolean { return live.has(fxId) }
+/** a plugin of the project is loaded (or loading): the host must keep running */
+export function vstInUse(): boolean { return live.size > 0 || loading.size > 0 }
 
 async function loadInstance(ref: VstRef, sampleRate: number): Promise<{ instance: number; latency: number }> {
   await host.ensure()

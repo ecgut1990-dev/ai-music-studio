@@ -11,6 +11,7 @@
 //   editor {instance, show, title, parent}   parent: native handle of the app window (Windows), keeps it above the app
 //   reset {instance}                   clears tails (after a jump in the song)
 //   stats                              -> {instances, cpu}  (cpu: processing time / real time of the last second)
+//   events: {event: "changed", instance}  the plugin's settings changed (in its window): the project has unsaved changes
 //
 // Audio (binary frames, little endian), header of 24 bytes then MIDI events (8 bytes each) then planar float32:
 //   u32 magic 'AMSA' | u32 instance | u32 seq | u16 channels | u16 flags (1: reset first) | u32 frames | u32 midiCount
@@ -24,7 +25,7 @@ static constexpr uint32_t kAudioMagic = 0x41534D41;   // "AMSA"
 
 struct PluginInstance;
 
-class PluginHost : public WebSocketServer::Handler
+class PluginHost : public WebSocketServer::Handler, private juce::Timer
 {
 public:
     explicit PluginHost (juce::String token);
@@ -50,4 +51,8 @@ private:
     std::atomic<double> busyWindowStart { 0 };
     std::atomic<double> lastCpu { 0 };
     std::unique_ptr<juce::Thread> scanThread;
+    // a plugin's settings changed (in its window): told to the app twice a second as {event: "changed", instance}
+    void timerCallback() override;
+    std::vector<std::weak_ptr<WsConnection>> clients;
+    std::mutex clientsLock;
 };

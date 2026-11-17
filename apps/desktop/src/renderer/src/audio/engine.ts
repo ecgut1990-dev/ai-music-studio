@@ -502,6 +502,9 @@ function ensureContext(): AudioContext {
   return ctx
 }
 
+/** the sample rate of live playback (plugins are loaded at this rate) */
+export function liveSampleRate(): number { return ensureContext().sampleRate }
+
 export function isPlaying(): boolean {
   return playing
 }

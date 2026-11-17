@@ -1,0 +1,112 @@
+import React, { useEffect, useState } from 'react'
+import { usePluginsStore, DEFAULT_FOLDERS } from '../../stores/plugins.store'
+import { tr, trf } from '../../i18n/tr'
+
+// Settings → Plugins: where VST plugins are searched, the search, and which plugins appear in the app.
+export function PluginsTab(): React.ReactElement {
+  const s = usePluginsStore()
+  const [filter, setFilter] = useState('')
+  const [showFailed, setShowFailed] = useState(false)
+  useEffect(() => { if (!s.loaded) void s.load() }, [s.loaded])
+
+  const shown = s.plugins.filter((p) => !filter || `${p.name} ${p.vendor} ${p.format}`.toLowerCase().includes(filter.toLowerCase()))
+  const muted: React.CSSProperties = { fontSize: 11, color: 'var(--text-muted)' }
+  const box: React.CSSProperties = { background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 8, padding: 12 }
+  const pick = async (): Promise<void> => {
+    const f = await window.api?.dialog?.pickFolder?.(tr('Choose a folder with VST plugins'))
+    if (typeof f === 'string' && f) s.addFolder(f)
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 900 }}>
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>{tr('VST plugins')}</div>
+        <div style={muted}>
+          {tr('Your VST3 and VST2 effects can be used in the Studio (effects of a track: “+ Effect…”). Only 64-bit plugins work; 32-bit plugins are not supported.')}
+        </div>
+      </div>
+
+      {s.available === false && (
+        <div style={{ ...box, color: 'var(--orange)', fontSize: 12 }}>
+          {tr('The plugin host is not part of this installation (development build). Plugins work in the installed app.')}
+        </div>
+      )}
+
+      <div style={box}>
+        <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>{tr('Folders')}</div>
+        <div style={{ ...muted, marginBottom: 6 }}>{tr('Always searched (where plugins are usually installed):')}</div>
+        {DEFAULT_FOLDERS.map((f) => <div key={f} style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{f}</div>)}
+        {s.folders.length > 0 && <div style={{ ...muted, margin: '8px 0 4px' }}>{tr('Your folders:')}</div>}
+        {s.folders.map((f) => (
+          <div key={f} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 12, fontFamily: 'monospace' }}>
+            <span style={{ flex: 1 }}>{f}</span>
+            <button className="btn btn-ghost" style={{ fontSize: 11, padding: '1px 8px' }} onClick={() => s.removeFolder(f)}>{tr('Remove')}</button>
+          </div>
+        ))}
+        <button className="btn btn-ghost" style={{ fontSize: 11, marginTop: 8 }} onClick={() => void pick()}>{tr('Add folder…')}</button>
+      </div>
+
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+        <button className="btn btn-primary" disabled={!!s.scanning || s.available === false} onClick={() => void s.scan()}>
+          {s.scanning ? tr('Searching…') : tr('Search for plugins')}
+        </button>
+        {s.scanning && (
+          <span style={muted}>
+            {s.scanning.total > 0 ? trf('{done} of {total}', { done: s.scanning.done, total: s.scanning.total }) : tr('Looking for plugin files…')}
+            {s.scanning.file ? ` · ${s.scanning.file.split(/[\\/]/).pop()}` : ''}
+          </span>
+        )}
+        {!s.scanning && s.scannedAt > 0 && (
+          <span style={muted}>{trf('Last search: {date} · {n} plugins', { date: new Date(s.scannedAt).toLocaleString(), n: s.plugins.length })}</span>
+        )}
+        {s.error && <span style={{ fontSize: 12, color: 'var(--red)' }}>{s.error}</span>}
+      </div>
+      <div style={muted}>{tr('Each plugin is checked on its own: one that crashes while being checked is skipped and listed below, the app keeps running. New plugins: press Search for plugins again.')}</div>
+
+      {s.plugins.length > 0 && (
+        <div style={box}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+            <input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder={tr('Search name or vendor…')} style={{ flex: 1, fontSize: 12 }} />
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => s.setAll(true)}>{tr('Tick all')}</button>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => s.setAll(false)}>{tr('None')}</button>
+          </div>
+          <div style={{ ...muted, marginBottom: 6 }}>{tr('Ticked plugins appear in the app.')}</div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+            <thead>
+              <tr style={{ textAlign: 'left', color: 'var(--text-muted)' }}>
+                <th style={{ width: 28 }} /><th>{tr('Name')}</th><th>{tr('Vendor')}</th><th>{tr('Type')}</th><th>{tr('Format')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shown.map((p) => (
+                <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }} title={p.file}>
+                  <td><input type="checkbox" checked={!s.off.includes(p.id)} onChange={(e) => s.setOn(p.id, e.target.checked)} /></td>
+                  <td style={{ padding: '4px 0', color: 'var(--text-primary)' }}>{p.name}</td>
+                  <td>{p.vendor || '–'}</td>
+                  <td>{p.isInstrument ? tr('Instrument (later)') : tr('Effect')}</td>
+                  <td>{p.format}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {s.loaded && !s.scanning && s.scannedAt > 0 && s.plugins.length === 0 && (
+        <div style={{ ...box, fontSize: 12 }}>{tr('No plugins found in these folders. Add the folder your plugins are in and search again.')}</div>
+      )}
+
+      {s.failed.length > 0 && (
+        <div style={box}>
+          <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setShowFailed(!showFailed)}>
+            {showFailed ? '▾' : '▸'} {trf('{n} files could not be used', { n: s.failed.length })}
+          </button>
+          {showFailed && s.failed.map((f) => (
+            <div key={f.file} style={{ fontSize: 11, marginTop: 4 }}>
+              <span style={{ fontFamily: 'monospace' }}>{f.file}</span> <span style={muted}>({f.format}): {tr(f.reason)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

@@ -20,8 +20,12 @@ public:
     std::function<void()> closed;
 };
 
-struct PluginInstance
+struct PluginInstance : public juce::AudioProcessorListener
 {
+    std::atomic<bool> changed { false };
+    void audioProcessorParameterChanged (juce::AudioProcessor*, int, float) override { changed = true; }
+    void audioProcessorChanged (juce::AudioProcessor*, const ChangeDetails& d) override { if (d.parameterInfoChanged || d.programChanged || d.nonParameterStateChanged) changed = true; }
+    ~PluginInstance() override { if (plugin) plugin->removeListener (this); }
     std::unique_ptr<juce::AudioPluginInstance> plugin;
     juce::PluginDescription desc;
     std::mutex lock;                      // processing and state changes never at the same time
@@ -57,10 +61,34 @@ static juce::var describe (const juce::PluginDescription& d)
 PluginHost::PluginHost (juce::String t) : token (std::move (t))
 {
     formats.addDefaultFormats();
+    startTimer (500);
+}
+
+void PluginHost::timerCallback()
+{
+    std::vector<int> ids;
+    {
+        std::lock_guard<std::mutex> l (instancesLock);
+        for (auto& [id, inst] : instances) if (inst->changed.exchange (false)) ids.push_back (id);
+    }
+    if (ids.empty()) return;
+    std::lock_guard<std::mutex> l (clientsLock);
+    for (auto it = clients.begin(); it != clients.end();)
+    {
+        auto c = it->lock();
+        if (! c || ! c->isOpen()) { it = clients.erase (it); continue; }
+        for (int id : ids)
+        {
+            auto ev = obj(); ev.getDynamicObject()->setProperty ("event", "changed"); ev.getDynamicObject()->setProperty ("instance", id);
+            c->sendText (juce::JSON::toString (ev, true));
+        }
+        ++it;
+    }
 }
 
 PluginHost::~PluginHost()
 {
+    stopTimer();
     if (scanThread) scanThread->stopThread (3000);
     std::lock_guard<std::mutex> l (instancesLock);
     for (auto& [id, inst] : instances) inst->window.reset();
@@ -88,6 +116,7 @@ void PluginHost::onText (std::shared_ptr<WsConnection> conn, const juce::String&
     if (cmd == "hello")
     {
         conn->authed = msg.getProperty ("token", "").toString() == token;
+        if (conn->authed) { std::lock_guard<std::mutex> l (clientsLock); clients.push_back (conn); }
         reply (conn->authed ? okay() : fail ("wrong token"));
         if (! conn->authed) conn->close();
         return;
@@ -142,6 +171,7 @@ juce::var PluginHost::handle (std::shared_ptr<WsConnection>, const juce::var& ms
         inst->sampleRate = sr; inst->maxBlock = block; inst->desc = desc;
         inst->buffer.setSize (juce::jmax (2, plugin->getTotalNumInputChannels(), plugin->getTotalNumOutputChannels()), block);
         inst->plugin = std::move (plugin);
+        inst->plugin->addListener (inst.get());
         int iid;
         { std::lock_guard<std::mutex> l (instancesLock); iid = nextInstance++; instances[iid] = inst; }
         auto o = okay(); auto* p = o.getDynamicObject();
