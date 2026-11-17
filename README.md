@@ -93,6 +93,11 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 
 All changes of every version: [CHANGELOG.md](CHANGELOG.md)
 
+### New in 0.31.5
+
+- **Fix: the "✦ AI assistant" button in the top bar could not be clicked** in the installed app (the top bar is the area for moving the window). It works now, sits further left, and a **✦ AI** tab at the right edge opens the panel as well.
+- **Mastering waveform:** zoom out further than the whole song (more empty room after the end), **⤢** for the whole song; Ctrl + wheel no longer scrolls the page at the same time.
+
 ### New in 0.31.4
 
 - **AI assistant button at the top:** with the AI panel closed, a **✦ AI assistant** button at the top right opens it again (instead of the small tab at the side).

@@ -202,6 +202,14 @@ export default function App(): React.ReactElement {
           </div>
         </div>
 
+        {/* also at the right edge, near the top: always reachable, even when the top bar is too narrow */}
+        {!chatOpen && (
+          <button onClick={() => setChatOpen(true)} title="AI"
+            style={{ position: 'absolute', right: 0, top: 8, zIndex: 30, background: 'var(--accent)', border: 'none', cursor: 'pointer',
+              color: '#fff', fontSize: 11, fontWeight: 700, padding: '8px 4px', borderRadius: '6px 0 0 6px', writingMode: 'vertical-rl', letterSpacing: '0.06em' }}>
+            ✦ AI
+          </button>
+        )}
       </div>
 
       <StatusBar hw={hw} base={base} onSetup={() => { sessionStorage.setItem('ams-settings-tab', 'engines'); setActiveView('settings') }} />

@@ -19,7 +19,7 @@ plugin needed); what you hear while playing is exactly what is written to the fi
 - **Same loudness** (on by default): while comparing, the louder of the two is turned down, so you judge the sound,
   not the volume. Switch it off to hear how much louder the master really is. The meters always show the real level.
 - **Waveform:** follows Before / After (or both, grey and purple), clipping in red. Click to play from there, **drag to mark a region**,
-  **⟲ Loop** plays it again and again. **Ctrl + wheel** or the slider zooms; the view reaches a little past the end of the song (darker), so the end is easy to see and to mark.
+  **⟲ Loop** plays it again and again. **Ctrl + wheel** or the slider zooms, also further out than the whole song; the view always reaches past the end of the song (darker), so the end is easy to see and to mark; **⤢** shows the whole song.
 
 ## Edit (cut and more)
 Drag in the waveform to mark a region, then in the **Edit** bar:
@@ -33,7 +33,7 @@ Drag in the waveform to mark a region, then in the **Edit** bar:
 **✨ Analyse & suggest** measures the song: tone balance in eight bands (sub bass to air), dynamics (crest factor), stereo (bass width, correlation), clipping and silence. It compares the tone balance with a **Style** (Techno / House, Afro House, Trance / EDM, Pop, Hip-hop, Rock, Soul / R&B, Funk, Acoustic, Podcast) or with a **Reference song**, shows the bands (purple: song, green: target) and lists proposals with their reason (e.g. "Low mids +8 dB above Techno: band 1 at 300 Hz −4 dB"). Press **Apply** on a proposal to use just that one, or tick several and press **✓ Apply all ticked** (top right); the loudness target is reached afterwards, the page switches to *After* and a green box lists what was applied. The bars then show the **master** (purple), the original as a grey outline and the target in green. **Analyse the master again** starts a second round on the master; its EQ proposals add to what is set. **↶ Undo suggestions** brings the chain from before back. It works with measurements and rules, without internet, in a few seconds.
 
 ## Master gain fader
-With the AI panel closed, the meters and the fader move to the right edge of the window (their own column): goniometer and spectrum, loudness over time, whole song, live, and the master fader at the bottom; with the AI panel open they sit beside the chain. **✦ AI assistant** at the top right opens the AI panel again.
+With the AI panel closed, the meters and the fader move to the right edge of the window (their own column): goniometer and spectrum, loudness over time, whole song, live, and the master fader at the bottom; with the AI panel open they sit beside the chain. **✦ AI assistant** in the top bar (or the **✦ AI** tab at the right edge) opens the AI panel again.
 
 A big fader like on a mixing desk (right, above the meters) makes the master louder or quieter. It drives the song into the limiter, so it gets louder without clipping; next to it the live true peak, short-term loudness and how much the limiter holds back (orange). Drag, mouse wheel (Shift: fine), arrow keys, −1 / 0 / +1; double-click: 0 dB. It is the same value as *Louder* in the limiter.
 
