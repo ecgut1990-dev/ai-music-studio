@@ -45,10 +45,13 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
   const [, tick] = useState(0)
   const drag = useRef<{ x0: number; t0: number; moved: boolean } | null>(null)
   const dur = before?.duration ?? 0
-  const span = dur / zoom
+  // the view reaches a little past the end of the song, so the end is easy to see and to mark
+  const total = dur + Math.max(2, dur * 0.06)
+  const span = total / zoom
 
   useEffect(() => masterPlayer.on(() => tick((n) => n + 1)), [])
-  useEffect(() => { setZoom(1); setScroll(0) }, [before])
+  // after an edit the zoom stays; only the scroll position is kept inside the (shorter or longer) song
+  useEffect(() => { setScroll((sc) => Math.max(0, Math.min(sc, total - total / zoom))) }, [total, zoom])
 
   // redraw on every animation frame while playing (the play line), else when something changes
   useEffect(() => {
@@ -62,7 +65,7 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
       g.setTransform(dpr, 0, 0, dpr, 0, 0)
       g.fillStyle = '#121317'; g.fillRect(0, 0, W, H)
       if (!before) return
-      const from = scroll, to = Math.min(dur, scroll + span)
+      const from = scroll, to = Math.min(total, scroll + span)
       const x = (t: number): number => ((t - from) / (to - from)) * W
       const loop = masterPlayer.loop
       if (loop) { g.fillStyle = masterPlayer.loopOn ? 'rgba(124,58,237,0.22)' : 'rgba(255,255,255,0.07)'; g.fillRect(x(loop.start), 0, x(loop.end) - x(loop.start), H) }
@@ -76,6 +79,10 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
       if (show !== 'after') paint(before, show === 'both' ? 'rgba(156,163,175,0.55)' : '#9ca3af')
       if (show !== 'before') paint(after, show === 'both' ? 'rgba(157,95,248,0.75)' : '#9d5ff8')
       g.fillStyle = 'rgba(255,255,255,0.12)'; g.fillRect(0, mid, W, 1)
+      if (to > dur) {                                   // after the end of the song: darker, with an end line
+        g.fillStyle = 'rgba(0,0,0,0.35)'; g.fillRect(x(dur), 0, W - x(dur), H)
+        g.fillStyle = 'rgba(255,255,255,0.45)'; g.fillRect(x(dur), 0, 1, H)
+      }
       g.fillStyle = '#ef4444'
       for (const c of clips) if (c >= from && c <= to) g.fillRect(x(c), 0, 1.5, H)
       g.font = '10px system-ui'
@@ -123,10 +130,10 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
     if (e.ctrlKey) {
       const t = timeAt(e)
       const z = Math.max(1, Math.min(200, zoom * (e.deltaY < 0 ? 1.25 : 0.8)))
-      const ns = dur / z
-      setZoom(z); setScroll(Math.max(0, Math.min(dur - ns, t - (t - scroll) * (ns / span))))
+      const ns = total / z
+      setZoom(z); setScroll(Math.max(0, Math.min(total - ns, t - (t - scroll) * (ns / span))))
     } else if (zoom > 1) {
-      setScroll((s) => Math.max(0, Math.min(dur - span, s + (e.deltaY + e.deltaX) / 400 * span)))
+      setScroll((s) => Math.max(0, Math.min(total - span, s + (e.deltaY + e.deltaX) / 400 * span)))
     }
   }
 
@@ -136,10 +143,10 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
         <span>Click: play from there · drag: loop a region · Ctrl + wheel: zoom</span>
         <span style={{ flex: 1 }} />
-        {zoom > 1 && <input type="range" min={0} max={Math.max(0, dur - span)} step={0.01} value={scroll} style={{ width: 160 }}
+        {zoom > 1 && <input type="range" min={0} max={Math.max(0, total - span)} step={0.01} value={scroll} style={{ width: 160 }}
           onChange={(e) => setScroll(Number(e.target.value))} title="Scroll" />}
         Zoom <input type="range" min={0} max={1} step={0.01} value={Math.log(zoom) / Math.log(200)} style={{ width: 90 }}
-          onChange={(e) => { const z = Math.pow(200, Number(e.target.value)); setZoom(z); setScroll((s) => Math.max(0, Math.min(dur - dur / z, s))) }} />
+          onChange={(e) => { const z = Math.pow(200, Number(e.target.value)); setZoom(z); setScroll((s) => Math.max(0, Math.min(total - total / z, s))) }} />
       </div>
     </div>
   )
