@@ -6,6 +6,7 @@ import { masterPlayer } from '../../audio/master/player'
 import { encodeWavFloat } from '../../audio/wav'
 import { isPlaying, pause as pauseStudio } from '../../audio/engine'
 import { useMasteringStore } from '../../stores/mastering.store'
+import { useUIStore } from '../../stores/ui.store'
 import { MasterWave } from './MasterWave'
 import { MasterMeters } from './MasterMeters'
 import { MasterRack } from './MasterRack'
@@ -41,6 +42,7 @@ const clock = (t: number): string => `${Math.floor(t / 60)}:${(t % 60).toFixed(1
 
 export function Mastering(): React.ReactElement {
   const { files, current, recent, chain, open, close, select, setChain } = useMasteringStore()
+  const chatOpen = useUIStore((s) => s.chatOpen)
   const [original, setOriginal] = useState<AudioBuffer | null>(null)
   const [buffer, setBuffer] = useState<AudioBuffer | null>(null)
   const [edits, setEdits] = useState<{ ops: EditOp[]; redo: EditOp[] }>({ ops: [], redo: [] })
@@ -213,8 +215,17 @@ export function Mastering(): React.ReactElement {
   const pos = masterPlayer.position()
   const active: 'before' | 'after' = masterPlayer.bypass ? 'before' : 'after'   // what is heard: the page shows that
   const shown = show === 'follow' ? active : show
+  // with the AI panel closed, the fader and the meters take its place on the right, always in view
+  const side = !chatOpen && !!buffer
+  const meters = buffer ? (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <MasterFader chain={chain} onChange={setChain} height={side ? 160 : 220} />
+      <MasterMeters before={aBefore} after={aAfter} target={tgt.lufs} busy={measuring} active={active} />
+    </div>
+  ) : null
   return (
-    <div style={{ height: '100%', overflow: 'auto', padding: 14, display: 'flex', flexDirection: 'column', gap: 12, position: 'relative' }}
+    <div style={{ height: '100%', display: 'flex', minWidth: 0 }}>
+    <div style={{ flex: 1, minWidth: 0, height: '100%', overflow: 'auto', padding: 14, display: 'flex', flexDirection: 'column', gap: 12, position: 'relative' }}
       onDragOver={(e) => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); setDropping(true) } }}
       onDragLeave={(e) => { if (e.currentTarget === e.target) setDropping(false) }}
       onDrop={onDrop}>
@@ -289,17 +300,14 @@ export function Mastering(): React.ReactElement {
             onTarget={(t) => { setTarget(t); try { localStorage.setItem('ams-master-target', t) } catch { /* */ } }}
             onReach={(t) => void reachTarget(t)} reaching={reaching} />
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(340px, 1fr) minmax(320px, 420px)', minWidth: 0, gap: 14, alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: side ? 'minmax(340px, 1fr)' : 'minmax(340px, 1fr) minmax(320px, 420px)', minWidth: 0, gap: 14, alignItems: 'start' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <MasterRack chain={chain} onChange={setChain} target={target}
                 onTarget={(t) => { setTarget(t); try { localStorage.setItem('ams-master-target', t) } catch { /* */ } }}
                 onReachTarget={() => void reachTarget()} reaching={reaching} view={active} />
               <ReferenceMatch open={refOpen} setOpen={setRefOpen} target={current!} onDone={(p) => open({ path: p, name: `${name} (reference match)` })} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <MasterFader chain={chain} onChange={setChain} />
-              <MasterMeters before={aBefore} after={aAfter} target={tgt.lufs} busy={measuring} active={active} />
-            </div>
+            {!side && meters}
           </div>
         </>
       )}
@@ -307,6 +315,10 @@ export function Mastering(): React.ReactElement {
       {output && (
         <MasterOutput initial={output} busy={exporting} results={results} onClose={() => setOutput(null)} onExport={(s) => void doExport(s)} />
       )}
+    </div>
+    {side && (
+      <div style={{ width: 430, flexShrink: 0, height: '100%', overflow: 'auto', padding: '14px 14px 14px 0' }}>{meters}</div>
+    )}
     </div>
   )
 }

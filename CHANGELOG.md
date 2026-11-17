@@ -3,6 +3,10 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.31.3
+
+- **Mastering layout:** with the AI panel closed, the master fader and all meters move to the right edge of the window, in their own column that is always in view (no scrolling down to see them). With the AI panel open the layout stays as before. The app remembers whether the AI panel is open.
+
 ## 0.31.2
 
 - **Master gain fader:** a big fader like on a mixing desk makes the master louder or quieter, through the limiter (no clipping), with live true peak, loudness and limiter meters next to it.
