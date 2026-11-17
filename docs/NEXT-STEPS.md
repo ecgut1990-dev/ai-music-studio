@@ -1,6 +1,6 @@
 # Next steps and working notes
 
-Kept for the next working session (also read by Claude: see CLAUDE.md). State: version 0.17.0, 2026-11-11.
+Kept for the next working session (also read by Claude: see CLAUDE.md). State: version 0.40.0, 2026-11-17 (almost 1000 downloads).
 
 ## Where things are
 
@@ -33,6 +33,15 @@ Kept for the next working session (also read by Claude: see CLAUDE.md). State: v
    YouTube creators: small channels (5k–50k) that show free music tools; find current ones by searching.
 3. Prepare the emails to the blogs (short: what it is, why it is different – local, free, open source –, video link,
    download link, one screenshot).
+
+## Plan (owner, 17.11.2026)
+
+- **0.50.0: VST plugins, VST3 and VST2 at the same time:** host, scan, Settings → Plugins list with ticks, plugin
+  windows, plugins in the Studio inserts, on the master and in the Mastering chain.
+- **Translations:** Japanese and Korean tables (`i18n/ui/ja.json`, `ko.json`) are still empty: only the menu is
+  translated. The mastering assistant writes its suggestions in German or English only. See `docs/TRANSLATING.md`.
+- **Help in the app:** the manual / wiki inside the app, in the chosen language (owner's idea).
+- **New promo video** once VST is in (the owner plans it soon).
 
 ## Open technical items
 

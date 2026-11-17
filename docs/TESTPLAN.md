@@ -189,6 +189,21 @@ Tipp: Pro Sitzung einen Bereich testen (z. B. heute 1–3, morgen 4–6). Nach j
 | 7b.3 | Coming-soon-Menüpunkte | „Coming soon“-Seite, kein Fehler | | | |
 | 7b.4 | MCP: Claude Code lokal mit `http://127.0.0.1:38765/mcp` | Claude sieht die App-Werkzeuge | | | |
 
+## 8. Neu in 0.40.0: Übersetzung, Speichern beim Schließen
+
+| Nr. | Test | Erwartet |
+|---|---|---|
+| 8.1 | Einstellungen → Allgemein → Sprache **Deutsch**, dann durch alle Seiten gehen (Musik erstellen, Bibliothek, Studio, Mastering, Stem-Trenner, Einstellungen) | Alles auf Deutsch; nur Namen (ACE-Step, LUFS, WAV …) bleiben englisch. Notiere Stellen, die noch englisch sind (Screenshot) |
+| 8.2 | Mastering: Song öffnen, Assistent, Kette, Schneiden, Export-Fenster | Knöpfe, Tooltips und Meldungen auf Deutsch |
+| 8.3 | Sprache **Français**, dann **Español**, **中文** kurz durchklicken | Die ganze App in der Sprache; nichts abgeschnitten oder verrutscht |
+| 8.4 | Sprache **日本語** | Menü links auf Japanisch, der Rest englisch (so gewollt, kommt später) |
+| 8.5 | Etwas im Studio ändern (Spur hinzufügen), dann das Fenster mit **X** schließen | Frage „Projekt vor dem Schließen speichern?“ mit Speichern / Nicht speichern / Abbrechen |
+| 8.6 | Bei der Frage **Abbrechen** | App bleibt offen, nichts geht verloren |
+| 8.7 | Nochmal schließen, **Speichern** (neues Projekt: Speicherort wählen) | Projekt wird gespeichert, dann schließt die App. Beim Speichern-Dialog auf Abbrechen: App bleibt offen |
+| 8.8 | Nochmal ändern, schließen, **Nicht speichern** | App schließt sofort |
+| 8.9 | Ohne Änderungen schließen | Keine Frage, App schließt sofort |
+| 8.10 | Bibliothek mit geschlossenem KI-Fenster | Liste nutzt die ganze Breite, voller Songname sichtbar, Knöpfe in eigener Zeile darunter |
+
 ## Ergebnisse
 
 Nach dem Test: Datei mit den Einträgen an Claude geben („hier der Testplan mit Ergebnissen“). Fehler (❌) werden zuerst

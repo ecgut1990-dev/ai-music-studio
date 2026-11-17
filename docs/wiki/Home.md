@@ -4,6 +4,13 @@
 
 🎬 [2-minute tour on YouTube](https://youtu.be/F1hakwjWwEc) · ⬇ [Download the latest version](https://github.com/pierrecinema/ai-music-studio/releases/latest) · 🐞 [Report a problem](https://github.com/pierrecinema/ai-music-studio/issues)
 
+## What's new (0.40)
+
+The whole app is now available in **German, French, Spanish, Italian, Portuguese and Chinese** ([[Settings]] →
+General → Language), closing the app asks whether to save unsaved changes, and the [[Library]] uses the full width.
+Earlier: a full [[Mastering]] workspace with an assistant, editing and a master gain fader.
+All changes: [release notes](https://github.com/pierrecinema/ai-music-studio/releases).
+
 ## Start here
 
 1. [[Installation and Setup]]: install the app, then the AI engines (once).
@@ -24,7 +31,7 @@ The menu on the left of the app, from top to bottom:
 | 🎻 AI Instruments | [[Coming Soon]] |
 | 🎚 [[Mixer]] | Faders, pan, mute, solo, level meters, returns and groups |
 | ✂ [[Stem Splitter]] | Vocals, drums, bass and more; stem mixer, karaoke remix, Audio → MIDI |
-| ◎ [[Mastering]] | Master a song: EQ, compressor, multiband, stereo, limiter to a loudness target, every meter, export in all formats |
+| ◎ [[Mastering]] | Master a song: assistant with suggestions per genre, EQ, dynamic EQ, compressor, multiband, saturation, stereo, limiter to a loudness target, master gain fader, cutting and fades, every meter, export in all formats |
 | 🎙 Karaoke Export | [[Coming Soon]] |
 | 🎬 Video Composer | [[Coming Soon]] |
 | 💬 [[AI Chat]] | Music assistant: Claude, ChatGPT, Grok or free and local with Ollama |
