@@ -127,7 +127,7 @@ export function FxHeader({ track }: { track: Track }): React.ReactElement {
   const addPlugin = (id: string): void => {
     const p = plugins.find((x) => x.id === id)
     if (!p) return
-    const fx: InsertFx = { id: nanoid(), type: 'vst', on: true, p: {}, vst: { pluginId: p.id, name: p.name, vendor: p.vendor, format: p.format, xml: p.xml } }
+    const fx: InsertFx = { id: nanoid(), type: 'vst', on: true, p: {}, vst: { pluginId: p.id, name: p.name, vendor: p.vendor, format: p.format, xml: p.xml, arch: p.arch } }
     updateTrack(track.id, { fx: [...(track.fx ?? []), fx], showFx: true })
     void openPlugin(fx, track.name)                    // the plugin window opens right away
   }
@@ -145,7 +145,7 @@ export function FxHeader({ track }: { track: Track }): React.ReactElement {
           {FX_TYPES.map((t) => <option key={t} value={t}>{tr(INSERT_LABEL[t])}</option>)}
         </optgroup>
         <optgroup label={tr('VST plugins')}>
-          {plugins.map((p) => <option key={p.id} value={`vst:${p.id}`}>{p.name}{p.vendor ? ` (${p.vendor})` : ''} · {p.format}</option>)}
+          {plugins.map((p) => <option key={p.id} value={`vst:${p.id}`}>{p.name}{p.vendor ? ` (${p.vendor})` : ''} · {p.format}{p.arch === 'x86' ? ' · 32-bit' : ''}</option>)}
           {!plugins.length && <option value="" disabled>{tr('None yet: Settings → Plugins')}</option>}
         </optgroup>
       </select>

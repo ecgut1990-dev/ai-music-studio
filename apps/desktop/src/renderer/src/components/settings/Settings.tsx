@@ -92,6 +92,9 @@ function ModelPicker({ models, value, onChange }: {
   )
 }
 
+// tab names translated through the tables (the older locale files lack the newer tabs)
+const TAB_EN: Partial<Record<string, string>> = { plugins: 'Plugins', engines: 'AI Engines', hardware: 'Hardware', models: 'Models', shortcuts: 'Shortcuts', audio: 'Audio', updates: 'Updates', about: 'About' }
+
 type SettingsTab = 'general' | 'plugins' | 'ai' | 'engines' | 'hardware' | 'models' | 'shortcuts' | 'audio' | 'appearance' | 'updates' | 'about'
 
 type UpdatePhase = 'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error'
@@ -255,7 +258,7 @@ export function Settings(): React.ReactElement {
               fontWeight: tab === tab2 ? 600 : 400
             }}
           >
-            {t(`settings.${tab2}`, { defaultValue: tab2 === 'plugins' ? tr('Plugins') : tab2 === 'engines' ? 'AI Engines' : tab2 === 'hardware' ? 'Hardware' : tab2 === 'models' ? 'Models' : tab2 === 'shortcuts' ? 'Shortcuts' : tab2 === 'updates' ? 'Updates' : tab2 === 'about' ? 'About' : tab2 })}
+            {TAB_EN[tab2] ? tr(TAB_EN[tab2]) : t(`settings.${tab2}`)}
           </button>
         ))}
       </div>

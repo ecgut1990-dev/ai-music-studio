@@ -5,7 +5,7 @@ owner's PC (no particular plugins are required).
 
 ## Decisions
 
-- **64-bit plugins only.** 32-bit VST2 plugins are not supported; the plugin list and the docs say so.
+- **64-bit and 32-bit plugins** (owner, 17.11.: many plugins are 32-bit): the host is built twice, `ams-plugin-host.exe` (x64) and `ams-plugin-host32.exe` (x86). The search reads the Windows binary header of each file and checks a 32-bit plugin with the 32-bit host; the app loads it there. Folders under *Program Files (x86)* are searched too.
 - **Audio goes to the plugin host only while a plugin is in use** (a track, the master or the mastering chain has a
   plugin switched on). Without plugins nothing changes and the host is not even started.
 - **Plugin windows float above the app** (always on top of the app window, like Ableton).
@@ -48,7 +48,7 @@ renderer (Web Audio)                     AMS Plugin Host (C++, JUCE 7, GPL-3.0)
 2. Electron: start / stop / restart the host, port and token to the page.
 3. Settings → Plugins: folders (defaults plus the VST folders of Settings → General), **Search for plugins**, list
    with name, vendor, type (effect / instrument), format (VST3 / VST2) and a tick per plugin; failed plugins marked;
-   note "64-bit plugins only".
+   column with the bits (64 / 32).
 4. Studio: plugins in "+ Effect…" under the built-in effects; click opens the plugin window; on / off and order as
    with the built-in effects; CPU load of the host shown.
 5. Project save / open with plugin states; export with plugins.

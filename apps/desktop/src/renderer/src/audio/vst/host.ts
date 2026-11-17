@@ -13,6 +13,7 @@ export const VST_DELAY = VST_BLOCK * VST_BLOCKS_AHEAD
 export interface PluginInfo {
   id: string; name: string; vendor: string; format: string; category: string; isInstrument: boolean
   file: string; version: string; inputs: number; outputs: number; xml: string
+  arch?: 'x64' | 'x86'        // a 32-bit plugin runs in the 32-bit host
 }
 export interface FailedPlugin { file: string; format: string; reason: string }
 
@@ -110,8 +111,8 @@ class HostClient {
   latencyOf = new Map<string, number>()
   windowHandle = ''
 
-  constructor() {
-    if (typeof window !== 'undefined') window.api?.plugins?.onHostExit?.(() => this.lost())
+  constructor(readonly arch: 'x64' | 'x86') {
+    if (typeof window !== 'undefined') window.api?.plugins?.onHostExit?.((i) => { if (!i.arch || i.arch === arch) this.lost() })
   }
 
   /** the host program is part of this installation */
@@ -132,7 +133,7 @@ class HostClient {
 
   private async open(): Promise<void> {
     const dev = devHost()
-    const { port, token } = dev ?? (await window.api.plugins!.host())
+    const { port, token } = dev ?? (await window.api.plugins!.host(this.arch))
     try { this.windowHandle = (await window.api?.plugins?.windowHandle?.()) ?? '' } catch { this.windowHandle = '' }
     const ws = new WebSocket(`ws://127.0.0.1:${port}`)
     await new Promise<void>((res, rej) => { ws.onopen = () => res(); ws.onerror = () => rej(new Error('The plugin host cannot be reached.')) })
@@ -206,7 +207,7 @@ class HostClient {
   /** nothing uses the host any more: stop it */
   release(): void {
     this.lost()
-    if (!devHost()) void window.api?.plugins?.release?.()
+    if (!devHost()) void window.api?.plugins?.release?.(this.arch)
   }
 }
 
@@ -220,10 +221,13 @@ function devHost(): { port: number; token: string } | null {
   } catch { return null }
 }
 
-export const host = new HostClient()
+export const host = new HostClient('x64')       // 64-bit plugins (and the search)
+export const host32 = new HostClient('x86')     // 32-bit plugins
+const clients = [host, host32]
+const clientFor = (ref?: { arch?: string }): HostClient => (ref?.arch === 'x86' ? host32 : host)
 
 // ── plugin instances of the project (live playback) ────────────────────────────
-interface Live { instance: number; latency: number; ref: VstRef; sampleRate: number }
+interface Live { instance: number; latency: number; ref: VstRef; sampleRate: number; client: HostClient }
 const live = new Map<string, Live>()           // insert id -> loaded instance
 const loading = new Map<string, Promise<Live | null>>()
 const failures = new Map<string, string>()     // insert id -> why it could not be loaded
@@ -231,29 +235,36 @@ const listeners = new Set<() => void>()
 export function onVstChange(fn: () => void): () => void { listeners.add(fn); return () => listeners.delete(fn) }
 const changed = (): void => { for (const l of listeners) l() }
 
-host.onExit(() => { live.clear(); changed() })
+for (const c of clients) c.onExit(() => { for (const [id, l] of live) if (l.client === c) live.delete(id); changed() })
 
 /** a plugin's settings were changed in its window (the project then has unsaved changes) */
 export function onVstSettingsChanged(fn: (fxId: string) => void): () => void {
-  return host.onEvent((m) => {
+  const offs = clients.map((c) => c.onEvent((m) => {
     if (m.event !== 'changed') return
-    for (const [id, l] of live) if (l.instance === m.instance) fn(id)
-  })
+    for (const [id, l] of live) if (l.client === c && l.instance === m.instance) fn(id)
+  }))
+  return () => offs.forEach((o) => o())
 }
 
 export function vstFailure(fxId: string): string | undefined { return failures.get(fxId) }
 export function vstLoaded(fxId: string): boolean { return live.has(fxId) }
 /** a plugin of the project is loaded (or loading): the host must keep running */
-export function vstInUse(): boolean { return live.size > 0 || loading.size > 0 }
+export function vstInUse(client?: HostClient): boolean { return [...live.values()].some((l) => !client || l.client === client) || loading.size > 0 }
 
-async function loadInstance(ref: VstRef, sampleRate: number): Promise<{ instance: number; latency: number }> {
-  await host.ensure()
-  const r = await host.call<{ instance: number; latency: number }>('load', { xml: ref.xml, sampleRate, blockSize: VST_BLOCK }, 120000)
+async function loadInstance(ref: VstRef, sampleRate: number): Promise<{ instance: number; latency: number; client: HostClient }> {
+  const c = clientFor(ref)
+  await c.ensure()
+  const r = await c.call<{ instance: number; latency: number }>('load', { xml: ref.xml, sampleRate, blockSize: VST_BLOCK }, 120000)
   if (ref.state) {
-    try { const s = await host.call<{ latency: number }>('setState', { instance: r.instance, state: ref.state }); r.latency = s.latency ?? r.latency }
+    try { const s = await c.call<{ latency: number }>('setState', { instance: r.instance, state: ref.state }); r.latency = s.latency ?? r.latency }
     catch { /* the plugin keeps its defaults */ }
   }
-  return r
+  return { ...r, client: c }
+}
+
+/** stops the hosts that no plugin uses any more */
+function releaseIdle(): void {
+  for (const c of clients) if (c.connected && !vstInUse(c) && ![...offlineClients].includes(c)) c.release()
 }
 
 /** loads every plugin of the project (live playback at `sampleRate`); unloads plugins no longer in it */
@@ -263,10 +274,10 @@ export async function prepareVst(project: Project, sampleRate: number): Promise<
   for (const [id, l] of live) {
     if (!wanted.has(id) || l.sampleRate !== sampleRate || l.ref.pluginId !== wanted.get(id)!.vst!.pluginId) {
       live.delete(id)
-      host.call('unload', { instance: l.instance }).catch(() => {})
+      l.client.call('unload', { instance: l.instance }).catch(() => {})
     }
   }
-  if (wanted.size === 0) { if (host.connected) host.release(); return }
+  if (wanted.size === 0) { releaseIdle(); return }
   await Promise.all([...wanted.values()].map((fx) => {
     if (live.has(fx.id)) return Promise.resolve()
     let p = loading.get(fx.id)
@@ -283,10 +294,10 @@ export async function prepareVst(project: Project, sampleRate: number): Promise<
 
 /** the current settings of every loaded plugin into the project's inserts (before saving) */
 export async function collectVstStates(project: Project): Promise<Project> {
-  if (!host.connected || live.size === 0) return project
+  if (live.size === 0) return project
   const states = new Map<string, string>()
   await Promise.all([...live].map(async ([id, l]) => {
-    try { states.set(id, (await host.call<{ state: string }>('getState', { instance: l.instance })).state) } catch { /* keep the old state */ }
+    try { states.set(id, (await l.client.call<{ state: string }>('getState', { instance: l.instance })).state) } catch { /* keep the old state */ }
   }))
   if (!states.size) return project
   return {
@@ -307,18 +318,19 @@ export async function showVstEditor(fx: InsertFx, sampleRate: number, trackName:
     live.set(fx.id, l)
     changed()
   }
-  await host.call('editor', { instance: l.instance, show: true, title: `${fx.vst.name} – ${trackName}`, parent: host.windowHandle })
+  await l.client.call('editor', { instance: l.instance, show: true, title: `${fx.vst.name} – ${trackName}`, parent: l.client.windowHandle })
 }
 
 // ── offline rendering (export): separate instances with the saved settings ──────
-const offline = new WeakMap<BaseAudioContext, Map<string, { instance: number; latency: number }>>()
+const offline = new WeakMap<BaseAudioContext, Map<string, { instance: number; latency: number; client: HostClient }>>()
+const offlineClients = new Set<HostClient>()
 
 export async function prepareVstOffline(ctx: BaseAudioContext, project: Project): Promise<boolean> {
   const fxs = project.tracks.flatMap((t) => (t.fx ?? []).filter((f) => f.type === 'vst' && f.vst && f.on))
   if (!fxs.length) return false
-  const m = new Map<string, { instance: number; latency: number }>()
+  const m = new Map<string, { instance: number; latency: number; client: HostClient }>()
   for (const fx of fxs) {
-    try { m.set(fx.id, await loadInstance(fx.vst!, ctx.sampleRate)) }
+    try { const r = await loadInstance(fx.vst!, ctx.sampleRate); m.set(fx.id, r); offlineClients.add(r.client) }
     catch (e) { failures.set(fx.id, (e as Error).message) }
   }
   offline.set(ctx, m)
@@ -329,15 +341,16 @@ export async function releaseVstOffline(ctx: BaseAudioContext): Promise<void> {
   const m = offline.get(ctx)
   if (!m) return
   offline.delete(ctx)
-  await Promise.all([...m.values()].map((r) => host.call('unload', { instance: r.instance }).catch(() => {})))
-  if (live.size === 0) host.release()
+  await Promise.all([...m.values()].map((r) => r.client.call('unload', { instance: r.instance }).catch(() => {})))
+  offlineClients.clear()
+  releaseIdle()
 }
 
 /** for an OfflineAudioContext with plugins: pauses every block until the host has answered */
 export function pumpOffline(ctx: OfflineAudioContext, seconds: number): void {
   const step = VST_BLOCK / ctx.sampleRate
   for (let t = step; t < seconds; t += step) {
-    ctx.suspend(t).then(async () => { await host.flush(); await ctx.resume() }).catch(() => {})
+    ctx.suspend(t).then(async () => { await Promise.all([...offlineClients].map((c) => c.flush())); await ctx.resume() }).catch(() => {})
   }
 }
 
@@ -350,7 +363,7 @@ export function vstDelaySeconds(ctx: BaseAudioContext, fx: InsertFx): number {
   return (VST_DELAY + (inst?.latency ?? 0)) / ctx.sampleRate
 }
 
-function instanceFor(ctx: BaseAudioContext, fx: InsertFx): { instance: number; latency: number } | undefined {
+function instanceFor(ctx: BaseAudioContext, fx: InsertFx): { instance: number; latency: number; client: HostClient } | undefined {
   const off = offline.get(ctx)
   if (off) return off.get(fx.id)
   return live.get(fx.id)
@@ -364,10 +377,10 @@ export function makeVstInsert(ctx: BaseAudioContext, fx: InsertFx): { input: Aud
     processorOptions: { block: VST_BLOCK, delay: VST_DELAY + (inst?.latency ?? 0), on: fx.on && !!inst },
   })
   const key = `${offline.has(ctx) ? 'off:' : 'live:'}${fx.id}#${nodeCount++}`
-  if (inst) host.attach(node, key, inst.instance)
+  if (inst) inst.client.attach(node, key, inst.instance)
   return {
     input: node, output: node,
-    dispose: () => { node.port.postMessage({ dispose: true }); host.detach(key) },
+    dispose: () => { node.port.postMessage({ dispose: true }); inst?.client.detach(key) },
   }
 }
 

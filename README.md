@@ -31,7 +31,7 @@ AI Music Studio is free and stays free, made in my spare time. If it saves you t
 
 ### New in 0.50
 
-- **VST plugins (VST3 and VST2):** your own effects in the Studio. *Settings → Plugins* finds them (64-bit plugins), **+ Effect…** on a track adds them and opens their window; their settings are saved with the project and the export includes them. Plugins run in a separate plugin host, so a crashing plugin does not take the app down. Master, Mastering and instrument plugins follow.
+- **VST plugins (VST3 and VST2):** your own effects in the Studio. *Settings → Plugins* finds them (64-bit and 32-bit plugins), **+ Effect…** on a track adds them and opens their window; their settings are saved with the project and the export includes them. Plugins run in a separate plugin host, so a crashing plugin does not take the app down. Master, Mastering and instrument plugins follow.
 
 ### Earlier: 0.40
 
@@ -53,7 +53,7 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 - **Arrangement:** audio and MIDI tracks, drag and drop from the Library or Explorer, multi-select, copy / cut / paste, duplicate (Ctrl+D lines up loops without a gap), split, consolidate, crossfades
 - **Timing:** loop range in the ruler, markers and cycle markers, tempo and time-signature track, snap to grid, warp markers, AUTO SYNC of imported audio to the project tempo
 - **Recording:** count-in, punch in / out, loop recording into take lanes with comping
-- **VST plugins:** your VST3 and VST2 effects (64-bit) on every track, with their own windows; Settings → Plugins finds them
+- **VST plugins:** your VST3 and VST2 effects (64-bit and 32-bit) on every track, with their own windows; Settings → Plugins finds them
 - **Mixing:** mixer with faders, pan, mute, solo and live level meters, volume and pan automation lanes, reverb and delay return tracks with sends, group tracks, a channel tab per track
 - **Piano Roll:** draw, move and quantize MIDI notes
 - **Right in the Studio:** split a clip into stems from the right-click menu, quick export of the song

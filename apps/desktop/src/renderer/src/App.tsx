@@ -1,6 +1,6 @@
 import { useAudioStore } from './stores/audio.store'
 import { usePluginsStore } from './stores/plugins.store'
-import { host, onVstSettingsChanged, vstInUse } from './audio/vst/host'
+import { host, host32, onVstSettingsChanged, vstInUse } from './audio/vst/host'
 import { CloseGuard } from './components/common/CloseGuard'
 import React, { useEffect, useState } from 'react'
 import { UpdateToast } from './components/updater/UpdateToast'
@@ -107,11 +107,12 @@ function usePluginWatch(): void {
   useEffect(() => {
     void usePluginsStore.getState().load()
     const offChanged = onVstSettingsChanged(() => { if (!useProjectStore.getState().dirty) useProjectStore.setState({ dirty: true }) })
-    const offExit = host.onExit(() => {
+    const warn = (): void => {
       if (!vstInUse() && !useAudioStore.getState().isPlaying) return
       window.alert(tr('The plugin host stopped (a plugin may have crashed). Press Play again: the plugins are loaded again with their last saved settings.'))
-    })
-    return () => { offChanged(); offExit() }
+    }
+    const offExit = [host.onExit(warn), host32.onExit(warn)]
+    return () => { offChanged(); offExit.forEach((o) => o()) }
   }, [])
 }
 

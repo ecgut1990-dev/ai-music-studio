@@ -57,6 +57,7 @@ export interface VstRef {
   format: string                          // VST3 or VST2
   xml: string                             // the host's plugin description
   state?: string                          // the plugin's own settings (base64), saved with the project
+  arch?: 'x64' | 'x86'                    // a 32-bit plugin runs in the 32-bit plugin host
 }
 
 export interface TakeLane { id: string; name: string; clips: Clip[] }

@@ -77,13 +77,13 @@ const api = {
   },
   plugins: {
     available: () => ipcRenderer.invoke('plugins:available'),
-    host: () => ipcRenderer.invoke('plugins:host'),
-    release: () => ipcRenderer.invoke('plugins:release'),
+    host: (arch?: 'x64' | 'x86') => ipcRenderer.invoke('plugins:host', arch),
+    release: (arch?: 'x64' | 'x86') => ipcRenderer.invoke('plugins:release', arch),
     windowHandle: () => ipcRenderer.invoke('plugins:window-handle'),
     listRead: () => ipcRenderer.invoke('plugins:list-read'),
     listWrite: (data: unknown) => ipcRenderer.invoke('plugins:list-write', data),
-    onHostExit: (cb: (info: { code: number | null; signal: string | null }) => void): (() => void) => {
-      const h = (_: unknown, i: { code: number | null; signal: string | null }): void => cb(i)
+    onHostExit: (cb: (info: { code: number | null; signal: string | null; arch?: string }) => void): (() => void) => {
+      const h = (_: unknown, i: { code: number | null; signal: string | null; arch?: string }): void => cb(i)
       ipcRenderer.on('plugins:host-exit', h)
       return () => ipcRenderer.removeListener('plugins:host-exit', h)
     }

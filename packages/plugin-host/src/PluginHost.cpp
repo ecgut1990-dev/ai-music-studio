@@ -55,7 +55,29 @@ static juce::var describe (const juce::PluginDescription& d)
     p->setProperty ("inputs", d.numInputChannels);
     p->setProperty ("outputs", d.numOutputChannels);
     if (auto xml = d.createXml()) p->setProperty ("xml", xml->toString (juce::XmlElement::TextFormat().singleLine()));
+    p->setProperty ("arch", sizeof (void*) == 8 ? "x64" : "x86");     // which host loads it: 64-bit or 32-bit
     return o;
+}
+
+// 32 or 64 bit: the machine field of the Windows binary (PE header). A .vst3 bundle has a folder per architecture.
+static juce::String binaryArch (const juce::File& f)
+{
+    if (f.isDirectory())
+    {
+        auto contents = f.getChildFile ("Contents");
+        if (contents.getChildFile ("x86_64-win").isDirectory()) return "x64";
+        if (contents.getChildFile ("x86-win").isDirectory()) return "x86";
+        return "x64";
+    }
+    juce::FileInputStream in (f);
+    if (! in.openedOk() || in.readByte() != 'M' || in.readByte() != 'Z') return "x64";
+    in.setPosition (0x3C);
+    auto peOffset = in.readInt();
+    if (peOffset <= 0 || peOffset > 1 << 20) return "x64";
+    in.setPosition (peOffset);
+    if (in.readInt() != 0x00004550) return "x64";            // "PE\0\0"
+    auto machine = (uint16_t) in.readShort();
+    return machine == 0x014c ? "x86" : "x64";
 }
 
 PluginHost::PluginHost (juce::String t) : token (std::move (t))
@@ -357,6 +379,9 @@ void PluginHost::scan (std::shared_ptr<WsConnection> conn, int id, juce::StringA
     {
         // all plugin files in the folders, per format
         struct Item { juce::String format, file; };
+        // a 32-bit plugin is checked (and later loaded) by the 32-bit host next to this one
+        auto hostExe = juce::File::getSpecialLocation (juce::File::currentExecutableFile);
+        auto host32 = hostExe.getSiblingFile (hostExe.getFileNameWithoutExtension() + "32" + hostExe.getFileExtension());
         juce::Array<Item> items;
         for (auto* fmt : formats.getFormats())
         {
@@ -376,7 +401,21 @@ void PluginHost::scan (std::shared_ptr<WsConnection> conn, int id, juce::StringA
             conn->sendText (juce::JSON::toString (ev, true));
 
             juce::ChildProcess child;
-            juce::StringArray args { exe, "--scan-one", items[i].format, items[i].file };
+            juce::String runner = exe;
+            bool is32 = sizeof (void*) == 8 && binaryArch (juce::File (items[i].file)) == "x86";
+            if (is32)
+            {
+                if (! host32.existsAsFile())
+                {
+                    auto f = obj(); f.getDynamicObject()->setProperty ("file", items[i].file);
+                    f.getDynamicObject()->setProperty ("format", items[i].format == "VST" ? juce::String ("VST2") : items[i].format);
+                    f.getDynamicObject()->setProperty ("reason", "32-bit plugin, but the 32-bit plugin host is missing");
+                    failed.add (f);
+                    continue;
+                }
+                runner = host32.getFullPathName();
+            }
+            juce::StringArray args { runner, "--scan-one", items[i].format, items[i].file };
             bool ok = child.start (args, juce::ChildProcess::wantStdOut);
             juce::String out;
             if (ok)
@@ -397,7 +436,7 @@ void PluginHost::scan (std::shared_ptr<WsConnection> conn, int id, juce::StringA
             {
                 auto f = obj(); f.getDynamicObject()->setProperty ("file", items[i].file);
                 f.getDynamicObject()->setProperty ("format", items[i].format == "VST" ? juce::String ("VST2") : items[i].format);
-                f.getDynamicObject()->setProperty ("reason", ok ? "no plugin found in this file (or a 32-bit plugin)" : "the plugin crashed or did not answer while being checked");
+                f.getDynamicObject()->setProperty ("reason", ok ? "no plugin found in this file" : "the plugin crashed or did not answer while being checked");
                 failed.add (f);
             }
         }

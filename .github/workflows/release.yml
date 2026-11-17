@@ -110,7 +110,7 @@ jobs:
           git clone --depth 1 https://git.iem.at/zmoelnig/FST.git "$env:RUNNER_TEMP/FST"
           if ($LASTEXITCODE -ne 0) { Write-Warning "FST not available: the plugin host is built for VST3 only" }
 
-      - name: Build the plugin host
+      - name: Build the plugin host (64-bit and 32-bit)
         shell: pwsh
         run: |
           $fst = if (Test-Path "$env:RUNNER_TEMP/FST") { "$env:RUNNER_TEMP/FST" } else { "" }
@@ -122,6 +122,15 @@ jobs:
           if (-not $exe) { throw "ams-plugin-host.exe not found" }
           Copy-Item $exe.FullName packages/plugin-host/dist/ams-plugin-host.exe -Force
           Get-Item packages/plugin-host/dist/ams-plugin-host.exe | Select-Object Name, Length
+          # the 32-bit host for 32-bit plugins (same program, built for x86)
+          cmake -S packages/plugin-host -B "$env:RUNNER_TEMP/phbuild32" -A Win32 -DAMS_FST_DIR="$fst"
+          if ($LASTEXITCODE -ne 0) { throw "cmake configure (32-bit) failed" }
+          cmake --build "$env:RUNNER_TEMP/phbuild32" --config Release --target AMSPluginHost
+          if ($LASTEXITCODE -ne 0) { throw "32-bit plugin host build failed" }
+          $exe32 = Get-ChildItem "$env:RUNNER_TEMP/phbuild32" -Recurse -Filter ams-plugin-host.exe | Select-Object -First 1
+          if (-not $exe32) { throw "32-bit ams-plugin-host.exe not found" }
+          Copy-Item $exe32.FullName packages/plugin-host/dist/ams-plugin-host32.exe -Force
+          Get-Item packages/plugin-host/dist/ams-plugin-host32.exe | Select-Object Name, Length
 
       - name: Build Electron app + NSIS installer
         run: pnpm build

@@ -22,7 +22,7 @@ export function PluginsTab(): React.ReactElement {
       <div>
         <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>{tr('VST plugins')}</div>
         <div style={muted}>
-          {tr('Your VST3 and VST2 effects can be used in the Studio (effects of a track: “+ Effect…”). Only 64-bit plugins work; 32-bit plugins are not supported.')}
+          {tr('Your VST3 and VST2 effects can be used in the Studio (effects of a track: “+ Effect…”). 64-bit and 32-bit plugins work; a 32-bit plugin runs in its own 32-bit plugin host.')}
         </div>
       </div>
 
@@ -74,7 +74,7 @@ export function PluginsTab(): React.ReactElement {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ textAlign: 'left', color: 'var(--text-muted)' }}>
-                <th style={{ width: 28 }} /><th>{tr('Name')}</th><th>{tr('Vendor')}</th><th>{tr('Type')}</th><th>{tr('Format')}</th>
+                <th style={{ width: 28 }} /><th>{tr('Name')}</th><th>{tr('Vendor')}</th><th>{tr('Type')}</th><th>{tr('Format')}</th><th>{tr('Bits')}</th>
               </tr>
             </thead>
             <tbody>
@@ -85,6 +85,7 @@ export function PluginsTab(): React.ReactElement {
                   <td>{p.vendor || '–'}</td>
                   <td>{p.isInstrument ? tr('Instrument (later)') : tr('Effect')}</td>
                   <td>{p.format}</td>
+                  <td>{p.arch === 'x86' ? '32' : '64'}</td>
                 </tr>
               ))}
             </tbody>

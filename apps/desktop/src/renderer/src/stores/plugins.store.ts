@@ -26,6 +26,13 @@ export const DEFAULT_FOLDERS = [
   'C:\\Program Files\\VSTPlugins',
   'C:\\Program Files\\Steinberg\\VSTPlugins',
   'C:\\Program Files\\Common Files\\VST2',
+  'C:\\Program Files\\Common Files\\Steinberg\\VST2',
+  // 32-bit plugins (Windows puts them under "Program Files (x86)")
+  'C:\\Program Files (x86)\\Common Files\\VST3',
+  'C:\\Program Files (x86)\\VSTPlugins',
+  'C:\\Program Files (x86)\\Steinberg\\VSTPlugins',
+  'C:\\Program Files (x86)\\Common Files\\VST2',
+  'C:\\Program Files (x86)\\Common Files\\Steinberg\\VST2',
 ]
 
 const persist = (s: Saved): void => {
@@ -57,7 +64,6 @@ export const usePluginsStore = create<PluginsState>()((set, get) => ({
       await host.ensure()
       const paths = [...DEFAULT_FOLDERS, ...get().folders]
       const r = await host.call<{ plugins: PluginInfo[]; failed: FailedPlugin[] }>('scan', { paths, known: [] }, 3600000)
-      // 64-bit only: a 32-bit file is reported as "no plugin found"
       const plugins = r.plugins.sort((a, b) => a.name.localeCompare(b.name))
       set({ plugins, failed: r.failed, scannedAt: Date.now() })
       persist(get())
