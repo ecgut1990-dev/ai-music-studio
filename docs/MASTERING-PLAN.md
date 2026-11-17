@@ -12,8 +12,8 @@ full mastering workspace like a professional mastering editor, with open-source 
   How it works: `apps/desktop/src/renderer/src/audio/master/` (`dsp.ts` holds the processors and the BS.1770 meter as
   self-contained classes that run both in AudioWorklets and offline; `chain.ts` builds the graph; `player.ts` plays,
   A/B, meters), `components/mastering/`, backend `services/master_export.py` (`/mastering/export`).
-- **Next, step by step:** 4 (assistant, editing), 5 (VST3 host, wishes 5, 7, 8), 6 (album).
-  Not in 0.30.0: dynamic EQ and saturation (step 2 extras), the built-in effects as Studio inserts (wish 8 without VST).
+- **0.31.0 (17.11.2026): step 4 done** with the owner's additions: assistant (button; styles incl. Soul and Funk; reference song), editing incl. cut / copy / paste / delete / crop, fades with curves, gain, normalise, trim, DC, undo, markers; dynamic EQ and saturation / exciter; these processors (and stereo, limiter) as Studio track effects; a chain per song; Mastering from the Stem Splitter. Code: `audio/master/assistant.ts`, `audio/master/edit.ts`, `components/mastering/MasterAssistant.tsx`, `MasterEdit.tsx`.
+- **Next:** 5 (VST3 host, wishes 5, 7, 8; also effects on the Studio master), 6 (album).
 
 ## The owner's wishes
 

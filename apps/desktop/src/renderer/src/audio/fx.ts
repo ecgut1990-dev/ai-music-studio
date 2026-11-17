@@ -1,5 +1,6 @@
 // The effects of return tracks (Ableton "Return tracks", Cubase "FX channels"): a reverb and a tempo delay.
 import type { InsertFx, InsertType, ReturnTrack } from '../types'
+import { crossover, truePeakTaps } from './master/dsp'
 
 const irCache = new Map<string, AudioBuffer>()
 
@@ -82,6 +83,30 @@ export const INSERT_PARAMS: Record<InsertType, ParamDef[]> = {
     { key: 'decay', label: 'Decay', min: 0.3, max: 8, step: 0.1, def: 2, unit: 's' },
     { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, def: 0.25 },
   ],
+  // the Mastering page's processors, also on Studio tracks and the master (AudioWorklets, same code)
+  limiter: [
+    { key: 'gainDb', label: 'Louder', min: -12, max: 24, step: 0.1, def: 0, unit: 'dB' },
+    { key: 'ceilingDb', label: 'Ceiling', min: -3, max: 0, step: 0.1, def: -1, unit: 'dBTP' },
+    { key: 'releaseMs', label: 'Release', min: 10, max: 500, step: 5, def: 120, unit: 'ms' },
+  ],
+  saturation: [
+    { key: 'driveDb', label: 'Drive', min: 0, max: 24, step: 0.5, def: 6, unit: 'dB' },
+    { key: 'mix', label: 'Mix', min: 0, max: 1, step: 0.01, def: 0.3 },
+    { key: 'excite', label: 'Exciter', min: 0, max: 1, step: 0.01, def: 0 },
+    { key: 'exciteFreq', label: 'Exciter from', min: 1000, max: 16000, step: 100, def: 6000, unit: 'Hz' },
+    { key: 'outDb', label: 'Output', min: -12, max: 6, step: 0.5, def: 0, unit: 'dB' },
+  ],
+  stereo: [
+    { key: 'width', label: 'Width', min: 0, max: 2, step: 0.01, def: 1 },
+    { key: 'monoBelow', label: 'Mono below', min: 0, max: 300, step: 5, def: 0, unit: 'Hz' },
+    { key: 'balance', label: 'Balance', min: -1, max: 1, step: 0.01, def: 0 },
+  ],
+  dyneq: [
+    { key: 'freq', label: 'Frequency', min: 30, max: 16000, step: 10, def: 3500, unit: 'Hz' },
+    { key: 'thresholdDb', label: 'Threshold', min: -50, max: 0, step: 0.5, def: -24, unit: 'dB' },
+    { key: 'rangeDb', label: 'Max. cut', min: 0, max: 18, step: 0.5, def: 6, unit: 'dB' },
+    { key: 'q', label: 'Width (Q)', min: 0.3, max: 8, step: 0.1, def: 1.5 },
+  ],
   filter: [
     { key: 'mode', label: 'High-pass', min: 0, max: 1, step: 1, def: 0 },
     { key: 'freq', label: 'Frequency', min: 20, max: 20000, step: 10, def: 8000, unit: 'Hz' },
@@ -89,7 +114,10 @@ export const INSERT_PARAMS: Record<InsertType, ParamDef[]> = {
   ],
 }
 
-export const INSERT_LABEL: Record<InsertType, string> = { eq: 'EQ', compressor: 'Compressor', delay: 'Delay', reverb: 'Reverb', filter: 'Filter' }
+export const INSERT_LABEL: Record<InsertType, string> = {
+  eq: 'EQ', compressor: 'Compressor', delay: 'Delay', reverb: 'Reverb', filter: 'Filter',
+  limiter: 'Limiter (true peak)', saturation: 'Saturation / exciter', stereo: 'Stereo / mono bass', dyneq: 'Dynamic EQ',
+}
 
 export function insertDefaults(type: InsertType): Record<string, number> {
   return Object.fromEntries(INSERT_PARAMS[type].map((d) => [d.key, d.def]))
@@ -114,6 +142,18 @@ export function makeInsert(ctx: BaseAudioContext, fx: InsertFx, secPerBeat: numb
     c.attack.value = p.attack / 1000; c.release.value = p.release / 1000
     const makeup = ctx.createGain(); makeup.gain.value = dbToGain(p.makeup)
     input.connect(c).connect(makeup).connect(output)
+  } else if (fx.type === 'limiter' || fx.type === 'saturation' || fx.type === 'stereo' || fx.type === 'dyneq') {
+    // AudioWorklet processors of the Mastering page; loadWorklets(ctx) runs before the project is scheduled
+    try {
+      const params = fx.type === 'stereo' ? { width: p.width, balance: p.balance } : p
+      const extra: Record<string, unknown> = fx.type === 'limiter' ? { tp: truePeakTaps(), lookaheadMs: 5 } : {}
+      if (fx.type === 'stereo') extra.hp = p.monoBelow > 0 ? crossover(ctx.sampleRate, p.monoBelow).high : null
+      const node = new AudioWorkletNode(ctx, 'ams-fx', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit',
+        processorOptions: { kind: fx.type, params, ...extra } })
+      input.connect(node).connect(output)
+    } catch {
+      input.connect(output)                            // worklets not loaded (should not happen): pass the sound through
+    }
   } else if (fx.type === 'filter') {
     const f = ctx.createBiquadFilter()
     f.type = p.mode >= 0.5 ? 'highpass' : 'lowpass'; f.frequency.value = p.freq; f.Q.value = p.q

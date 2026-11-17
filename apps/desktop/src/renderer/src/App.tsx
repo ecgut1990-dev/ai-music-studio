@@ -22,6 +22,7 @@ import { Library } from './components/library/Library'
 import { Welcome } from './components/common/Welcome'
 import { BeatMatchCard } from './beatmatch/BeatMatchCard'
 import { QuantizeDialog } from './edit/GridControls'
+import { AskTextDialog } from './components/common/AskText'
 import { FeedbackButton } from './components/common/Feedback'
 import { Mastering } from './components/mastering/Mastering'
 import { KaraokeExport } from './components/karaoke/KaraokeExport'
@@ -222,6 +223,7 @@ export default function App(): React.ReactElement {
       <Welcome />
       <BeatMatchCard />
       <QuantizeDialog />
+      <AskTextDialog />
     </div>
   )
 }

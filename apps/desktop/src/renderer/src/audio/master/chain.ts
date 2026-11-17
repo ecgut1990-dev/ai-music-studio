@@ -3,7 +3,7 @@
 import { crossover, truePeakTaps } from './dsp'
 import { loadWorklets } from './worklets'
 
-export type SlotType = 'eq' | 'comp' | 'multiband' | 'stereo'
+export type SlotType = 'eq' | 'comp' | 'multiband' | 'stereo' | 'dyneq' | 'saturation'
 
 export interface EqParams {
   lowCut: number                                   // Hz, 0 = off
@@ -18,12 +18,16 @@ export interface CompParams { thresholdDb: number; ratio: number; attackMs: numb
 export interface BandParams { thresholdDb: number; ratio: number; attackMs: number; releaseMs: number; levelDb: number }
 export interface MultibandParams { xo1: number; xo2: number; bands: [BandParams, BandParams, BandParams] }
 export interface StereoParams { width: number; monoBelow: number; balance: number }   // width 1 = unchanged; monoBelow 0 = off
+export interface DynEqParams { freq: number; q: number; thresholdDb: number; ratio: number; rangeDb: number; attackMs: number; releaseMs: number }
+export interface SaturationParams { driveDb: number; mix: number; exciteFreq: number; excite: number; outDb: number }
 
 export type Slot =
   | { id: string; type: 'eq'; on: boolean; p: EqParams }
   | { id: string; type: 'comp'; on: boolean; p: CompParams }
   | { id: string; type: 'multiband'; on: boolean; p: MultibandParams }
   | { id: string; type: 'stereo'; on: boolean; p: StereoParams }
+  | { id: string; type: 'dyneq'; on: boolean; p: DynEqParams }
+  | { id: string; type: 'saturation'; on: boolean; p: SaturationParams }
 
 export interface Chain {
   slots: Slot[]
@@ -33,6 +37,7 @@ export interface Chain {
 
 export const SLOT_LABEL: Record<SlotType, string> = {
   eq: 'Equalizer', comp: 'Compressor (glue)', multiband: 'Multiband compressor', stereo: 'Stereo / mono bass',
+  dyneq: 'Dynamic EQ', saturation: 'Saturation / exciter',
 }
 
 export function slotDefaults(type: SlotType, id: string): Slot {
@@ -44,6 +49,8 @@ export function slotDefaults(type: SlotType, id: string): Slot {
       return { id, type, on: true, p: { xo1: 150, xo2: 3000, bands: [band(), band(), band()] } }
     }
     case 'stereo': return { id, type, on: true, p: { width: 1, monoBelow: 120, balance: 0 } }
+    case 'dyneq': return { id, type, on: true, p: { freq: 3500, q: 1.5, thresholdDb: -24, ratio: 3, rangeDb: 6, attackMs: 5, releaseMs: 120 } }
+    case 'saturation': return { id, type, on: true, p: { driveDb: 6, mix: 0.3, exciteFreq: 6000, excite: 0, outDb: 0 } }
   }
 }
 
@@ -77,7 +84,7 @@ export interface ChainNodes {
   output: AudioNode
   latency: number                                   // seconds of delay through the chain (the limiter's look-ahead)
   update: (chain: Chain) => void                    // new settings without rebuilding (same slots in the same order)
-  onReduction?: (r: { limiter: number; comp: number; bands: number[] }) => void
+  onReduction?: (r: { limiter: number; comp: number; bands: number[]; dyneq: number }) => void
   dispose: () => void
 }
 
@@ -90,7 +97,7 @@ export async function buildChain(ctx: BaseAudioContext, chain: Chain): Promise<C
   const updaters: Array<(c: Chain) => void> = []
   const fx = (kind: string, extra: Record<string, unknown>): AudioWorkletNode =>
     new AudioWorkletNode(ctx, 'ams-fx', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit', processorOptions: { kind, ...extra } })
-  const red = { limiter: 1, comp: 0, bands: [0, 0, 0] }
+  const red = { limiter: 1, comp: 0, bands: [0, 0, 0], dyneq: 0 }
   const result: ChainNodes = { input, output: input, latency: 0, update: () => {}, dispose: () => {} }
 
   let last: AudioNode = input
@@ -137,6 +144,12 @@ export async function buildChain(ctx: BaseAudioContext, chain: Chain): Promise<C
       const n = fx('stereo', { hp: sideHp(sr, slot.p.monoBelow), params: slot.p })
       nodes.push(n); head = tail = n
       updaters.push((c) => { const s = find(c); if (s?.type === 'stereo') { n.port.postMessage({ ...s.p, hp: sideHp(sr, s.p.monoBelow) }); setOn(s.on) } })
+    } else if (slot.type === 'dyneq' || slot.type === 'saturation') {
+      const n = fx(slot.type, { params: slot.p })
+      if (slot.type === 'dyneq') n.port.onmessage = (e) => { if (e.data.reduction !== undefined) { red.dyneq = e.data.reduction; result.onReduction?.(red) } }
+      nodes.push(n); head = tail = n
+      const kind = slot.type
+      updaters.push((c) => { const s = find(c); if (s?.type === kind) { n.port.postMessage(s.p); setOn(s.on) } })
     }
     if (head !== inG) inG.connect(head)
     tail.connect(wet); wet.connect(sum)

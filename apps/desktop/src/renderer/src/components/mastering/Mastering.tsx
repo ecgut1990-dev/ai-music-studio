@@ -10,6 +10,12 @@ import { MasterWave } from './MasterWave'
 import { MasterMeters } from './MasterMeters'
 import { MasterRack } from './MasterRack'
 import { MasterOutput, loadOutput, type OutputSettings } from './MasterOutput'
+import { MasterAssistant } from './MasterAssistant'
+import { MasterEdit } from './MasterEdit'
+import { applyEdits, type EditOp } from '../../audio/master/edit'
+
+// edits of each open song (this session): the original file is never changed
+const editsByPath = new Map<string, { ops: EditOp[]; redo: EditOp[] }>()
 
 // Mastering workspace: drop or open a song, hear it through the chain (A/B with the original at the same loudness),
 // see every measurement before and after, and export it in any format. Processing runs in the app's audio engine
@@ -34,7 +40,9 @@ const clock = (t: number): string => `${Math.floor(t / 60)}:${(t % 60).toFixed(1
 
 export function Mastering(): React.ReactElement {
   const { files, current, recent, chain, open, close, select, setChain } = useMasteringStore()
+  const [original, setOriginal] = useState<AudioBuffer | null>(null)
   const [buffer, setBuffer] = useState<AudioBuffer | null>(null)
+  const [edits, setEdits] = useState<{ ops: EditOp[]; redo: EditOp[] }>({ ops: [], redo: [] })
   const [after, setAfter] = useState<AudioBuffer | null>(null)
   const [aBefore, setABefore] = useState<Analysis | null>(null)
   const [aAfter, setAAfter] = useState<Analysis | null>(null)
@@ -61,27 +69,57 @@ export function Mastering(): React.ReactElement {
   // load the shown file
   useEffect(() => {
     let gone = false
-    setBuffer(null); setAfter(null); setABefore(null); setAAfter(null); setError(null); afterFor.current = null
+    setBuffer(null); setOriginal(null); setAfter(null); setABefore(null); setAAfter(null); setError(null); afterFor.current = null
     void masterPlayer.load(null)
     if (!current) return
+    setEdits(editsByPath.get(current) ?? { ops: [], redo: [] })
     setLoading(true)
     ;(async () => {
       try {
         const buf = await decodeFile(current)
         if (gone) return
-        await masterPlayer.load(buf)
         await masterPlayer.setChain(useMasteringStore.getState().chain)
-        setBuffer(buf)
+        setOriginal(buf)
         setLoading(false)
-        setMeasuring(true)
-        await later()
-        const a = analyze(chansOf(buf), buf.sampleRate)
-        if (!gone) setABefore(a)
       } catch (e) {
         if (!gone) { setError(`Could not open the file: ${(e as Error).message}`); setLoading(false) }
       }
     })()
     return () => { gone = true }
+  }, [current])
+
+  // the edited song: the original with every edit step applied; played, measured and exported
+  useEffect(() => {
+    if (!original) return
+    let gone = false
+    const ch = applyEdits(chansOf(original), original.sampleRate, edits.ops)
+    const buf = new AudioBuffer({ numberOfChannels: 2, length: Math.max(1, ch[0].length), sampleRate: original.sampleRate })
+    buf.copyToChannel(ch[0] as Float32Array<ArrayBuffer>, 0); buf.copyToChannel((ch[1] ?? ch[0]) as Float32Array<ArrayBuffer>, 1)
+    const at = Math.min(masterPlayer.position(), buf.duration)
+    const wasPlaying = masterPlayer.playing
+    const loop = masterPlayer.loop
+    ;(async () => {
+      await masterPlayer.load(buf)
+      if (loop && loop.end <= buf.duration) masterPlayer.setLoop(loop, masterPlayer.loopOn)
+      masterPlayer.seek(at)
+      if (wasPlaying) void masterPlayer.play(at)
+      setBuffer(buf); setAfter(null); afterFor.current = null
+      setMeasuring(true)
+      await later()
+      const a = analyze(chansOf(buf), buf.sampleRate)
+      if (!gone) setABefore(a)
+    })()
+    return () => { gone = true }
+  }, [original, edits])
+
+  const pushEdit = useCallback((op: EditOp): void => {
+    setEdits((e) => { const n = { ops: [...e.ops, op], redo: [] }; if (current) editsByPath.set(current, n); return n })
+  }, [current])
+  const undoEdit = useCallback((): void => {
+    setEdits((e) => { if (!e.ops.length) return e; const n = { ops: e.ops.slice(0, -1), redo: [e.ops[e.ops.length - 1], ...e.redo] }; if (current) editsByPath.set(current, n); return n })
+  }, [current])
+  const redoEdit = useCallback((): void => {
+    setEdits((e) => { if (!e.redo.length) return e; const n = { ops: [...e.ops, e.redo[0]], redo: e.redo.slice(1) }; if (current) editsByPath.set(current, n); return n })
   }, [current])
 
   // the chain: live at once, the measurement "after" a moment later (rendered offline with the same code)
@@ -107,16 +145,21 @@ export function Mastering(): React.ReactElement {
       return null
     }
   }, [])
+  const reachingRef = useRef(false)          // while "Reach" measures, the automatic measurement waits
   useEffect(() => {
-    if (!buffer || !aBefore) return
-    const t = setTimeout(() => void measureAfter(chain, buffer, aBefore), 600)
+    if (!buffer || !aBefore || reachingRef.current) return
+    const t = setTimeout(() => { if (!reachingRef.current) void measureAfter(chain, buffer, aBefore) }, 600)
     return () => clearTimeout(t)
   }, [chain, buffer, aBefore, measureAfter])
 
-  const reachTarget = async (): Promise<void> => {
+  // the target can be given (the assistant sets one); the chain is read now, so changes made just before count
+  const reachTarget = async (targetId?: string): Promise<void> => {
     if (!buffer || !aBefore) return
+    const tgt = TARGETS.find((t) => t.id === (targetId ?? target)) ?? TARGETS[0]
     setReaching(true)
-    let c: Chain = { ...chain, limiter: { ...chain.limiter, on: true, ceilingDb: tgt.ceiling } }
+    reachingRef.current = true
+    const now = useMasteringStore.getState().chain
+    let c: Chain = { ...now, limiter: { ...now.limiter, on: true, ceilingDb: tgt.ceiling } }
     for (let i = 0; i < 4; i++) {
       const a = await measureAfter(c, buffer, aBefore)
       if (!a || !Number.isFinite(a.integrated)) break
@@ -124,6 +167,7 @@ export function Mastering(): React.ReactElement {
       if (Math.abs(diff) < 0.2) break
       c = { ...c, louderDb: Math.max(-12, Math.min(24, Math.round((c.louderDb + diff * (diff > 0 ? 1.1 : 1)) * 10) / 10)) }
     }
+    reachingRef.current = false
     setChain(c)
     setReaching(false)
   }
@@ -235,7 +279,13 @@ export function Mastering(): React.ReactElement {
             <button className="btn btn-primary" onClick={() => { setResults(null); setOutput(loadOutput(name)) }}>Export…</button>
           </div>
 
-          <MasterWave before={buffer} after={after} clips={shown === 'before' ? aBefore?.clips ?? [] : aAfter?.clips ?? []} show={shown} />
+          <MasterWave before={buffer} after={after} clips={shown === 'before' ? aBefore?.clips ?? [] : aAfter?.clips ?? []} show={shown}
+            markers={useMasteringStore.getState().markers[current!] ?? []} />
+          <MasterEdit buffer={buffer} ops={edits.ops} canRedo={edits.redo.length > 0} onEdit={pushEdit} onUndo={undoEdit} onRedo={redoEdit} path={current!} />
+
+          <MasterAssistant buffer={buffer} before={aBefore} chain={chain} onApply={setChain} onEdit={pushEdit}
+            onTarget={(t) => { setTarget(t); try { localStorage.setItem('ams-master-target', t) } catch { /* */ } }}
+            onReach={(t) => void reachTarget(t)} />
 
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(340px, 1fr) minmax(320px, 420px)', minWidth: 0, gap: 14, alignItems: 'start' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

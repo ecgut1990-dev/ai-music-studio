@@ -22,6 +22,7 @@ After splitting: **▶ Play** all stems together, waveform with seeking, per ste
 - **→ MIDI:** turns a stem (bass, vocals, piano…) into notes on a new MIDI track, opened in the [[Piano Roll]].
 
 ## Saving
+- **Mastering** on a stem opens it in [[Mastering]] (e.g. the instrumental).
 - **Save to library** with a name and tags: the stems go to the [[Library]] → *Stems*. **Open Library → Stems** jumps there.
 - **Export Stems…:** every stem as its own file (WAV, AIFF, FLAC, MP3) for any DAW.
 

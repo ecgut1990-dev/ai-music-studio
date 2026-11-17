@@ -157,7 +157,7 @@ const HANDLERS: Record<string, () => void> = {
     if (owner && st.selectedClipId) st.duplicateClip(owner.id, st.selectedClipId)
     else duplicateSelectedTrack()
   },
-  'file.new': () => { newProject() },
+  'file.new': () => { void newProject() },
   'file.open': () => { void openProject().then(reportOpen) },
   'file.save': () => { void saveProject().catch((e) => window.alert(`Saving failed: ${(e as Error).message}`)) },
   'file.saveAs': () => { void saveProjectAs().catch((e) => window.alert(`Saving failed: ${(e as Error).message}`)) },

@@ -53,6 +53,8 @@ export function useShortcuts(): void {
       // list, and Delete must not silently do nothing.
       if (isEditable(e.target, combo) && !/^(F\d+|Escape)$/.test(combo)) return
       if (wantsTextCommand(id)) return                     // the browser copies / pastes the text itself
+      // the Mastering page edits its own song with these keys (cut, copy, paste, delete, undo, redo)
+      if (useUIStore.getState().activeView === 'mastering' && /^(edit\.|clip\.delete)/.test(id)) return
       const el = e.target as HTMLElement | null
       if (el && (el.tagName === 'SELECT' || el.tagName === 'BUTTON' || el.tagName === 'INPUT')) el.blur()   // keys go to the Studio again
       e.preventDefault()

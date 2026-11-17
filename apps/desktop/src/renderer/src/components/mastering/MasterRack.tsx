@@ -111,6 +111,36 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
       </div>
     )
   }
+  if (slot.type === 'dyneq') {
+    const p = slot.p
+    const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Turns this frequency down only while it is too loud (sharp highs, booming bass). Add it twice for two bands.</span>
+        <Knob name="Frequency" refv={d.freq} value={p.freq} min={30} max={16000} step={1} unit="Hz" log onChange={(v) => u('freq', v)} />
+        <Knob name="Width (Q)" refv={d.q} value={p.q} min={0.3} max={8} step={0.1} onChange={(v) => u('q', v)} />
+        <Knob name="Threshold" refv={d.thresholdDb} value={p.thresholdDb} min={-50} max={0} step={0.5} unit="dB" onChange={(v) => u('thresholdDb', v)} />
+        <Knob name="Ratio" refv={d.ratio} value={p.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => u('ratio', v)} />
+        <Knob name="Max. cut" refv={d.rangeDb} value={p.rangeDb} min={0} max={18} step={0.5} unit="dB" onChange={(v) => u('rangeDb', v)} />
+        <Knob name="Attack" refv={d.attackMs} value={p.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => u('attackMs', v)} />
+        <Knob name="Release" refv={d.releaseMs} value={p.releaseMs} min={20} max={1000} step={5} unit="ms" onChange={(v) => u('releaseMs', v)} />
+      </div>
+    )
+  }
+  if (slot.type === 'saturation') {
+    const p = slot.p
+    const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Warmth (soft tape-like saturation) and air (new harmonics above a frequency).</span>
+        <Knob name="Drive" refv={d.driveDb} value={p.driveDb} min={0} max={24} step={0.5} unit="dB" onChange={(v) => u('driveDb', v)} />
+        <Knob name="Mix" refv={d.mix * 100} value={p.mix * 100} min={0} max={100} step={1} unit="%" onChange={(v) => u('mix', v / 100)} />
+        <Knob name="Exciter from" refv={d.exciteFreq} value={p.exciteFreq} min={1000} max={16000} step={1} unit="Hz" log onChange={(v) => u('exciteFreq', v)} />
+        <Knob name="Exciter amount" refv={d.excite * 100} value={p.excite * 100} min={0} max={100} step={1} unit="%" onChange={(v) => u('excite', v / 100)} />
+        <Knob name="Output" refv={d.outDb} value={p.outDb} min={-12} max={6} step={0.5} unit="dB" onChange={(v) => u('outDb', v)} />
+      </div>
+    )
+  }
   const p = slot.p
   const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
   return (

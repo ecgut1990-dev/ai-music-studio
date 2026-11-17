@@ -15,6 +15,7 @@ import { MAX_STRETCH_SECONDS, stretchBuffer } from './stretch'
 import { beatToSec, bpmAt, barAt, isDownbeat, secToBeat } from './timemap'
 import { hasAutomation, scheduleLane } from './automation'
 import { makeEffect, makeInsert } from './fx'
+import { loadWorklets } from './master/worklets'
 import { exportSampleRate } from '../lib/sampleRate'
 import { beatOfSrc, renderWarped } from './warp'
 
@@ -561,6 +562,7 @@ async function startAt(beat: number, countInBars = 0): Promise<void> {
   if (c.state === 'suspended') await c.resume()
   const project = useProjectStore.getState().project
   useAudioStore.setState({ loading: true })
+  await loadWorklets(c)                                       // Mastering processors as track effects
   await loadAllFiles(project)
   useAudioStore.setState({ loading: false })
   if (my !== epoch) return                                        // stopped or restarted meanwhile
@@ -968,6 +970,7 @@ export async function renderMix(opts: { bits: 16 | 24; normalize: boolean; tailS
   if (endBeat <= 0) throw new Error('The project is empty: nothing to export.')
   const seconds = beatToSec(project, endBeat) + (opts.tailSeconds ?? 2)
   const off = new OfflineAudioContext(2, Math.ceil(seconds * sr), sr)
+  await loadWorklets(off)
   const out = off.createGain()
   out.gain.value = useAudioStore.getState().masterVolume
   out.connect(off.destination)
@@ -988,6 +991,7 @@ export async function renderClips(project: Project, clips: Clip[], fromBeat: num
   const sr = 44100
   const seconds = beatToSec(p, toBeat) - beatToSec(p, fromBeat)
   const off = new OfflineAudioContext(2, Math.max(1, Math.ceil(seconds * sr)), sr)
+  await loadWorklets(off)
   scheduleProject(off, off.destination, p, fromBeat, 0, { untilBeat: toBeat })
   return off.startRendering()
 }

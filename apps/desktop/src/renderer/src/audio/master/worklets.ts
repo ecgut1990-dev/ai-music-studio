@@ -1,12 +1,13 @@
 // Loads the mastering processors (dsp.ts) into an AudioContext or OfflineAudioContext as AudioWorklets. The worklet
 // code is made from the source text of the same classes, so live playback and the export run identical code.
-import { BiquadBank, CompressorCore, LimiterCore, MeterCore, MultibandCore, StereoCore } from './dsp'
+import { BiquadBank, CompressorCore, DynEqCore, LimiterCore, MeterCore, MultibandCore, SaturationCore, StereoCore } from './dsp'
 
 function workletSource(): string {
   const cls = (name: string, c: { toString(): string }): string => `const ${name} = (${c.toString()});\n`
   return [
     cls('BiquadBank', BiquadBank), cls('CompressorCore', CompressorCore), cls('LimiterCore', LimiterCore),
     cls('MultibandCore', MultibandCore), cls('StereoCore', StereoCore), cls('MeterCore', MeterCore),
+    cls('DynEqCore', DynEqCore), cls('SaturationCore', SaturationCore),
     `
 class AmsFx extends AudioWorkletProcessor {
   constructor(options) {
@@ -19,6 +20,8 @@ class AmsFx extends AudioWorkletProcessor {
     else if (o.kind === 'multiband') this.core = new MultibandCore({ sr, channels: 2, Comp: CompressorCore, Bank: BiquadBank, xo: o.xo })
     else if (o.kind === 'stereo') this.core = new StereoCore({ sr, Bank: BiquadBank, hp: o.hp })
     else if (o.kind === 'meter') this.core = new MeterCore({ sr, k: o.k, tp: o.tp })
+    else if (o.kind === 'dyneq') this.core = new DynEqCore({ sr, channels: 2 })
+    else if (o.kind === 'saturation') this.core = new SaturationCore({ sr, channels: 2 })
     this.apply(o.params || {})
     this.count = 0
     this.port.onmessage = (e) => this.apply(e.data || {})

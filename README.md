@@ -93,6 +93,17 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 
 All changes of every version: [CHANGELOG.md](CHANGELOG.md)
 
+### New in 0.31.0
+
+**Mastering: assistant, cutting and new effects.**
+
+- **✨ Analyse & suggest:** measures tone balance (eight bands), dynamics, stereo, clipping and silence, compares the song with a style (Techno / House, Afro House, Trance / EDM, Pop, Hip-hop, Rock, Soul / R&B, Funk, Acoustic, Podcast) or with a reference song, and proposes settings for the chain, each with its reason. Tick what you want, *Apply*, and the loudness target is reached; *Undo* brings the chain back. Runs on your PC in seconds, no internet.
+- **Cut and edit:** mark a region in the waveform, then **Cut**, **Copy**, **Paste**, **Delete**, **Crop**, **Silence**, **Fade in / out** (S-curve, linear, logarithmic), **Gain**, **Normalise** (peak or LUFS), **Trim silence**, **DC offset**; Ctrl+X / C / V, Del, Ctrl+Z / Y; markers with names. The original file is never changed: the steps are applied on export.
+- **New effects in the chain:** **Dynamic EQ** (turns a frequency down only while it is too loud) and **Saturation / exciter** (warmth and air).
+- **Mastering effects in the Studio:** dynamic EQ, saturation, stereo / mono bass and the true-peak limiter can be added to any track (FX → + Effect…).
+- Each song keeps its own chain; stems open in Mastering from the Stem Splitter.
+- **New project asks for its name.**
+
 ### New in 0.30.9
 
 - **ACE-Step 1.5 says whether it downloads or only loads its model.** The model (about 10 GB) is downloaded only once and kept; every song then loads it from the disk, which takes a minute or two. The progress text used to say "the first time it downloads the model" on every song, which looked like a new download each time. Now it says "Loading … from the disk (already downloaded)", or, if a part of the model is really missing, "Downloading … missing: <part>" (also in the backend log).
