@@ -6,6 +6,7 @@ on its GitHub release page, so every version needs a `## <version>` section here
 ## 0.50.1
 
 - **Effects in the channel tab:** the *Channel* panel on the right of the Studio now lists the effects of the selected track (built-in and VST plugins) with on / off, **Open** for a plugin's window, the order and remove, and **+ Effect…** to add one. Before, effects were only reachable through the small **FX** button on the track.
+- A plugin window that is opened again is built fresh, and pressing **Open** while a project's plugins are still loading no longer loads the plugin a second time.
 
 ## 0.50.0
 

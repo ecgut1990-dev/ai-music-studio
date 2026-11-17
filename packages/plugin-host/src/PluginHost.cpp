@@ -246,6 +246,12 @@ juce::var PluginHost::handle (std::shared_ptr<WsConnection>, const juce::var& ms
     {
         bool show = (bool) msg.getProperty ("show", true);
         if (! show) { if (inst->window) inst->window->setVisible (false); return okay(); }
+        // a window that was closed is built again: some plugins only draw the settings they had when their window
+        // was made (after a project was opened its settings arrive first, then the window)
+        if (inst->window != nullptr && ! inst->window->isVisible())
+        {
+            inst->window.reset();                              // deletes the editor it owns as well
+        }
         if (inst->window == nullptr)
         {
             if (! inst->plugin->hasEditor()) return fail ("this plugin has no window");
