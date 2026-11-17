@@ -219,8 +219,8 @@ export function Mastering(): React.ReactElement {
   const side = !chatOpen && !!buffer
   const meters = buffer ? (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <MasterFader chain={chain} onChange={setChain} height={side ? 160 : 220} />
       <MasterMeters before={aBefore} after={aAfter} target={tgt.lufs} busy={measuring} active={active} />
+      <MasterFader chain={chain} onChange={setChain} height={side ? 160 : 220} />
     </div>
   ) : null
   return (

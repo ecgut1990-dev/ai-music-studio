@@ -202,21 +202,6 @@ export default function App(): React.ReactElement {
           </div>
         </div>
 
-        {/* Chat toggle when closed */}
-        {!chatOpen && (
-          <button
-            onClick={() => setChatOpen(true)}
-            style={{
-              position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)',
-              background: 'var(--accent)', border: 'none', cursor: 'pointer',
-              color: '#fff', fontSize: 11, fontWeight: 700, padding: '8px 4px',
-              borderRadius: '6px 0 0 6px', writingMode: 'vertical-rl',
-              letterSpacing: '0.06em'
-            }}
-          >
-            AI ▸
-          </button>
-        )}
       </div>
 
       <StatusBar hw={hw} base={base} onSetup={() => { sessionStorage.setItem('ams-settings-tab', 'engines'); setActiveView('settings') }} />

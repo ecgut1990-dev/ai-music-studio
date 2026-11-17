@@ -19,3 +19,5 @@ The bar across the top of the window, visible in every menu.
 **Bottom bar (status bar):** state of the AI backend, the running job with progress (click it to go back to that view), **Feedback** (see [[Feedback and Troubleshooting]]) and the address of the MCP server.
 
 **Left menu:** **«** / **»** at its top collapses it to icons or expands it with names; the choice is remembered.
+
+**✦ AI assistant** (top right, only while the AI panel on the right is closed) opens it again.

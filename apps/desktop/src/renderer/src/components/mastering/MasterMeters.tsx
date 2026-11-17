@@ -48,6 +48,14 @@ export function MasterMeters({ before, after, target, busy, active }: { before: 
   const corr = live ? r!.correlation : after?.correlation ?? 1
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '150px minmax(0, 1fr)', gap: 10 }}>
+        <div style={box}><div style={label}>Goniometer</div><Goniometer /></div>
+        <div style={box}><div style={label}>Spectrum <span style={{ color: '#9ca3af' }}>before</span> / <span style={{ color: 'var(--accent-light)' }}>after</span></div><Spectrum /></div>
+      </div>
+      <div style={box}>
+        <div style={label}>Loudness over time (short-term) · <span style={{ color: '#9ca3af' }}>before</span> / <span style={{ color: 'var(--accent-light)' }}>after</span> · target</div>
+        <History before={before} after={after} target={target} active={active} />
+      </div>
       <div style={box}>
         <div style={{ ...label, display: 'flex', justifyContent: 'space-between' }}>
           <span>Whole song: <span style={{ color: active === 'before' ? 'var(--text-primary)' : undefined }}>before</span> → <span style={{ color: active === 'after' ? 'var(--accent-light)' : undefined }}>after</span> · now: <b style={{ color: 'var(--text-primary)' }}>{active === 'before' ? 'Before (original)' : 'After (master)'}</b></span>{busy && <span style={{ color: 'var(--accent-light)' }}>measuring…</span>}
@@ -88,14 +96,6 @@ export function MasterMeters({ before, after, target, busy, active }: { before: 
           <span style={{ position: 'absolute', left: 4, fontSize: 9, lineHeight: '14px' }}>−1</span>
           <span style={{ position: 'absolute', right: 4, fontSize: 9, lineHeight: '14px' }}>+1 ({fmt(corr, 2)})</span>
         </div>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '150px minmax(0, 1fr)', gap: 10 }}>
-        <div style={box}><div style={label}>Goniometer</div><Goniometer /></div>
-        <div style={box}><div style={label}>Spectrum <span style={{ color: '#9ca3af' }}>before</span> / <span style={{ color: 'var(--accent-light)' }}>after</span></div><Spectrum /></div>
-      </div>
-      <div style={box}>
-        <div style={label}>Loudness over time (short-term) · <span style={{ color: '#9ca3af' }}>before</span> / <span style={{ color: 'var(--accent-light)' }}>after</span> · target</div>
-        <History before={before} after={after} target={target} active={active} />
       </div>
     </div>
   )
