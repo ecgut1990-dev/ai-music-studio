@@ -214,6 +214,35 @@ const DE: Record<string, string> = {
   'unknown error': 'unbekannter Fehler',
 }
 
+// Mastering assistant
+Object.assign(DE, {
+  'Analyse & suggest': 'Analysieren & vorschlagen',
+  'Measuring the song…': 'Song wird gemessen…',
+  'Measuring the reference…': 'Referenz wird gemessen…',
+  'Style': 'Stil',
+  'Reference song…': 'Referenz-Song…',
+  'Reference': 'Referenz',
+  'Compare the tone balance with a song you like instead of the style': 'Klangbalance mit einem Song vergleichen, der dir gefällt, statt mit dem Stil',
+  'Bring back the chain from before the suggestions': 'Die Kette von vor den Vorschlägen zurückholen',
+  'Undo suggestions': 'Vorschläge rückgängig',
+  'Measures tone balance, dynamics, stereo and loudness and proposes settings for the chain, each with its reason. Nothing changes until you press Apply.':
+    'Misst Klangbalance, Dynamik, Stereo und Lautheit und schlägt Einstellungen für die Kette vor, jeweils mit Begründung. Es ändert sich nichts, bis du „Übernehmen“ drückst.',
+  'Compared with:': 'Verglichen mit:',
+  'Applied': 'Übernommen',
+  'setting the loudness target…': 'Lautheitsziel wird eingestellt…',
+  'you hear "After" now; the chain below shows the new settings.': 'du hörst jetzt „After“; die Kette unten zeigt die neuen Einstellungen.',
+  'Tone balance per band: the song (purple) against the target (green line)': 'Klangbalance pro Band: der Song (lila) gegen das Ziel (grüne Linie)',
+  'Apply ticked': 'Angehakte übernehmen',
+  'Tick all': 'Alle anhaken',
+  'None': 'Keine',
+  'Compare with Before / After afterwards; every control stays adjustable.': 'Danach mit Before / After vergleichen; jeder Regler bleibt einstellbar.',
+  'The analysis failed:': 'Die Analyse ging nicht:',
+  'Song now': 'Song jetzt', 'peak': 'Spitze', 'measuring…': 'wird gemessen…', 'Last step': 'Letzter Schritt',
+  'the original file is not changed; the steps are applied when you export.': 'die Originaldatei bleibt unverändert; die Schritte wirken beim Export.',
+  'The values of the edited song before the chain; the table "Whole song" on the right shows them next to the master.': 'Die Werte des bearbeiteten Songs vor der Kette; die Tabelle „Whole song“ rechts zeigt sie neben dem Master.',
+  'Tone': 'Klang', 'Dynamics': 'Dynamik', 'Loudness': 'Lautheit', 'File': 'Datei', 'Note': 'Hinweis',
+})
+
 const TABLES: Record<string, Record<string, string>> = { de: DE }
 
 export function tr(en: string): string {

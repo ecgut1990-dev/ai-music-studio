@@ -3,6 +3,8 @@ import { masterPlayer } from '../../audio/master/player'
 import { copyPart, OP_LABEL, type EditOp, type FadeCurve } from '../../audio/master/edit'
 import { useMasteringStore } from '../../stores/mastering.store'
 import { useUIStore } from '../../stores/ui.store'
+import type { Analysis } from '../../audio/master/dsp'
+import { tr } from '../../i18n/tr'
 
 // Editing bar under the waveform. The marked region (drag in the waveform) is what Cut, Copy, Delete, Crop, Silence,
 // Fade, Gain and Normalise work on; Paste inserts at the play position. Ctrl+X / C / V, Delete, Ctrl+Z / Y work too.
@@ -13,8 +15,9 @@ let clipboard: Float32Array[] | null = null
 const btn: React.CSSProperties = { fontSize: 11, padding: '3px 8px' }
 const fmt = (s: number): string => `${Math.floor(s / 60)}:${(s % 60).toFixed(2).padStart(5, '0')}`
 
-export function MasterEdit({ buffer, ops, canRedo, onEdit, onUndo, onRedo, path }: {
+export function MasterEdit({ buffer, stats, ops, canRedo, onEdit, onUndo, onRedo, path }: {
   buffer: AudioBuffer
+  stats: Analysis | null
   ops: EditOp[]
   canRedo: boolean
   onEdit: (op: EditOp) => void
@@ -115,7 +118,12 @@ export function MasterEdit({ buffer, ops, canRedo, onEdit, onUndo, onRedo, path 
           {ops.map((o, i) => <li key={i}>{OP_LABEL(o)}</li>)}
         </ol>
       )}
-      {ops.length > 0 && <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>The original file is not changed: the steps are applied when you export.</span>}
+      <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}
+        title={tr('The values of the edited song before the chain; the table "Whole song" on the right shows them next to the master.')}>
+        {tr('Song now')}: <b>{fmt(buffer.duration)}</b>
+        {stats ? <> · <b>{Number.isFinite(stats.integrated) ? stats.integrated.toFixed(1) : '–'}</b> LUFS · {tr('peak')} <b>{Number.isFinite(stats.samplePeak) ? stats.samplePeak.toFixed(1) : '–'}</b> dBFS · RMS {Number.isFinite(stats.rms) ? stats.rms.toFixed(1) : '–'} dB</> : ` · ${tr('measuring…')}`}
+        {ops.length > 0 && <span style={{ color: 'var(--text-muted)' }}> · {tr('Last step')}: {OP_LABEL(ops[ops.length - 1])} · {tr('the original file is not changed; the steps are applied when you export.')}</span>}
+      </div>
     </div>
   )
 }

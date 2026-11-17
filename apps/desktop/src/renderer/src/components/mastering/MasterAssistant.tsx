@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
-import { BANDS, PROFILES, bassWidth, measureBalance, silenceAtEdges, suggest, type Balance, type Suggestion } from '../../audio/master/assistant'
+import React, { useEffect, useRef, useState } from 'react'
+import i18n from '../../i18n'
+import { tr } from '../../i18n/tr'
+import { masterPlayer } from '../../audio/master/player'
+import { BANDS, PROFILES, bandLabel, bassWidth, measureBalance, profileLabel, silenceAtEdges, suggest, type Balance, type Suggestion } from '../../audio/master/assistant'
 import { analyze, type Analysis } from '../../audio/master/dsp'
 import type { Chain } from '../../audio/master/chain'
 import type { EditOp } from '../../audio/master/edit'
@@ -14,7 +17,7 @@ async function decodeRef(path: string): Promise<AudioBuffer> {
   return new OfflineAudioContext(2, 1, 48000).decodeAudioData(new Uint8Array(bytes).buffer)
 }
 
-export function MasterAssistant({ buffer, before, chain, onApply, onEdit, onTarget, onReach }: {
+export function MasterAssistant({ buffer, before, chain, onApply, onEdit, onTarget, onReach, reaching }: {
   buffer: AudioBuffer
   before: Analysis | null
   chain: Chain
@@ -22,7 +25,10 @@ export function MasterAssistant({ buffer, before, chain, onApply, onEdit, onTarg
   onEdit: (op: EditOp) => void
   onTarget: (target: string) => void
   onReach: (target: string) => void
+  reaching: boolean
 }): React.ReactElement {
+  const lang = (i18n.language || 'en').slice(0, 2)
+  const [applied, setApplied] = useState<string[] | null>(null)
   const [genre, setGenre] = useState<string>(() => localStorage.getItem('ams-master-genre') ?? 'techno')
   const [refPath, setRefPath] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
@@ -33,7 +39,7 @@ export function MasterAssistant({ buffer, before, chain, onApply, onEdit, onTarg
   const profile = PROFILES.find((p) => p.id === genre) ?? PROFILES[0]
 
   const run = async (): Promise<void> => {
-    setError(null); setList(null); setBusy('Measuring the song…')
+    setError(null); setBusy('Measuring the song…')
     try {
       await later()
       const ch = [buffer.getChannelData(0), buffer.getChannelData(1)]
@@ -45,11 +51,12 @@ export function MasterAssistant({ buffer, before, chain, onApply, onEdit, onTarg
         const rb = await decodeRef(refPath)
         ref = measureBalance([rb.getChannelData(0), rb.getChannelData(rb.numberOfChannels > 1 ? 1 : 0)], rb.sampleRate)
       }
-      const sug = suggest(a, song, bassWidth(ch, buffer.sampleRate), profile, ref, silenceAtEdges(ch, buffer.sampleRate))
+      const sug = suggest(a, song, bassWidth(ch, buffer.sampleRate), profile, ref, silenceAtEdges(ch, buffer.sampleRate), lang)
+      setApplied(null)
       setBal({ song, target: ref ?? profile.balance })
       setList(sug)
     } catch (e) {
-      setError(`The analysis failed: ${(e as Error).message}`)
+      setError(`${tr('The analysis failed:')} ${(e as Error).message}`)
     } finally {
       setBusy(null)
     }
@@ -63,35 +70,52 @@ export function MasterAssistant({ buffer, before, chain, onApply, onEdit, onTarg
     onApply(c)
     for (const s of list) if (s.on && s.edit) onEdit(s.edit)
     if (list.some((s) => s.on && s.reach)) { onTarget(profile.target); setTimeout(() => onReach(profile.target), 50) }
+    setApplied(list.filter((s) => s.on && (s.apply || s.edit || s.reach)).map((s) => s.text))
     setList(list.map((s) => ({ ...s, on: false, applied: s.on } as Suggestion & { applied?: boolean })))
+    masterPlayer.setBypass(false)                    // hear the result
   }
 
+  // a new style or reference: measure again at once (when there are proposals on screen)
+  const first = useRef(true)
+  useEffect(() => {
+    if (first.current) { first.current = false; return }
+    if (list) void run()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [genre, refPath])
+
   const tick = (id: string): void => setList((l) => l && l.map((s) => (s.id === id ? { ...s, on: !s.on } : s)))
-  const AREA: Record<Suggestion['area'], string> = { tone: 'Tone', dynamics: 'Dynamics', stereo: 'Stereo', loudness: 'Loudness', edit: 'File', note: 'Note' }
+  const AREA: Record<Suggestion['area'], string> = { tone: tr('Tone'), dynamics: tr('Dynamics'), stereo: 'Stereo', loudness: tr('Loudness'), edit: tr('File'), note: tr('Note') }
 
   return (
     <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.22), rgba(124,58,237,0.06))', border: '1px solid var(--accent)', borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <button className="btn btn-primary" style={{ fontSize: 14, fontWeight: 700, padding: '10px 18px' }} disabled={!!busy} onClick={() => void run()}>
-          ✨ {busy ?? 'Analyse & suggest'}
+          ✨ {busy ? tr(busy) : tr('Analyse & suggest')}
         </button>
-        <label style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Style{' '}
+        <label style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{tr('Style')}{' '}
           <select value={genre} onChange={(e) => { setGenre(e.target.value); try { localStorage.setItem('ams-master-genre', e.target.value) } catch { /* */ } }} style={{ fontSize: 12 }}>
-            {PROFILES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+            {PROFILES.map((p) => <option key={p.id} value={p.id}>{profileLabel(p, lang)}</option>)}
           </select>
         </label>
-        <button className="btn btn-ghost" style={{ fontSize: 11 }} title="Compare the tone balance with a song you like instead of the style"
-          onClick={async () => { const p = await window.api.dialog.openAudio(); if (p[0]) setRefPath(p[0]) }}>Reference song…</button>
+        <button className="btn btn-ghost" style={{ fontSize: 11 }} title={tr('Compare the tone balance with a song you like instead of the style')}
+          onClick={async () => { const p = await window.api.dialog.openAudio(); if (p[0]) setRefPath(p[0]) }}>{tr('Reference song…')}</button>
         {refPath && <span className="truncate" style={{ fontSize: 11, color: 'var(--text-secondary)', maxWidth: 200 }} title={refPath}>
           {refPath.split(/[\\/]/).pop()} <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 4px' }} onClick={() => setRefPath(null)}>×</button></span>}
-        {undo && <button className="btn btn-ghost" style={{ fontSize: 11, marginLeft: 'auto' }} title="Bring back the chain from before the suggestions"
-          onClick={() => { onApply(undo); setUndo(null) }}>↶ Undo suggestions</button>}
+        {undo && <button className="btn btn-ghost" style={{ fontSize: 11, marginLeft: 'auto' }} title={tr('Bring back the chain from before the suggestions')}
+          onClick={() => { onApply(undo); setUndo(null); setApplied(null) }}>↶ {tr('Undo suggestions')}</button>}
       </div>
-      {!list && !busy && <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Measures tone balance, dynamics, stereo and loudness and proposes settings for the chain, each with its reason. Nothing changes until you press <b>Apply</b>.</div>}
+      {!list && !busy && <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{tr('Measures tone balance, dynamics, stereo and loudness and proposes settings for the chain, each with its reason. Nothing changes until you press Apply.')}</div>}
+      {list && <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{tr('Compared with:')} <b>{refPath ? `${tr('Reference')} „${refPath.split(/[\\/]/).pop()}“` : profileLabel(profile, lang)}</b></div>}
+      {applied && (
+        <div style={{ fontSize: 12, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.5)', borderRadius: 6, padding: '6px 10px' }}>
+          <b style={{ color: 'var(--green)' }}>✓ {tr('Applied')} ({applied.length})</b>{reaching ? ` · ${tr('setting the loudness target…')}` : ` · ${tr('you hear "After" now; the chain below shows the new settings.')}`}
+          <ul style={{ margin: '4px 0 0', paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 11 }}>{applied.map((t, i) => <li key={i}>{t}</li>)}</ul>
+        </div>
+      )}
       {error && <div style={{ fontSize: 11, color: 'var(--red)' }}>{error}</div>}
 
       {bal && (
-        <div title="Tone balance per band: the song (purple) against the target (green line)">
+        <div title={tr('Tone balance per band: the song (purple) against the target (green line)')}>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${BANDS.length}, 1fr)`, gap: 4, alignItems: 'end', height: 70 }}>
             {BANDS.map((b) => {
               const v = bal.song[b.id], t = bal.target[b.id]
@@ -106,7 +130,7 @@ export function MasterAssistant({ buffer, before, chain, onApply, onEdit, onTarg
             })}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${BANDS.length}, 1fr)`, gap: 4, fontSize: 9, color: 'var(--text-muted)', textAlign: 'center' }}>
-            {BANDS.map((b) => <span key={b.id}>{b.label}<br />{(bal.song[b.id] - bal.target[b.id] > 0 ? '+' : '') + (bal.song[b.id] - bal.target[b.id]).toFixed(1)}</span>)}
+            {BANDS.map((b) => <span key={b.id}>{bandLabel(b.id, lang)}<br />{(bal.song[b.id] - bal.target[b.id] > 0 ? '+' : '') + (bal.song[b.id] - bal.target[b.id]).toFixed(1)}</span>)}
           </div>
         </div>
       )}
@@ -124,10 +148,10 @@ export function MasterAssistant({ buffer, before, chain, onApply, onEdit, onTarg
             )
           })}
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button className="btn btn-primary" disabled={!list.some((s) => s.on && (s.apply || s.edit || s.reach))} onClick={apply}>Apply ticked</button>
-            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setList(list.map((s) => ({ ...s, on: s.area !== 'note' && !(s as Suggestion & { applied?: boolean }).applied })))}>Tick all</button>
-            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setList(list.map((s) => ({ ...s, on: false })))}>None</button>
-            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Compare with Before / After afterwards; every control stays adjustable.</span>
+            <button className="btn btn-primary" disabled={!list.some((s) => s.on && (s.apply || s.edit || s.reach))} onClick={apply}>{tr('Apply ticked')}</button>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setList(list.map((s) => ({ ...s, on: s.area !== 'note' && !(s as Suggestion & { applied?: boolean }).applied })))}>{tr('Tick all')}</button>
+            <button className="btn btn-ghost" style={{ fontSize: 11 }} onClick={() => setList(list.map((s) => ({ ...s, on: false })))}>{tr('None')}</button>
+            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('Compare with Before / After afterwards; every control stays adjustable.')}</span>
           </div>
         </div>
       )}
