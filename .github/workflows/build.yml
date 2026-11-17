@@ -36,11 +36,6 @@ jobs:
         run: |
           git clone --depth 1 https://git.iem.at/zmoelnig/FST.git "$env:RUNNER_TEMP/FST"
           if ($LASTEXITCODE -ne 0) { Write-Warning "FST not available: the plugin host is built for VST3 only" }
-          Get-ChildItem "$env:RUNNER_TEMP/FST" -Recurse -Filter *.h | Select-Object FullName
-          Get-ChildItem "$env:RUNNER_TEMP/FST/fst" -Filter fst.h | Select-String -Pattern "define _fstEffect|FST_[A-Z_]*JUCE|ifdef|ifndef|if defined" -Context 3,3 | Select-Object -First 40 | ForEach-Object { "----"; $_.Context.PreContext; ">> " + $_.Line; $_.Context.PostContext }
-          Get-Content "$env:RUNNER_TEMP/FST/fst/aeffect.h"
-          Get-Content "$env:RUNNER_TEMP/FST/fst/aeffectx.h"
-          Get-Content "$env:RUNNER_TEMP/FST/README.md" -ErrorAction SilentlyContinue | Select-Object -First 80
 
       - name: Build the plugin host
         shell: pwsh

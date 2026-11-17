@@ -42,8 +42,9 @@ if(AMS_FST_DIR)
   # JUCE looks for <pluginterfaces/vst2.x/aeffect.h> and <aeffectx.h>: small headers that include FST
   set(_shim ${CMAKE_CURRENT_BINARY_DIR}/vst2shim)
   file(MAKE_DIRECTORY ${_shim}/pluginterfaces/vst2.x)
-  file(WRITE ${_shim}/pluginterfaces/vst2.x/aeffect.h "#pragma once\n#include <fst.h>\n")
-  file(WRITE ${_shim}/pluginterfaces/vst2.x/aeffectx.h "#pragma once\n#include <fst.h>\n")
+  # FST2VST: FST then uses the usual VST2 names (AEffect, VstEvents …), as its own aeffect.h does
+  file(WRITE ${_shim}/pluginterfaces/vst2.x/aeffect.h "#pragma once\n#define FST2VST 1\n#include <fst.h>\n")
+  file(WRITE ${_shim}/pluginterfaces/vst2.x/aeffectx.h "#pragma once\n#define FST2VST 1\n#include <fst.h>\n")
   file(GLOB_RECURSE _fsth ${AMS_FST_DIR}/fst.h)
   list(GET _fsth 0 _fst1)
   get_filename_component(_fstinc ${_fst1} DIRECTORY)
