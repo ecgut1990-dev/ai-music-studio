@@ -1,3 +1,4 @@
+import { CloseGuard } from './components/common/CloseGuard'
 import React, { useEffect, useState } from 'react'
 import { UpdateToast } from './components/updater/UpdateToast'
 import { api, baseUrl } from './lib/api'
@@ -67,13 +68,13 @@ function StatusBar({ hw, base, onSetup }: {
   const { project } = useProjectStore()
   const gpuLabel = hw
     ? `${hw.gpu || 'CPU'} · ${hw.backend.toUpperCase()}`
-    : 'AI backend offline — click to open Settings → AI Engines'
+    : tr('AI backend offline — click to open Settings → AI Engines')
 
   return (
     <footer className="app-statusbar">
       <span>{tr('AI Music Studio v')}{__APP_VERSION__}</span>
       <span style={{ color: 'var(--border-mid)' }}>·</span>
-      <span>{project.name}</span>
+      <span>{project.name === 'Untitled Project' ? tr('Untitled Project') : project.name}</span>
       <span style={{ color: 'var(--border-mid)' }}>·</span>
       <span
         onClick={hw ? undefined : onSetup}
@@ -219,6 +220,7 @@ export default function App(): React.ReactElement {
       <BeatMatchCard />
       <QuantizeDialog />
       <AskTextDialog />
+      <CloseGuard />
     </div>
   )
 }

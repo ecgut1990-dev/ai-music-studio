@@ -97,7 +97,7 @@ export function AIChat({ compact = false }: AIChatProps): React.ReactElement {
         {messages.length === 0 && (
           <div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, textAlign: 'center' }}>
-              AI music assistant ready. Try:
+              {tr('AI music assistant ready. Try:')}
             </div>
             {SUGGESTIONS.map((s, i) => (
               <div

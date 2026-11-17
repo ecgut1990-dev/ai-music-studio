@@ -75,6 +75,15 @@ const api = {
     autosaveRead: () => ipcRenderer.invoke('project:autosave-read'),
     autosaveClear: () => ipcRenderer.invoke('project:autosave-clear')
   },
+  app: {
+    // the window is about to close: the page asks about unsaved work, then calls closeConfirmed()
+    onCloseRequest: (cb: () => void): (() => void) => {
+      const h = (): void => cb()
+      ipcRenderer.on('app:close-request', h)
+      return () => ipcRenderer.removeListener('app:close-request', h)
+    },
+    closeConfirmed: () => ipcRenderer.invoke('app:close-confirmed')
+  },
   files: {
     exists: (paths: string[]) => ipcRenderer.invoke('files:exists', paths),
     saveRecording: (bytes: Uint8Array) => ipcRenderer.invoke('files:save-recording', bytes),

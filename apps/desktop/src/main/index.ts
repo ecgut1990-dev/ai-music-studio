@@ -7,6 +7,9 @@ import { setupUpdater } from './updater'
 import { registerFileHandlers, setupCrashLog } from './files-ipc'
 
 let mainWindow: BrowserWindow | null = null
+// Closing the window first asks the page whether the project has unsaved changes (Save / Don't save / Cancel).
+// A quit started by the app itself (update install) closes without asking.
+let allowClose = false
 const serverManager = new ServerManager()
 
 function createWindow(): void {
@@ -29,6 +32,13 @@ function createWindow(): void {
       sandbox: false,
       contextIsolation: true
     }
+  })
+
+  mainWindow.on('close', (e) => {
+    const w = mainWindow
+    if (allowClose || !w || w.webContents.isCrashed() || w.webContents.isLoading()) return
+    e.preventDefault()
+    w.webContents.send('app:close-request')
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -95,6 +105,8 @@ app.whenReady().then(async () => {
   }
 
   registerIpcHandlers(serverManager)
+  ipcMain.handle('app:close-confirmed', () => { allowClose = true; mainWindow?.close() })
+  app.on('before-quit', () => { allowClose = true })
 
   void serverManager.start()
 

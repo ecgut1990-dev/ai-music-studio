@@ -87,7 +87,7 @@ export function Sidebar(): React.ReactElement {
       </button>
 
       {NAV_ITEMS.map((item) =>
-        button(item.view, item.icon, t(item.labelKey, { defaultValue: item.fallback }))
+        button(item.view, item.icon, ((v) => (v === item.fallback ? tr(v) : v))(t(item.labelKey, { defaultValue: item.fallback })))
       )}
 
       <div style={{ flex: 1 }} />
