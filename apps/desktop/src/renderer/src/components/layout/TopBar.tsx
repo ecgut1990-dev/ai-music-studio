@@ -263,6 +263,19 @@ export function TopBar(): React.ReactElement {
       {/* Spacer */}
       <div style={{ flex: 1, WebkitAppRegion: 'drag' } as React.CSSProperties} />
 
+      {/* the AI assistant panel, when it is closed: open it again */}
+      {!chatOpen && (
+        <>
+          <div className="tb-divider" />
+          <button onClick={() => setChatOpen(true)} title={tr('Open the AI assistant')}
+            style={{ background: 'var(--accent)', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 12, fontWeight: 700,
+              padding: '6px 12px', borderRadius: 8, margin: '0 6px', display: 'inline-flex', alignItems: 'center', gap: 6,
+              WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+            ✦ {tr('AI assistant')}
+          </button>
+        </>
+      )}
+
       {/* Project name */}
       <div className="tb-section" style={{ color: 'var(--text-muted)', fontSize: 11 }}>
         {dirty ? '• ' : ''}{project.name}
@@ -286,18 +299,6 @@ export function TopBar(): React.ReactElement {
           {Math.round(masterVolume * 100)}%
         </span>
       </div>
-
-      {/* the AI assistant panel, when it is closed: open it again */}
-      {!chatOpen && (
-        <>
-          <div className="tb-divider" />
-          <button onClick={() => setChatOpen(true)} title={tr('Open the AI assistant')}
-            style={{ background: 'var(--accent)', border: 'none', cursor: 'pointer', color: '#fff', fontSize: 12, fontWeight: 700,
-              padding: '6px 12px', borderRadius: 8, margin: '0 6px', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            ✦ {tr('AI assistant')}
-          </button>
-        </>
-      )}
 
       {/* Right window drag padding */}
       <div style={{ width: 80, WebkitAppRegion: 'drag' } as React.CSSProperties} />

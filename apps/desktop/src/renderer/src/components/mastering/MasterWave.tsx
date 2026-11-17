@@ -46,7 +46,8 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
   const drag = useRef<{ x0: number; t0: number; moved: boolean } | null>(null)
   const dur = before?.duration ?? 0
   // the view reaches a little past the end of the song, so the end is easy to see and to mark
-  const total = dur + Math.max(2, dur * 0.06)
+  const total = dur + Math.max(2, dur * 0.1)
+  const ZMIN = 0.4                                   // zoomed out further than the song: more room after the end
   const span = total / zoom
 
   useEffect(() => masterPlayer.on(() => tick((n) => n + 1)), [])
@@ -102,6 +103,15 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
     return () => cancelAnimationFrame(raf)
   })
 
+  // Ctrl + wheel zooms the waveform only: stop the page from scrolling as well (needs a non-passive listener)
+  useEffect(() => {
+    const cv = canvas.current
+    if (!cv) return
+    const stop = (e: WheelEvent): void => { if (e.ctrlKey || zoom !== 1) e.preventDefault() }
+    cv.addEventListener('wheel', stop, { passive: false })
+    return () => cv.removeEventListener('wheel', stop)
+  }, [zoom])
+
   const timeAt = (e: React.MouseEvent | MouseEvent): number => {
     const r = canvas.current!.getBoundingClientRect()
     return Math.max(0, Math.min(dur, scroll + ((e.clientX - r.left) / r.width) * span))
@@ -129,7 +139,7 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
     if (!before) return
     if (e.ctrlKey) {
       const t = timeAt(e)
-      const z = Math.max(1, Math.min(200, zoom * (e.deltaY < 0 ? 1.25 : 0.8)))
+      const z = Math.max(ZMIN, Math.min(200, zoom * (e.deltaY < 0 ? 1.25 : 0.8)))
       const ns = total / z
       setZoom(z); setScroll(Math.max(0, Math.min(total - ns, t - (t - scroll) * (ns / span))))
     } else if (zoom > 1) {
@@ -145,8 +155,9 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
         <span style={{ flex: 1 }} />
         {zoom > 1 && <input type="range" min={0} max={Math.max(0, total - span)} step={0.01} value={scroll} style={{ width: 160 }}
           onChange={(e) => setScroll(Number(e.target.value))} title="Scroll" />}
-        Zoom <input type="range" min={0} max={1} step={0.01} value={Math.log(zoom) / Math.log(200)} style={{ width: 90 }}
-          onChange={(e) => { const z = Math.pow(200, Number(e.target.value)); setZoom(z); setScroll((s) => Math.max(0, Math.min(total - total / z, s))) }} />
+        Zoom <input type="range" min={0} max={1} step={0.01} value={Math.log(zoom / ZMIN) / Math.log(200 / ZMIN)} style={{ width: 110 }}
+          onChange={(e) => { const z = ZMIN * Math.pow(200 / ZMIN, Number(e.target.value)); setZoom(z); setScroll((s) => Math.max(0, Math.min(total - total / z, s))) }} />
+        <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 6px' }} title="Whole song" onClick={() => { setZoom(1); setScroll(0) }}>⤢</button>
       </div>
     </div>
   )
