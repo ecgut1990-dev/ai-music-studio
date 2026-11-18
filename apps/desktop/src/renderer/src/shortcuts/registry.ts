@@ -225,12 +225,31 @@ export function eventToCombo(e: KeyLike): string | null {
   return [...mods.filter(Boolean), main].join('+')
 }
 
-export function buildMap(preset: PresetId): Map<string, string> {
+/** combo (lower case) → action: the keys of the layout plus the user's own keys (which only use free keys) */
+export function buildMap(preset: PresetId, custom: Record<string, string[]> = {}): Map<string, string> {
   const map = new Map<string, string>()
   for (const [id, combos] of Object.entries(PRESETS[preset].keys)) {
     for (const c of combos) map.set(c.toLowerCase(), id)
   }
+  for (const [id, combos] of Object.entries(custom)) {
+    if (!ACTIONS.some((a) => a.id === id)) continue
+    for (const c of combos) if (!map.has(c.toLowerCase())) map.set(c.toLowerCase(), id)
+  }
   return map
+}
+
+/** while Settings → Shortcuts waits for a new key, the shortcuts do not fire */
+export const shortcutCapture = { active: false }
+
+// keys the app or Windows needs for itself; they cannot be given to an action
+const RESERVED = new Set(['escape', 'tab', 'enter', 'shift+tab', 'alt+f4', 'alt+tab', 'ctrl+w', 'ctrl+shift+i', 'backspace'])
+
+/** why a key cannot become an own shortcut: '' when it is free */
+export function comboTaken(combo: string, preset: PresetId, custom: Record<string, string[]>): { reason: 'reserved' | 'used' | ''; action?: string } {
+  const k = combo.toLowerCase()
+  const id = buildMap(preset, custom).get(k)
+  if (id) return { reason: 'used', action: id }
+  return RESERVED.has(k) ? { reason: 'reserved' } : { reason: '' }
 }
 
 export function formatCombo(c: string): string {

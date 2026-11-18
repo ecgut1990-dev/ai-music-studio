@@ -1097,7 +1097,7 @@
  "Your folders:": "Le tue cartelle:",
  "Your saved stems are in the": "I tuoi stem salvati sono nella scheda",
  "Your songs appear here. Describe the music on the left and press Create.": "I tuoi brani appaiono qui. Descrivi la musica a sinistra e premi Crea.",
- "Yours": "I tuoi",
+ "Yours": "Tuoi",
  "Zoom": "Zoom",
  "Zoom in": "Ingrandisci",
  "Zoom out": "Riduci",
@@ -1244,5 +1244,12 @@
  "Light": "Chiaro",
  "Analog console": "Console analogica",
  "Swiss": "Svizzero",
- "Hardware rack": "Rack hardware"
+ "Hardware rack": "Rack hardware",
+ "{key} is already used: {action}": "{key} è già in uso: {action}",
+ "{key} is needed by the app or Windows": "{key} serve all’app o a Windows",
+ "Remove this key": "Rimuovi questo tasto",
+ "Press the keys for this action; only keys that are still free are accepted (Esc: cancel)": "Premi i tasti per questa azione; solo i tasti ancora liberi vengono accettati (Esc: annulla)",
+ "Press a key…": "Premi un tasto…",
+ "+ Key": "+ Tasto",
+ "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "I tuoi tasti: nella colonna «Tuoi», + Tasto e poi premi i tasti per un’azione. Sono accettati solo tasti ancora liberi; valgono in aggiunta al layout sopra."
 }

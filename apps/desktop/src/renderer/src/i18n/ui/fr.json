@@ -1244,5 +1244,12 @@
  "Light": "Clair",
  "Analog console": "Console analogique",
  "Swiss": "Suisse",
- "Hardware rack": "Rack matériel"
+ "Hardware rack": "Rack matériel",
+ "{key} is already used: {action}": "{key} est déjà utilisé : {action}",
+ "{key} is needed by the app or Windows": "{key} est nécessaire à l’app ou à Windows",
+ "Remove this key": "Retirer cette touche",
+ "Press the keys for this action; only keys that are still free are accepted (Esc: cancel)": "Appuyez sur les touches pour cette action ; seules les touches encore libres sont acceptées (Échap : annuler)",
+ "Press a key…": "Appuyez sur une touche…",
+ "+ Key": "+ Touche",
+ "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "Vos propres touches : dans la colonne « Les vôtres », + Touche puis appuyez sur les touches d’une action. Seules les touches encore libres sont acceptées ; elles s’ajoutent à la disposition ci-dessus."
 }

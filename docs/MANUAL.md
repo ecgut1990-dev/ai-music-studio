@@ -106,6 +106,8 @@ Nach der Installation die App neu starten, damit sie die neuen Programme im PATH
 
 **Einstellungen → Shortcuts**: Dort wählst du per Klick die Belegung **Ableton Live 12** oder **Cubase**. Die Tabelle zeigt alle Kürzel beider DAWs nebeneinander, die gewählte ist hervorgehoben. Viele Tasten sind gleich (Leertaste, Strg+Z, Strg+D, Strg+N), andere unterscheiden sich:
 
+**Eigene Tasten:** In der Spalte **Eigene** bei einer Aktion auf **+ Taste** klicken und dann die Tasten drücken. Angenommen werden nur Tasten, die noch frei sind (weder im gewählten Layout noch bei deinen anderen eigenen Tasten). Ist eine Taste belegt, steht dort, welche Aktion sie schon hat. Eigene Tasten gelten zusätzlich zum Layout; **×** entfernt eine, **Esc** bricht ab.
+
 | Aktion | Ableton Live 12 | Cubase |
 |---|---|---|
 | Play / Pause | Leertaste | Leertaste |

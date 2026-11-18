@@ -2,7 +2,7 @@ import { pianoFocus } from '../components/timeline/studioOps'
 import { useEffect } from 'react'
 import { useUIStore } from '../stores/ui.store'
 import { runAction } from './handlers'
-import { ACTIONS, buildMap, eventToCombo } from './registry'
+import { ACTIONS, buildMap, eventToCombo, shortcutCapture } from './registry'
 
 
 const REPEATABLE = new Set(ACTIONS.filter((a) => a.repeatable).map((a) => a.id))
@@ -39,11 +39,13 @@ function isEditable(target: EventTarget | null, combo: string): boolean {
 
 export function useShortcuts(): void {
   const preset = useUIStore((s) => s.shortcutPreset)
+  const custom = useUIStore((s) => s.customKeys)
 
   useEffect(() => {
-    const map = buildMap(preset)
+    const map = buildMap(preset, custom)
 
     const onKeyDown = (e: KeyboardEvent): void => {
+      if (shortcutCapture.active) return                   // Settings → Shortcuts is waiting for a new key
       const combo = eventToCombo(e)
       if (!combo) return
       const id = map.get(combo.toLowerCase())
@@ -75,5 +77,5 @@ export function useShortcuts(): void {
       window.removeEventListener('keydown', onKeyDown, true)
       window.removeEventListener('keyup', onKeyUp, true)
     }
-  }, [preset])
+  }, [preset, custom])
 }

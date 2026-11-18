@@ -256,6 +256,8 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 | 10.18 | → **Swiss** | Weiß/Schwarz, eckig, Orange; das Menü ist eine Leiste unten mit Namen; KI-Assistent bleibt rechts | ✅ | | 0.51.4 |
 | 10.19 | → **Hardware-Rack** | Graue Gerätefronten mit Schrauben, grünes LCD für Position und Tempo, Bernstein | ✅ | | 0.51.4 |
 | 10.20 | In jedem Look: Studio, Mastering (Wellenform, Knöpfe), Mixer, Bibliothek, Einstellungen ansehen; App neu starten | Alles lesbar, Farben passen zum Look; nach dem Neustart ist der gewählte Look noch da | ✅ | | 0.51.4 |
+| 10.21 | Einstellungen → **Shortcuts**: bei „Audiospur hinzufügen“ in der Spalte **Eigene** auf **+ Taste**, dann Leertaste drücken | Abgelehnt: „Space ist schon belegt: Abspielen / Pause“ | | | |
+| 10.22 | Noch einmal **+ Taste**, dann z. B. Strg+Alt+K; ins Studio wechseln und Strg+Alt+K drücken | Taste erscheint in der Spalte; im Studio kommt eine neue Audiospur dazu; nach Neustart der App noch da; × entfernt sie | | | |
 
 ## Ergebnisse
 
