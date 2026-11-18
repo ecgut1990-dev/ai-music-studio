@@ -202,8 +202,9 @@ export interface KeyLike {
 // Turns a keyboard event into a combo string such as "Ctrl+Shift+Z", "Space", "Num*".
 export function eventToCombo(e: KeyLike): string | null {
   if (['Control', 'Shift', 'Alt', 'Meta', 'AltGraph', 'CapsLock'].includes(e.key)) return null
-  // AltGr on many layouts is reported as Ctrl+Alt: it types characters, it is not a shortcut
-  if (e.getModifierState?.('AltGraph')) return null
+  // AltGr on many layouts is reported as Ctrl+Alt: when it types a character (@, €, {, ...) it is not a shortcut.
+  // Windows also reports a real Ctrl+Alt as AltGr: Ctrl+Alt with a letter or digit (Ctrl+Alt+K) stays a shortcut.
+  if (e.getModifierState?.('AltGraph') && !(e.key.length === 1 && /[a-z0-9]/i.test(e.key))) return null
 
   let main: string
   let shiftInKey = false

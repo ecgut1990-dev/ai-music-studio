@@ -1251,5 +1251,6 @@
  "Press the keys for this action; only keys that are still free are accepted (Esc: cancel)": "Appuyez sur les touches pour cette action ; seules les touches encore libres sont acceptées (Échap : annuler)",
  "Press a key…": "Appuyez sur une touche…",
  "+ Key": "+ Touche",
- "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "Vos propres touches : dans la colonne « Les vôtres », + Touche puis appuyez sur les touches d’une action. Seules les touches encore libres sont acceptées ; elles s’ajoutent à la disposition ci-dessus."
+ "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "Vos propres touches : dans la colonne « Les vôtres », + Touche puis appuyez sur les touches d’une action. Seules les touches encore libres sont acceptées ; elles s’ajoutent à la disposition ci-dessus.",
+ "Show the stems large / normal (or double-click the group)": "Afficher les stems en grand / normal (ou double-clic sur le groupe)"
 }

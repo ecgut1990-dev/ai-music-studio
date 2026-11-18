@@ -204,7 +204,7 @@ Die Plugins laufen in einem eigenen kleinen Programm (Plugin-Host), das nur läu
 
 **Stem-Trenner:** **Alle Stems ins Studio** legt jeden Stem auf eine eigene Spur im Studio (in einer Gruppe, ab Takt 1, mit den Lautstärken und Stummschaltungen aus dem Stem-Mixer). **→ Studio** an einem Stem legt nur diesen ins Studio.
 
-**Gruppen im Studio:** Eine Gruppe zeigt die Clips ihrer Spuren als Balken mit Namen und Wellenform, eine Reihe pro Spur (die Gruppe ist so hoch, wie ihre Spuren es brauchen). Doppelklick auf die Gruppe (auf einen Balken oder irgendwo in ihre Zeile) macht die Zeile der Gruppe selbst groß: Jeder Stem darin mit großer Wellenform. Ein weiterer Doppelklick stellt die normale Höhe wieder her. (▶ / ▼ klappt die Gruppe mit ihren Spuren darunter auf.)
+**Gruppen im Studio:** Eine Gruppe zeigt die Clips ihrer Spuren als Balken mit Namen und Wellenform, eine Reihe pro Spur (die Gruppe ist so hoch, wie ihre Spuren es brauchen). Doppelklick auf die Gruppe (auf einen Balken oder irgendwo in ihre Zeile) macht die Zeile der Gruppe selbst groß: Jeder Stem darin mit großer Wellenform. Ein weiterer Doppelklick oder die Taste **⇕** im Kopf der Gruppe stellt die normale Höhe wieder her. (▶ / ▼ klappt die Gruppe mit ihren Spuren darunter auf.)
 
 ## Studio (früher Zeitleiste), Mixer, Klaviatur-Editor, Projekte (Grundfunktionen)
 

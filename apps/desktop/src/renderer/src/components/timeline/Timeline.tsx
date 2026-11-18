@@ -345,7 +345,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
     const big = groupBigHeight(kids)
     updateTrack(group.id, { height: (real?.height ?? 0) >= big ? undefined : big })
     if (trackId) { selectTrack(trackId); selectClip(clipId ?? null) }
-    window.setTimeout(() => document.querySelector(`[data-lane="${group.id}"]`)?.parentElement?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }), 60)
+    // no scrolling: the row grows downwards where it is, so a second double-click lands on it again
   }
 
   const laneDoubleClick = async (e: React.MouseEvent, track: Track): Promise<void> => {
@@ -489,6 +489,10 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
               )}
               <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{isGroup ? `group · ${childCount(track)} tracks` : track.type}{track.takes?.length ? ` · ${track.takes.length} takes` : ''}</div>
             </div>
+            {isGroup && (
+              <button onClick={(e) => { e.stopPropagation(); openGroup(track) }} style={{ ...tinyBtn, color: track.height !== undefined ? 'var(--accent-light)' : 'var(--text-muted)' }}
+                title={tr('Show the stems large / normal (or double-click the group)')}>⇕</button>
+            )}
             <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { muted: !track.muted }) }} style={{ ...tinyBtn, color: track.muted ? '#f59e0b' : 'var(--text-muted)' }} title={tr('Mute')}>M</button>
             <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { soloed: !track.soloed }) }} style={{ ...tinyBtn, color: track.soloed ? 'var(--accent-light)' : 'var(--text-muted)' }} title={tr('Solo')}>S</button>
             <button onClick={(e) => { e.stopPropagation(); updateTrack(track.id, { showFx: !track.showFx }) }} title={tr('Effects of this track (EQ, compressor, delay, reverb, filter)')}

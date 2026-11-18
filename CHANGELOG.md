@@ -3,6 +3,11 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.51.6
+
+- **Studio groups:** the second double-click now really brings a large group back to its normal height (the view no longer scrolls away under the mouse after the first one). A new **⇕** button in the group's header does the same.
+- **Own shortcuts with Ctrl+Alt:** Windows reports Ctrl+Alt as AltGr, so keys like Ctrl+Alt+K could not be set or used. They work now; AltGr characters (@, €, …) are still left to typing.
+
 ## 0.51.5
 
 - **Studio groups:** a double-click on a group now makes the group's own row large, with every stem in it shown with a big waveform, instead of opening the tracks below it; another double-click brings it back to the normal height.

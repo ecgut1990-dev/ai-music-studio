@@ -15,7 +15,7 @@ import { measureBalance, PROFILES, suggest, bassWidth } from '../src/renderer/sr
 import { defaultChain } from '../src/renderer/src/audio/master/chain'
 import { applyEdits, applyOp, copyPart, fadeShape } from '../src/renderer/src/audio/master/edit'
 import { VstLink, packBlock, unpackBlock } from '../src/renderer/src/audio/vst/link'
-import { buildMap, comboTaken } from '../src/renderer/src/shortcuts/registry'
+import { buildMap, comboTaken, eventToCombo } from '../src/renderer/src/shortcuts/registry'
 import { analyze, BiquadBank, CompressorCore, crossover, LimiterCore, MultibandCore, truePeakTaps } from '../src/renderer/src/audio/master/dsp'
 
 let failed = 0
@@ -333,6 +333,10 @@ check('search by stem name and several words', matchesQuery(stemT, 'vocals midni
   check('taken: own key', comboTaken('Ctrl+Alt+G', 'ableton', own).action === 'track.group')
   check('taken: reserved', comboTaken('Alt+F4', 'ableton', {}).reason === 'reserved')
   check('free key', comboTaken('Ctrl+Alt+K', 'ableton', {}).reason === '')
+  // Windows reports Ctrl+Alt as AltGr: a letter stays a shortcut, a typed character (@) does not
+  const altgr = (key: string): ReturnType<typeof eventToCombo> => eventToCombo({ key, code: 'KeyK', ctrlKey: true, altKey: true, shiftKey: false, getModifierState: (m) => m === 'AltGraph' })
+  check('Ctrl+Alt+K on Windows', altgr('k') === 'Ctrl+Alt+K', String(altgr('k')))
+  check('AltGr+Q (@) is typing', altgr('@') === null)
 }
 
 console.log(`${passed} passed, ${failed} failed`)
