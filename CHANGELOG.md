@@ -3,6 +3,10 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.51.3
+
+- **Studio groups:** a double-click on a group (on a bar or anywhere on its lane) opens it and makes all its tracks twice as high, with big waveforms; another double-click brings them back to the normal height.
+
 ## 0.51.2
 
 - **Studio groups:** a group is now as high as its tracks need, and every bar in it shows the track's name and its waveform, so the stems are easy to tell apart even with the group closed.

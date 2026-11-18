@@ -337,11 +337,14 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
     setActiveView('piano-roll')
   }
 
-  // a group opens: all its tracks are shown at (at least) the normal height, with their waveforms, and scrolled into view
+  // a group opens: all its tracks are shown large, with their waveforms, and scrolled into view
   const openGroup = (group: Track, trackId?: string, clipId?: string): void => {
     updateTrack(group.id, { collapsed: false })
     const kids = useProjectStore.getState().project.tracks.filter((t) => t.parentId === group.id)
-    for (const t of kids) if (t.height !== undefined && t.height < TRACK_HEIGHT) updateTrack(t.id, { height: undefined })
+    // the tracks grow to twice the normal height (big waveforms); a second double-click brings them back to normal
+    const big = TRACK_HEIGHT * 2
+    const allBig = kids.length > 0 && kids.every((t) => (t.height ?? TRACK_HEIGHT) >= big) && !group.collapsed
+    for (const t of kids) updateTrack(t.id, { height: allBig ? undefined : big })
     const target = trackId ?? kids[0]?.id
     if (target) { selectTrack(target); selectClip(clipId ?? null) }
     // the whole row (it starts at the left edge), so only the vertical position changes
@@ -524,7 +527,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
       const barH = kids.length ? Math.max(4, Math.floor((h - 10) / kids.length) - 2) : 0
       lane = isGroup
         ? kids.flatMap((t, k) => t.clips.map((c) => (
-          // a group shows the clips of its tracks as bars; double-click: the group opens with all its tracks at normal height
+          // a group shows the clips of its tracks as bars; double-click: the group opens with all its tracks large (again: normal height)
           <div key={c.id} title={`${t.name} · ${tr('double-click: show the tracks with their waveforms')}`}
             onPointerDown={(e) => e.stopPropagation()}
             onDoubleClick={(e) => { e.stopPropagation(); openGroup(track, t.id, c.id) }}
