@@ -3,6 +3,11 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.51.2
+
+- **Studio groups:** a group is now as high as its tracks need, and every bar in it shows the track's name and its waveform, so the stems are easy to tell apart even with the group closed.
+- **Mastering:** the plugin menu sits on the left, in front of **+ Add…**, with a **VST** label.
+
 ## 0.51.1
 
 - **Mastering:** the VST plugins have their own menu **+ VST plugin…** next to **+ Add…**, so they are easy to find.
