@@ -196,6 +196,8 @@ Die Plugins laufen in einem eigenen kleinen Programm (Plugin-Host), das nur läu
 
 ## VST-Plugins im Mastering, Stems ins Studio (ab 0.51)
 
+**Mastering-Drehknöpfe:** Alle Regler der Kette und des Lautheit-Limiters sind runde Drehknöpfe mit Lichtkranz. Nach oben oder unten ziehen dreht sie (**Shift**: fein), auch Mausrad und Pfeiltasten gehen; **Doppelklick** setzt den Startwert zurück. Ein lila Name mit Punkt zeigt einen verstellten Knopf.
+
 **Mastering:** In der Kette listet **VST + VST-Plugin…** (vor **+ Hinzufügen…**) deine Plugins. Ein Plugin kann an jeder Stelle der Kette stehen (↑ ↓). **Plugin-Fenster öffnen** zeigt seine Regler, ⏻ schaltet es aus und ein (das Timing bleibt gleich). Die Einstellungen werden mit dem Song gespeichert und im Export verwendet.
 
 **Stem-Trenner:** **Alle Stems ins Studio** legt jeden Stem auf eine eigene Spur im Studio (in einer Gruppe, ab Takt 1, mit den Lautstärken und Stummschaltungen aus dem Stem-Mixer). **→ Studio** an einem Stem legt nur diesen ins Studio.

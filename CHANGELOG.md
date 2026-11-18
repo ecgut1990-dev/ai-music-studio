@@ -5,6 +5,7 @@ on its GitHub release page, so every version needs a `## <version>` section here
 
 ## 0.51.3
 
+- **Mastering: round knobs.** Every control of the chain (EQ, compressor, multiband, dynamic EQ, saturation, stereo) and of the loudness limiter is now a round knob with a ring of lights, like on a mastering unit, instead of a slider. Drag up or down to turn it (hold **Shift** for fine steps), or use the mouse wheel or the arrow keys; a **double-click** sets it back to its starting value.
 - **Studio groups:** a double-click on a group (on a bar or anywhere on its lane) opens it and makes all its tracks twice as high, with big waveforms; another double-click brings them back to the normal height.
 
 ## 0.51.2

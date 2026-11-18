@@ -49,6 +49,8 @@ A big fader like on a mixing desk (right, above the meters) makes the master lou
 Slots are processed from top to bottom: **⏻** switches one off (bypass), **↑ ↓** moves it, **↺** resets it, **×** removes
 it, **+ Add…** adds one (also a second EQ or compressor). Click a name to open its controls.
 
+The controls are round knobs with a ring of lights: drag up or down to turn one (**Shift**: fine steps), or use the mouse wheel or the arrow keys; a **double-click** sets it back to its starting value. A purple name with a dot marks a knob that was moved.
+
 | Slot | What it does |
 |---|---|
 | **Equalizer** | low cut, low shelf, three bands (frequency, gain, width), high shelf, high cut; the curve is drawn over the live spectrum |

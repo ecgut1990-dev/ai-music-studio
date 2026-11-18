@@ -13,12 +13,22 @@ import { tr, trf } from '../../i18n/tr'
 
 const card: React.CSSProperties = { background: 'var(--bg-tertiary)', borderRadius: 8, padding: 10 }
 const small: React.CSSProperties = { fontSize: 10, padding: '1px 7px' }
-const grp: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 3, padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.03)' }
+const grp: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: 2, padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.03)' }
 
 // "Before" (the original) shows every control at its starting value, read-only; "After" shows the settings and
 // marks each control that was moved (purple name, dot)
 export const RackView = React.createContext<'before' | 'after'>('after')
 
+const KA0 = -135, KA1 = 135                       // the knob turns from -135° to +135°
+const polar = (r: number, deg: number): [number, number] => {
+  const a = ((deg - 90) * Math.PI) / 180
+  return [34 + r * Math.cos(a), 34 + r * Math.sin(a)]
+}
+// a row of knobs that wraps on narrow windows
+const knobs: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: '6px 4px', alignItems: 'flex-start' }
+
+// a round knob like on a mastering unit: a dark knob with a ring of lights showing the value.
+// Drag up / down (Shift: fine), mouse wheel, arrow keys; double-click: back to the starting value.
 function Knob({ name, value: setValue, min, max, step, unit, onChange, log, title, off: setOff, refv }: {
   name: string; value: number; min: number; max: number; step: number; unit?: string
   onChange: (v: number) => void; log?: boolean; title?: string; off?: boolean; refv?: number
@@ -28,17 +38,59 @@ function Knob({ name, value: setValue, min, max, step, unit, onChange, log, titl
   const value = before ? refv! : setValue
   const changed = !before && refv !== undefined && Math.abs(setValue - refv) > 1e-6
   const off = before ? setOff !== undefined && (refv === min || refv === max) : setOff
-  // a slider with a logarithmic scale for frequencies
-  const toPos = (v: number): number => (log ? Math.log(v / min) / Math.log(max / min) : (v - min) / (max - min))
-  const fromPos = (p: number): number => (log ? min * Math.pow(max / min, p) : min + p * (max - min))
+  const toPos = (v: number): number => Math.max(0, Math.min(1, log ? Math.log(v / min) / Math.log(max / min) : (v - min) / (max - min)))
+  const fromPos = (p: number): number => { p = Math.max(0, Math.min(1, p)); return log ? min * Math.pow(max / min, p) : min + p * (max - min) }
+  const put = (p: number): void => { const v = fromPos(p); onChange(log ? Math.round(v) : Math.round(v / step) * step) }
   const shown = log ? (value >= 1000 ? `${(value / 1000).toFixed(value >= 10000 ? 1 : 2)} k` : value.toFixed(0)) : value.toFixed(step < 0.1 ? 2 : step < 1 ? 1 : 0)
+  const pos = toPos(value)
+  const ang = KA0 + pos * (KA1 - KA0)
+  const drag = React.useRef<{ y: number; p: number } | null>(null)
+  const lights = Array.from({ length: 21 }, (_, i) => {
+    const t = KA0 + (i * (KA1 - KA0)) / 20
+    const [x, y] = polar(29, t)
+    const lit = !off && t <= ang + 0.01
+    return <circle key={i} cx={x} cy={y} r={1.8} fill={lit ? (before ? '#8b8f99' : '#9d5ff8') : '#33363d'} style={lit && !before ? { filter: 'drop-shadow(0 0 2px #9d5ff8)' } : undefined} />
+  })
+  const [x1, y1] = polar(9, ang), [x2, y2] = polar(19, ang)
   return (
-    <label title={title} style={{ display: 'grid', gridTemplateColumns: '92px 1fr 64px', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)', opacity: before ? 0.7 : 1 }}>
-      <span style={changed ? { color: 'var(--accent-light)', fontWeight: 600 } : undefined}>{name}{changed ? ' •' : ''}</span>
-      <input type="range" min={0} max={1} step={0.001} value={toPos(value)} disabled={before} style={{ accentColor: before ? '#6b7280' : 'var(--accent)', minWidth: 0 }}
-        onChange={(e) => { const v = fromPos(Number(e.target.value)); onChange(log ? Math.round(v) : Math.round(v / step) * step) }} />
-      <span style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{off ? tr('off') : `${shown}${unit ? ` ${unit}` : ''}`}</span>
-    </label>
+    <div title={title} tabIndex={before ? -1 : 0}
+      onKeyDown={(e) => {
+        if (before) return
+        const d = e.key === 'ArrowUp' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowDown' || e.key === 'ArrowLeft' ? -1 : 0
+        if (d) { e.preventDefault(); put(pos + d * (e.shiftKey ? 0.002 : 0.01)) }
+      }}
+      style={{ width: 76, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, fontSize: 11, color: 'var(--text-secondary)', opacity: before ? 0.7 : 1, outline: 'none' }}>
+      <svg width={68} height={68} style={{ cursor: before ? 'default' : 'ns-resize', touchAction: 'none' }}
+        onPointerDown={(e) => {
+          if (before || e.button !== 0) return
+          e.preventDefault(); (e.currentTarget as Element).setPointerCapture(e.pointerId)
+          drag.current = { y: e.clientY, p: pos }
+        }}
+        onPointerMove={(e) => {
+          const d = drag.current
+          if (!d) return
+          // 200 px of mouse travel turn the knob from one end to the other; Shift: 5 times finer
+          const np = d.p + (d.y - e.clientY) / (e.shiftKey ? 1000 : 200)
+          if (e.shiftKey) drag.current = { y: e.clientY, p: np }        // fine: go on from here
+          put(np)
+        }}
+        onPointerUp={() => { drag.current = null }}
+        onWheel={(e) => { if (!before) put(pos + (e.deltaY < 0 ? 1 : -1) * (e.shiftKey ? 0.002 : 0.01)) }}
+        onDoubleClick={() => { if (!before && refv !== undefined) onChange(refv) }}>
+        <defs>
+          <radialGradient id="ams-knob-metal" cx="40%" cy="30%">
+            <stop offset="0" stopColor="#4a4e58" /><stop offset="0.6" stopColor="#25272d" /><stop offset="1" stopColor="#16171a" />
+          </radialGradient>
+        </defs>
+        {lights}
+        <circle cx={34} cy={36} r={22} fill="#000" opacity={0.45} />
+        <circle cx={34} cy={34} r={22} fill="url(#ams-knob-metal)" stroke="#0c0d0f" strokeWidth={1.5} />
+        <circle cx={34} cy={34} r={17} fill="none" stroke="#3a3d45" strokeWidth={1} />
+        <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={off ? '#6b7280' : before ? '#9ca3af' : '#c4b5fd'} strokeWidth={3} strokeLinecap="round" />
+      </svg>
+      <span style={{ textAlign: 'center', lineHeight: 1.2, ...(changed ? { color: 'var(--accent-light)', fontWeight: 600 } : {}) }}>{name.trim()}{changed ? ' •' : ''}</span>
+      <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--text-primary)' }}>{off ? tr('off') : `${shown}${unit ? ` ${unit}` : ''}`}</span>
+    </div>
   )
 }
 
@@ -78,7 +130,7 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <EqCurve p={view === 'before' ? d : p} />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', columnGap: 14, rowGap: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(176px, auto))', columnGap: 14, rowGap: 8 }}>
           {/* each filter's controls stay together */}
           <div style={grp}>
             <Knob name={tr('Low cut')} off={!p.lowCut} refv={d.lowCut || 10} value={p.lowCut || 10} min={10} max={300} step={1} unit="Hz" log onChange={(v) => u('lowCut', v <= 10 ? 0 : v)} title={tr('High-pass: removes rumble below this frequency (all the way left: off)')} />
@@ -107,7 +159,7 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
     const p = slot.p
     const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={knobs}>
         <Knob name={tr('Threshold')} refv={d.thresholdDb} value={p.thresholdDb} min={-40} max={0} step={0.5} unit="dB" onChange={(v) => u('thresholdDb', v)} />
         <Knob name={tr('Ratio')} refv={d.ratio} value={p.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => u('ratio', v)} />
         <Knob name={tr('Attack')} refv={d.attackMs} value={p.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => u('attackMs', v)} />
@@ -124,12 +176,12 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
       set({ ...slot, p: { ...p, bands } })
     }
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={knobs}>
         <Knob name={tr('Split low/mid')} refv={d.xo1} value={p.xo1} min={60} max={600} step={1} unit="Hz" log onChange={(v) => set({ ...slot, p: { ...p, xo1: v } })} />
         <Knob name={tr('Split mid/high')} refv={d.xo2} value={p.xo2} min={1000} max={10000} step={1} unit="Hz" log onChange={(v) => set({ ...slot, p: { ...p, xo2: v } })} />
         {p.bands.map((b, i) => (
-          <div key={i} style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{['Low', 'Mid', 'High'][i]}</span>
+          <div key={i} style={{ ...grp, flexBasis: '100%', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: 10, color: 'var(--text-muted)', width: 34, paddingTop: 26 }}>{['Low', 'Mid', 'High'][i]}</span>
             <Knob name={tr('Threshold')} refv={db.thresholdDb} value={b.thresholdDb} min={-40} max={0} step={0.5} unit="dB" onChange={(v) => band(i, 'thresholdDb', v)} />
             <Knob name={tr('Ratio')} refv={db.ratio} value={b.ratio} min={1} max={10} step={0.1} unit=": 1" onChange={(v) => band(i, 'ratio', v)} />
             <Knob name={tr('Attack')} refv={db.attackMs} value={b.attackMs} min={0.5} max={100} step={0.5} unit="ms" onChange={(v) => band(i, 'attackMs', v)} />
@@ -144,8 +196,8 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
     const p = slot.p
     const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('Turns this frequency down only while it is too loud (sharp highs, booming bass). Add it twice for two bands.')}</span>
+      <div style={knobs}>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)', flexBasis: '100%' }}>{tr('Turns this frequency down only while it is too loud (sharp highs, booming bass). Add it twice for two bands.')}</span>
         <Knob name={tr('Frequency')} refv={d.freq} value={p.freq} min={30} max={16000} step={1} unit="Hz" log onChange={(v) => u('freq', v)} />
         <Knob name={tr('Width (Q)')} refv={d.q} value={p.q} min={0.3} max={8} step={0.1} onChange={(v) => u('q', v)} />
         <Knob name={tr('Threshold')} refv={d.thresholdDb} value={p.thresholdDb} min={-50} max={0} step={0.5} unit="dB" onChange={(v) => u('thresholdDb', v)} />
@@ -160,8 +212,8 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
     const p = slot.p
     const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('Warmth (soft tape-like saturation) and air (new harmonics above a frequency).')}</span>
+      <div style={knobs}>
+        <span style={{ fontSize: 10, color: 'var(--text-muted)', flexBasis: '100%' }}>{tr('Warmth (soft tape-like saturation) and air (new harmonics above a frequency).')}</span>
         <Knob name={tr('Drive')} refv={d.driveDb} value={p.driveDb} min={0} max={24} step={0.5} unit="dB" onChange={(v) => u('driveDb', v)} />
         <Knob name={tr('Mix')} refv={d.mix * 100} value={p.mix * 100} min={0} max={100} step={1} unit="%" onChange={(v) => u('mix', v / 100)} />
         <Knob name={tr('Exciter from')} refv={d.exciteFreq} value={p.exciteFreq} min={1000} max={16000} step={1} unit="Hz" log onChange={(v) => u('exciteFreq', v)} />
@@ -174,7 +226,7 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
   const p = slot.p
   const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div style={knobs}>
       <Knob name={tr('Width')} refv={d.width * 100} value={p.width * 100} min={0} max={200} step={1} unit="%" onChange={(v) => u('width', v / 100)} title={tr('0 % = mono, 100 % = unchanged, 200 % = twice as wide')} />
       <Knob name={tr('Mono below')} off={!p.monoBelow} refv={d.monoBelow || 20} value={p.monoBelow || 20} min={20} max={300} step={1} unit="Hz" log onChange={(v) => u('monoBelow', v <= 20 ? 0 : v)} title={tr('Bass below this frequency in mono (all the way left: off)')} />
       <Knob name={tr('Balance')} refv={d.balance * 100} value={p.balance * 100} min={-100} max={100} step={1} unit="" onChange={(v) => u('balance', v / 100)} />
@@ -300,11 +352,13 @@ export function MasterRack({ chain, onChange, target, onTarget, onReachTarget, r
             onClick={() => onChange({ ...chain, limiter: { ...chain.limiter, on: !chain.limiter.on } })}>⏻</button>
           <span style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>{tr('Loudness: limiter / maximizer (true peak, 4x oversampled)')}</span>
         </div>
+        <div style={knobs}>
         <Knob name={tr('Louder')} refv={0} value={chain.louderDb} min={-12} max={24} step={0.1} unit="dB" onChange={(v) => onChange({ ...chain, louderDb: v })}
           title={tr('Drives the song into the limiter: louder, without going over the ceiling')} />
         <Knob name={tr('Ceiling')} refv={-1} value={chain.limiter.ceilingDb} min={-3} max={0} step={0.1} unit="dBTP" onChange={(v) => onChange({ ...chain, limiter: { ...chain.limiter, ceilingDb: v } })}
           title={tr('The highest peak allowed (true peak). −1 dBTP is safe for MP3 and AAC.')} />
         <Knob name={tr('Release')} refv={120} value={chain.limiter.releaseMs} min={10} max={500} step={5} unit="ms" onChange={(v) => onChange({ ...chain, limiter: { ...chain.limiter, releaseMs: v } })} />
+        </div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{tr('Target')}</span>
           <select value={target} onChange={(e) => onTarget(e.target.value)} style={{ fontSize: 11 }}>
