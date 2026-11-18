@@ -238,6 +238,11 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 | 10.6 | Stem-Trenner: Song trennen, dann **Alle Stems ins Studio** | Im Studio eine Gruppe „<Song> – Stems“ mit einer Spur pro Stem ab Takt 1, Lautstärken/Stumm wie im Stem-Mixer | | | |
 | 10.7 | Bei einem Stem **→ Studio** | Nur dieser Stem auf einer neuen Spur | | | |
 | 10.8 | Studio: bei einer Gruppe (z. B. nach *In Stems trennen*) die Gruppe zuklappen (▶), dann auf einen der farbigen Balken doppelklicken | Gruppe klappt auf, die Spur dieses Stems ist ausgewählt und mit Wellenform zu sehen | | | |
+| 10.9 | Einstellungen → **Audio**: Ausgangsgerät wählen (z. B. Kopfhörer statt Lautsprecher), **Testton** an | Der Ton kommt aus dem gewählten Gerät; Lautstärke- und Frequenzregler ändern ihn sofort | | | |
+| 10.10 | Song im Studio und im Mastering abspielen, Bibliothek-Vorhören | Alles kommt aus dem gewählten Gerät | | | |
+| 10.11 | **Puffergröße** ändern (z. B. 256, 1024) | Ausgangs- und Gesamt-Latenz ändern sich; Wiedergabe läuft danach normal | | | |
+| 10.12 | Song abspielen, **Simulierte CPU-Belastung** langsam hochdrehen | Ab einem Wert knackt es; mit größerem Puffer erst später | | | |
+| 10.13 | Eingangsgerät wählen, im Studio aufnehmen | Aufnahme kommt vom gewählten Mikrofon/Eingang; mit Treiberfehler-Kompensation verschiebt sich die Aufnahme | | | |
 
 ## Ergebnisse
 

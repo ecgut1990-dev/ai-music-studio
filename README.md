@@ -31,7 +31,7 @@ AI Music Studio is free and stays free, made in my spare time. If it saves you t
 
 ### New in 0.51
 
-- **VST plugins in Mastering** (anywhere in the chain, saved with the song, in the export), **Stem Splitter → Studio** (all stems on their own tracks in one group), and a double-click on a stem bar of a Studio group shows that track.
+- **VST plugins in Mastering** (anywhere in the chain, saved with the song, in the export), **Stem Splitter → Studio** (all stems on their own tracks in one group), a double-click on a stem bar of a Studio group shows that track, and a new **Settings → Audio** page (output and input device, sample rate, buffer and latency, test tone).
 
 ### Earlier: 0.50
 

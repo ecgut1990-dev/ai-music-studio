@@ -9,6 +9,7 @@ on its GitHub release page, so every version needs a `## <version>` section here
 - **Stem Splitter → Studio:** **All stems into the Studio** puts every stem on its own track in the Studio, in one group, with the levels and mutes of the stem mixer; **→ Studio** on a stem puts only that one.
 - **Studio groups:** a group shows the clips of its tracks as bars; double-click a bar and the group opens and shows that track with its waveform.
 - Exports with plugins use the plugins' current settings, also ones not saved yet.
+- **Settings → Audio, new:** laid out like the audio preferences of other DAWs: **audio output device** (used everywhere in the app) and **audio input device** for recording, **sample rate** of playback, **buffer size** with the real input, output and overall latency, **driver error compensation** for recordings, a **test tone** (on / off, volume, frequency) to check the right card plays, and a **simulated CPU load** to find a buffer that does not crackle. ASIO follows in 0.61.
 
 ## 0.50.1
 
