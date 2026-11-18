@@ -3,6 +3,11 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.51.3
+
+- **Mastering: round knobs.** Every control of the chain (EQ, compressor, multiband, dynamic EQ, saturation, stereo) and of the loudness limiter is now a round knob with a ring of lights, like on a mastering unit, instead of a slider. Drag up or down to turn it (hold **Shift** for fine steps), or use the mouse wheel or the arrow keys; a **double-click** sets it back to its starting value.
+- **Studio groups:** a double-click on a group (on a bar or anywhere on its lane) opens it and makes all its tracks twice as high, with big waveforms; another double-click brings them back to the normal height.
+
 ## 0.51.2
 
 - **Studio groups:** a group is now as high as its tracks need, and every bar in it shows the track's name and its waveform, so the stems are easy to tell apart even with the group closed.
