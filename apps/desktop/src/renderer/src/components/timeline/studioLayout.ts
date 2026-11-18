@@ -38,7 +38,10 @@ export function buildRows(p: Project): Row[] {
   for (const t of p.tracks) {
     const parent = t.parentId ? byId.get(t.parentId) : undefined
     if (parent?.collapsed) continue
-    rows.push({ kind: 'track', track: t, depth: parent ? 1 : 0 })
+    // a group is as high as its stems need (one row of about 26 px each), unless its height was set by hand
+    const kids = t.type === 'group' && t.height === undefined ? p.tracks.filter((x) => x.parentId === t.id).length : 0
+    const shown = kids ? { ...t, height: Math.min(TRACK_MAX_HEIGHT, Math.max(TRACK_HEIGHT, 10 + kids * 26)) } : t
+    rows.push({ kind: 'track', track: shown, depth: parent ? 1 : 0 })
     if (t.showFx) rows.push({ kind: 'fx', track: t })
     for (const param of openLanes(t)) rows.push({ kind: 'auto', track: t, param, min: (t.autoMin ?? []).includes(param) })
     if (t.showTakes) for (const lane of t.takes ?? []) rows.push({ kind: 'take', track: t, lane })

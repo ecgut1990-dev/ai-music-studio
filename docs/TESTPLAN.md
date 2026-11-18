@@ -238,13 +238,15 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 | 10.6 | Stem-Trenner: Song trennen, dann **Alle Stems ins Studio** | Im Studio eine Gruppe „<Song> – Stems“ mit einer Spur pro Stem ab Takt 1, Lautstärken/Stumm wie im Stem-Mixer | ✅ |  | 0.51.0 |
 | 10.7 | Bei einem Stem **→ Studio** | Nur dieser Stem auf einer neuen Spur | ✅ |  | 0.51.0 |
 | 10.8 | Studio: bei einer Gruppe (z. B. nach *In Stems trennen*) die Gruppe zuklappen (▶), dann auf einen der farbigen Balken doppelklicken | Gruppe klappt auf, die Spur dieses Stems ist ausgewählt und mit Wellenform zu sehen | ❌ | Stems sollen nach Doppelklick normal hoch mit Wellenform erscheinen → 0.51.1 | 0.51.0 |
-| 10.9 | Einstellungen → **Audio**: Ausgangsgerät wählen (z. B. Kopfhörer statt Lautsprecher), **Testton** an | Der Ton kommt aus dem gewählten Gerät; Lautstärke- und Frequenzregler ändern ihn sofort | | | |
+| 10.9 | Einstellungen → **Audio**: Ausgangsgerät wählen (z. B. Kopfhörer statt Lautsprecher), **Testton** an | Der Ton kommt aus dem gewählten Gerät; Lautstärke- und Frequenzregler ändern ihn sofort | ✅ | | 0.51.0 |
 | 10.10 | Song im Studio und im Mastering abspielen, Bibliothek-Vorhören | Alles kommt aus dem gewählten Gerät | ✅ |  | 0.51.0 |
 | 10.11 | **Puffergröße** ändern (z. B. 256, 1024) | Ausgangs- und Gesamt-Latenz ändern sich; Wiedergabe läuft danach normal | ✅ |  | 0.51.0 |
 | 10.12 | Song abspielen, **Simulierte CPU-Belastung** langsam hochdrehen | Ab einem Wert knackt es; mit größerem Puffer erst später | ✅ |  | 0.51.0 |
 | 10.13 | Eingangsgerät wählen, im Studio aufnehmen | Aufnahme kommt vom gewählten Mikrofon/Eingang; mit Treiberfehler-Kompensation verschiebt sich die Aufnahme | ✅ |  | 0.51.0 |
-| 10.1b | Mastering: Menü **+ VST-Plugin…** neben **+ Hinzufügen…** | Listet alle Plugins; eins wählen setzt es in die Kette | | | |
-| 10.8b | Studio: Gruppe zuklappen (▶), irgendwo in die Zeile der Gruppe doppelklicken (auf einen Balken oder daneben) | Gruppe klappt auf, jede Stem-Spur normal hoch mit Wellenform, die Ansicht scrollt dorthin | | | |
+| 10.1b | Mastering: Menü **+ VST-Plugin…** neben **+ Hinzufügen…** | Listet alle Plugins; eins wählen setzt es in die Kette | ✅ | Menü links mit „VST“ beschriften → 0.51.2 | 0.51.0 |
+| 10.8b | Studio: Gruppe zuklappen (▶), irgendwo in die Zeile der Gruppe doppelklicken (auf einen Balken oder daneben) | Gruppe klappt auf, jede Stem-Spur normal hoch mit Wellenform, die Ansicht scrollt dorthin | ❌ | Stem-Balken in der Gruppe zu schmal → 0.51.2 | 0.51.0 |
+| 10.1c | Mastering: links steht **VST** vor dem Menü **+ VST-Plugin…**, rechts davon **+ Hinzufügen…** | Plugins sofort zu finden | | | |
+| 10.8c | Studio: Gruppe (z. B. nach *In Stems trennen*) zugeklappt ansehen | Gruppe ist höher, jeder Stem-Balken zeigt Namen und Wellenform; Doppelklick öffnet die Gruppe | | | |
 
 ## Ergebnisse
 

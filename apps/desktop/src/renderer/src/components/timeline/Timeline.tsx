@@ -528,7 +528,10 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
           <div key={c.id} title={`${t.name} · ${tr('double-click: show the tracks with their waveforms')}`}
             onPointerDown={(e) => e.stopPropagation()}
             onDoubleClick={(e) => { e.stopPropagation(); openGroup(track, t.id, c.id) }}
-            style={{ position: 'absolute', left: c.startTime * beatWidth, width: Math.max(2, c.duration * beatWidth), top: 5 + k * (barH + 2), height: barH, background: t.color, opacity: 0.75, borderRadius: 2, cursor: 'pointer' }} />
+            style={{ position: 'absolute', left: c.startTime * beatWidth, width: Math.max(2, c.duration * beatWidth), top: 5 + k * (barH + 2), height: barH, background: `${t.color}55`, border: `1px solid ${t.color}`, boxSizing: 'border-box', borderRadius: 3, overflow: 'hidden', cursor: 'pointer' }}>
+            {c.audioFile && barH >= 12 && <Waveform clip={c} color={t.color} height={barH - 2} width={Math.max(2, c.duration * beatWidth)} warpEdit={false} trackId={t.id} />}
+            {barH >= 14 && <span style={{ position: 'relative', fontSize: 9, color: '#fff', padding: '0 4px', pointerEvents: 'none', whiteSpace: 'nowrap', textShadow: '0 0 3px #000' }}>{t.name}</span>}
+          </div>
         )))
         : renderClips(track)
     }

@@ -196,11 +196,11 @@ Die Plugins laufen in einem eigenen kleinen Programm (Plugin-Host), das nur läu
 
 ## VST-Plugins im Mastering, Stems ins Studio (ab 0.51)
 
-**Mastering:** In der Kette listet **+ VST-Plugin…** (neben **+ Hinzufügen…**) deine Plugins. Ein Plugin kann an jeder Stelle der Kette stehen (↑ ↓). **Plugin-Fenster öffnen** zeigt seine Regler, ⏻ schaltet es aus und ein (das Timing bleibt gleich). Die Einstellungen werden mit dem Song gespeichert und im Export verwendet.
+**Mastering:** In der Kette listet **VST + VST-Plugin…** (vor **+ Hinzufügen…**) deine Plugins. Ein Plugin kann an jeder Stelle der Kette stehen (↑ ↓). **Plugin-Fenster öffnen** zeigt seine Regler, ⏻ schaltet es aus und ein (das Timing bleibt gleich). Die Einstellungen werden mit dem Song gespeichert und im Export verwendet.
 
 **Stem-Trenner:** **Alle Stems ins Studio** legt jeden Stem auf eine eigene Spur im Studio (in einer Gruppe, ab Takt 1, mit den Lautstärken und Stummschaltungen aus dem Stem-Mixer). **→ Studio** an einem Stem legt nur diesen ins Studio.
 
-**Gruppen im Studio:** Eine Gruppe zeigt die Clips ihrer Spuren als Balken, eine Reihe pro Spur. Doppelklick auf die Gruppe (auf einen Balken oder irgendwo in ihre Zeile) klappt sie auf: Jede Spur der Gruppe wird in normaler Höhe mit Wellenform gezeigt.
+**Gruppen im Studio:** Eine Gruppe zeigt die Clips ihrer Spuren als Balken mit Namen und Wellenform, eine Reihe pro Spur (die Gruppe ist so hoch, wie ihre Spuren es brauchen). Doppelklick auf die Gruppe (auf einen Balken oder irgendwo in ihre Zeile) klappt sie auf: Jede Spur der Gruppe wird in normaler Höhe mit Wellenform gezeigt.
 
 ## Studio (früher Zeitleiste), Mixer, Klaviatur-Editor, Projekte (Grundfunktionen)
 
