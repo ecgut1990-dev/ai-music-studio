@@ -248,9 +248,9 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 | 10.1c | Mastering: links steht **VST** vor dem Menü **+ VST-Plugin…**, rechts davon **+ Hinzufügen…** | Plugins sofort zu finden | ✅ | | 0.51.2 |
 | 10.8c | Studio: Gruppe (z. B. nach *In Stems trennen*) zugeklappt ansehen | Gruppe ist höher, jeder Stem-Balken zeigt Namen und Wellenform; Doppelklick öffnet die Gruppe | ⚠️ | Anzeige gut, aber Doppelklick macht die Spuren nicht größer → 0.51.3 | 0.51.2 |
 | 10.8d | Studio: Doppelklick auf eine Gruppe (Balken oder Zeile), dann noch einmal | Gruppe klappt auf, alle Stem-Spuren doppelt so hoch mit großer Wellenform; zweiter Doppelklick: wieder normale Höhe | | | |
-| 10.14 | Mastering: Module 1–6 und Lautheit öffnen | Überall runde Drehknöpfe mit Lichtkranz statt Schiebereglern | | | |
-| 10.15 | Knopf nach oben/unten ziehen, mit Shift ziehen, Mausrad, Doppelklick | Wert ändert sich (mit Shift fein), man hört es sofort; Doppelklick setzt den Startwert | | | |
-| 10.16 | Vorher/Nachher umschalten | Bei *Vorher* stehen die Knöpfe grau auf dem Startwert und lassen sich nicht drehen | | | |
+| 10.14 | Mastering: Module 1–6 und Lautheit öffnen | Überall runde Drehknöpfe mit Lichtkranz statt Schiebereglern | ✅ | | 0.51.3 |
+| 10.15 | Knopf nach oben/unten ziehen, mit Shift ziehen, Mausrad, Doppelklick | Wert ändert sich (mit Shift fein), man hört es sofort; Doppelklick setzt den Startwert | ✅ | | 0.51.3 |
+| 10.16 | Vorher/Nachher umschalten | Bei *Vorher* stehen die Knöpfe grau auf dem Startwert und lassen sich nicht drehen | ✅ | | 0.51.3 |
 
 ## Ergebnisse
 

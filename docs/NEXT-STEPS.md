@@ -94,3 +94,12 @@ Kept for the next working session (also read by Claude: see CLAUDE.md). State: v
 - The app's MCP endpoint is on the owner's PC (`http://127.0.0.1:38765/mcp`, 38766 if the port is busy): only a
   Claude session running on that PC can reach it (`claude mcp add --transport http ai-music-studio <url>`).
 - ElevenLabs free generations were often busy; Splice downloads spend credits (ask first).
+
+## Layouts (planned for a later version)
+
+The owner wants, next to light / dark, a choice of whole layouts (structure, type and controls, not only colours), and
+they should not look like the usual "AI app" style. Mock-ups made on 2026-11-18; the owner liked:
+1 **Analog console** (warm wood, amber display, mixer strips with VU needles at the bottom), 3 **Swiss / brutal**
+(white and black, very large type, orange, transport as big blocks, navigation bar at the bottom) and 4 **Hardware rack**
+(grey device fronts with screws, green LCD, LED buttons, effect rack with knobs). Five further ideas were shown
+(tape machine, modular with cables, vertical timeline, blueprint, pocket device); the owner's choice is still open.
