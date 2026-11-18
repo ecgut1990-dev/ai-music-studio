@@ -2,6 +2,7 @@ import { pianoFocus } from '../components/timeline/studioOps'
 import { useEffect } from 'react'
 import { useUIStore } from '../stores/ui.store'
 import { runAction } from './handlers'
+import { diagWrite } from '../lib/diagLog'
 import { ACTIONS, buildMap, eventToCombo, shortcutCapture } from './registry'
 
 
@@ -47,6 +48,10 @@ export function useShortcuts(): void {
     const onKeyDown = (e: KeyboardEvent): void => {
       if (shortcutCapture.active) return                   // Settings → Shortcuts is waiting for a new key
       const combo = eventToCombo(e)
+      // Ctrl+Alt keys go to the diagnostics log, to see what Windows sends (own shortcuts, AltGr)
+      if (e.ctrlKey && e.altKey && !/^(Control|Alt|AltGraph)$/.test(e.key)) {
+        diagWrite('key', `key=${e.key} code=${e.code} altgr=${e.getModifierState('AltGraph')} combo=${combo} action=${combo ? map.get(combo.toLowerCase()) ?? '-' : '-'}`)
+      }
       if (!combo) return
       const id = map.get(combo.toLowerCase())
       if (!id) return

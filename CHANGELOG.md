@@ -3,6 +3,10 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.51.7
+
+- **Own shortcuts with Ctrl+Alt (again):** with Ctrl+Alt held, Windows does not always send the letter of the key (it depends on the keyboard layout), so a key like Ctrl+Alt+K could be set but did nothing. The letter or digit is now taken from the key itself, the same on every keyboard layout. Ctrl+Alt keys are written to the diagnostics log, so a key that still does nothing can be traced.
+
 ## 0.51.6
 
 - **Studio groups:** the second double-click now really brings a large group back to its normal height (the view no longer scrolls away under the mouse after the first one). A new **⇕** button in the group's header does the same.
