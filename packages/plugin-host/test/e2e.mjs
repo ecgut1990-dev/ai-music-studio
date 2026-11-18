@@ -78,7 +78,14 @@ const t0 = performance.now()
 for (let i = 0; i < 200; i++) await block(ld.instance, [L, R])
 const ms = (performance.now() - t0) / 200
 console.log(`round trip per 512-sample block: ${ms.toFixed(3)} ms (real time: ${(512 / 48).toFixed(2)} ms)`)
-if (process.env.DISPLAY) { const ed = await call('editor', { instance: ld.instance, show: true, title: 'test' }); console.log('editor', ed.ok); await call('editor', { instance: ld.instance, show: false }) }
+if (process.env.DISPLAY) {
+  const ed = await call('editor', { instance: ld.instance, show: true, title: 'test' }); console.log('editor', ed.ok)
+  await call('editor', { instance: ld.instance, show: false })
+  // opened again after closing: a fresh window (after a state change too)
+  assert.equal((await call('setState', { instance: ld.instance, state: st.state })).ok, true)
+  assert.equal((await call('editor', { instance: ld.instance, show: true, title: 'test' })).ok, true)
+  await call('editor', { instance: ld.instance, show: false })
+}
 console.log('stats', await call('stats'))
 assert.equal((await call('unload', { instance: ld.instance })).ok, true)
 // unknown instance: the sound passes through unchanged

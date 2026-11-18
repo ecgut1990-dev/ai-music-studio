@@ -311,6 +311,8 @@ export async function collectVstStates(project: Project): Promise<Project> {
 /** opens (or brings to the front) the plugin's own window */
 export async function showVstEditor(fx: InsertFx, sampleRate: number, trackName: string): Promise<void> {
   if (!fx.vst) return
+  // the plugin may still be loading (the project was just opened, or Play was pressed): use that one
+  if (!live.get(fx.id) && loading.has(fx.id)) await loading.get(fx.id)
   let l = live.get(fx.id)
   if (!l) {
     const r = await loadInstance(fx.vst, sampleRate)

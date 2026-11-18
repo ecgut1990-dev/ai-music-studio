@@ -45,6 +45,8 @@ Kept for the next working session (also read by Claude: see CLAUDE.md). State: v
   and a **test tone** button to check that the right card plays. Idea: the JUCE plugin host already has JUCE's audio
   device layer (ASIO needs the ASIO SDK, which Steinberg now publishes under GPL-3), so it could play the app's output;
   plain outputs also work in the page (setSinkId). Plan it first and let the owner add to it.
+- **Linux version: only after RC 1.0** (owner, 17.11.2026). Then: AppImage build, engine install on Linux; the owner
+  can test it in WSL2 (WSLg) or a VM on Windows 11. Not before.
 - **Help in the app:** the manual / wiki inside the app, in the chosen language (owner's idea).
 - **New promo video** once VST is in (the owner plans it soon).
 

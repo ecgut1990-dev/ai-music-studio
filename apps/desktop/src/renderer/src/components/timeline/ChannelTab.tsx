@@ -3,8 +3,9 @@
 import React from 'react'
 import { useProjectStore } from '../../stores/project.store'
 import { AUTO_LABEL, hasAutomation } from '../../audio/automation'
-import type { AutoParam } from '../../types'
-import { MiniMeter } from './StudioLanes'
+import type { AutoParam, InsertFx } from '../../types'
+import { FxAddSelect, MiniMeter, openPlugin } from './StudioLanes'
+import { INSERT_LABEL } from '../../audio/fx'
 import { openLanes } from './studioLayout'
 import { tr } from '../../i18n/tr'
 
@@ -33,7 +34,7 @@ export function ChannelTab({ onClose }: { onClose: () => void }): React.ReactEle
             <input key={t.id + t.name} defaultValue={t.name} onBlur={(e) => updateTrack(t.id, { name: e.target.value.trim() || t.name })}
               onKeyDown={(e) => { e.stopPropagation(); if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} style={{ flex: 1, minWidth: 0, fontSize: 12, fontWeight: 600 }} />
           </div>
-          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t.type === 'group' ? tr('Group track: the tracks inside play through it') : `${t.type} track`}</span>
+          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t.type === 'group' ? tr('Group track: the tracks inside play through it') : t.type === 'midi' ? tr('MIDI track') : tr('Audio track')}</span>
           <MiniMeter id={t.id} />
           <label style={row}>{tr('Volume')}
             <input type="range" min={0} max={1} step={0.01} value={t.volume} disabled={hasAutomation(t, 'volume')} style={{ flex: 1 }}
@@ -51,6 +52,32 @@ export function ChannelTab({ onClose }: { onClose: () => void }): React.ReactEle
             <button className="btn btn-ghost" style={{ fontSize: 11, color: t.muted ? '#f59e0b' : undefined }} onClick={() => updateTrack(t.id, { muted: !t.muted })}>{tr('Mute')}</button>
             <button className="btn btn-ghost" style={{ fontSize: 11, color: t.soloed ? 'var(--accent-light)' : undefined }} onClick={() => updateTrack(t.id, { soloed: !t.soloed })}>{tr('Solo')}</button>
           </div>
+
+          {(
+            <>
+              <b style={{ fontSize: 11, color: 'var(--text-primary)' }}>{tr('Effects (inserts)')}</b>
+              {(t.fx ?? []).length === 0 && <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('No effects yet. Add a built-in effect or one of your VST plugins:')}</span>}
+              {(t.fx ?? []).map((f, i, list) => {
+                const set = (patch: Partial<InsertFx>): void => updateTrack(t.id, { fx: list.map((x) => (x.id === f.id ? { ...x, ...patch } : x)) })
+                const move = (d: number): void => { const j = i + d; if (j < 0 || j >= list.length) return; const nx = [...list]; [nx[i], nx[j]] = [nx[j], nx[i]]; updateTrack(t.id, { fx: nx }) }
+                return (
+                  <div key={f.id} style={{ ...row, border: '1px solid var(--border-mid)', borderRadius: 6, padding: '3px 4px', opacity: f.on ? 1 : 0.55 }}>
+                    <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 4px', color: f.on ? 'var(--green)' : 'var(--text-muted)' }} title={f.on ? tr('On: click to bypass') : tr('Bypassed: click to switch on')} onClick={() => set({ on: !f.on })}>⏻</button>
+                    <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-primary)' }} title={f.vst ? `${f.vst.name} · ${f.vst.format}` : ''}>
+                      {f.type === 'vst' ? f.vst?.name ?? tr('VST plugin') : tr(INSERT_LABEL[f.type])}
+                    </span>
+                    {f.type === 'vst'
+                      ? <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 5px' }} title={tr('Open the plugin window')} onClick={() => void openPlugin(f, t.name)}>{tr('Open')}</button>
+                      : <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 5px' }} title={tr('Show the settings in the effects lane under the track')} onClick={() => updateTrack(t.id, { showFx: true })}>{tr('Edit')}</button>}
+                    <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 3px' }} disabled={i === 0} title={tr('Earlier in the chain')} onClick={() => move(-1)}>▲</button>
+                    <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 3px' }} disabled={i === list.length - 1} title={tr('Later in the chain')} onClick={() => move(1)}>▼</button>
+                    <button className="btn btn-ghost" style={{ fontSize: 10, padding: '0 3px', color: 'var(--red)' }} title={tr('Remove this effect')} onClick={() => updateTrack(t.id, { fx: list.filter((x) => x.id !== f.id) })}>×</button>
+                  </div>
+                )
+              })}
+              <FxAddSelect track={t} style={{ fontSize: 11, width: '100%' }} />
+            </>
+          )}
 
           <b style={{ fontSize: 11, color: 'var(--text-primary)' }}>{tr('Sends')}</b>
           {returns.length === 0 && <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{tr('No return tracks yet: add one with “+ Return” in the Studio bar.')}</span>}

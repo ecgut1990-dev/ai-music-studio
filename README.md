@@ -31,6 +31,8 @@ AI Music Studio is free and stays free, made in my spare time. If it saves you t
 
 ### New in 0.50
 
+- **0.50.1:** the effects (built-in and VST) are also in the Studio's *Channel* panel on the right: add, open, switch on / off, reorder.
+
 - **VST plugins (VST3 and VST2):** your own effects in the Studio. *Settings → Plugins* finds them (64-bit and 32-bit plugins), **+ Effect…** on a track adds them and opens their window; their settings are saved with the project and the export includes them. Plugins run in a separate plugin host, so a crashing plugin does not take the app down. Master, Mastering and instrument plugins follow.
 
 ### Earlier: 0.40

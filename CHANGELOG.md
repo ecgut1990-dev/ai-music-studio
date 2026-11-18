@@ -3,6 +3,11 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.50.1
+
+- **Effects in the channel tab:** the *Channel* panel on the right of the Studio now lists the effects of the selected track (built-in and VST plugins) with on / off, **Open** for a plugin's window, the order and remove, and **+ Effect…** to add one. Before, effects were only reachable through the small **FX** button on the track.
+- A plugin window that is opened again is built fresh, and pressing **Open** while a project's plugins are still loading no longer loads the plugin a second time.
+
 ## 0.50.0
 
 - **VST plugins:** your own VST3 and VST2 effects in the Studio. *Settings → Plugins* searches your plugin folders (by itself on the first start, afterwards when you press **Search for plugins**), lists every plugin with vendor, type and format, and a tick decides which ones appear in the app. In the Studio, **+ Effect…** on a track lists them under the built-in effects; adding one opens the plugin's own window, **Open** opens it again. Plugin settings are saved with the project, and the export (WAV / MP3) includes the plugins.
