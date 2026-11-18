@@ -213,9 +213,9 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 |---|---|---|---|---|---|
 | 9.1 | Nach dem Update die App starten, dann Einstellungen → **Plugins** | Die Suche ist beim ersten Start von selbst gelaufen (oder läuft noch: Fortschritt „x von y“). Deine Plugins stehen in der Liste mit Hersteller, Typ, Format | ✅ | | 0.50.0 |
 | 9.2 | **Search for plugins** drücken | Suche läuft mit Fortschritt; danach „Letzte Suche: … · n Plugins“. Nicht nutzbare Dateien (z. B. beim Prüfen abgestürzt) stehen unten aufklappbar; Spalte „Bits“ zeigt 64 oder 32 | ✅ | | 0.50.0 |
-| 9.2b | Ein **32-Bit-Plugin** (z. B. aus *C:\\Programme (x86)\\VSTPlugins*) auf eine Spur legen, Fenster öffnen, abspielen | Es steht im Menü mit „32-bit“, öffnet sein Fenster und klingt wie ein 64-Bit-Plugin | | | |
-| 9.2c | Einstellungen → Plugins → **Ordner hinzufügen…** mit einem eigenen Plugin-Ordner, dann suchen | Die Plugins aus dem Ordner erscheinen in der Liste | | | |
-| 9.3 | Bei einem Plugin das Häkchen entfernen | Es erscheint nicht mehr im Studio unter „+ Effekt…“ | | | |
+| 9.2b | Ein **32-Bit-Plugin** (z. B. aus *C:\\Programme (x86)\\VSTPlugins*) auf eine Spur legen, Fenster öffnen, abspielen | Es steht im Menü mit „32-bit“, öffnet sein Fenster und klingt wie ein 64-Bit-Plugin | ✅ | | 0.51.0 |
+| 9.2c | Einstellungen → Plugins → **Ordner hinzufügen…** mit einem eigenen Plugin-Ordner, dann suchen | Die Plugins aus dem Ordner erscheinen in der Liste | ✅ | | 0.51.0 |
+| 9.3 | Bei einem Plugin das Häkchen entfernen | Es erscheint nicht mehr im Studio unter „+ Effekt…“ | ✅ | | 0.51.0 |
 | 9.4 | Studio: Spur mit Song auswählen, rechts **Kanal** → unter *Effekte* **+ Effekt…** → unter *VST-Plugins* ein Plugin wählen (geht auch über das kleine **FX** an der Spur) | Plugin erscheint in der Effekt-Zeile, sein Fenster öffnet sich und bleibt über der App | ✅ | | 0.50.0 |
 | 9.5 | Abspielen, im Plugin-Fenster Regler drehen (z. B. Hall stark) | Man hört das Plugin sofort; keine Aussetzer oder Knackser | ✅ | | 0.50.0 |
 | 9.6 | ⏻ am Plugin aus und wieder an, während der Song läuft | Ohne / mit Plugin; die Spur bleibt im Takt mit den anderen Spuren | ✅ | | 0.50.0 |
