@@ -1097,7 +1097,7 @@
  "Your folders:": "你的文件夹：",
  "Your saved stems are in the": "你保存的分轨在以下标签页：",
  "Your songs appear here. Describe the music on the left and press Create.": "你的歌曲会出现在这里。在左侧描述音乐并按“创建”。",
- "Yours": "你的",
+ "Yours": "自定义",
  "Zoom": "缩放",
  "Zoom in": "放大",
  "Zoom out": "缩小",
@@ -1244,5 +1244,12 @@
  "Light": "浅色",
  "Analog console": "模拟调音台",
  "Swiss": "瑞士风格",
- "Hardware rack": "硬件机架"
+ "Hardware rack": "硬件机架",
+ "{key} is already used: {action}": "{key} 已被占用：{action}",
+ "{key} is needed by the app or Windows": "{key} 由应用或 Windows 使用",
+ "Remove this key": "删除此按键",
+ "Press the keys for this action; only keys that are still free are accepted (Esc: cancel)": "按下此操作的按键；只接受尚未使用的按键（Esc：取消）",
+ "Press a key…": "请按键…",
+ "+ Key": "+ 按键",
+ "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "自定义按键：在“自定义”列点击 + 按键，然后按下某个操作的按键。只接受尚未使用的按键；它们与上方的布局同时生效。"
 }

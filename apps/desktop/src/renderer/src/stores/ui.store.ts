@@ -17,6 +17,7 @@ interface UIState {
   language: string
   sidebarOpen: boolean
   shortcutPreset: 'ableton' | 'cubase'
+  customKeys: Record<string, string[]>     // the user's own extra keys per action (Settings → Shortcuts)
   pianoTool: 'draw' | 'select' | 'erase'
   pianoZoom: number
   grid: string          // id of a grid size (see edit/grid.ts)
@@ -32,6 +33,7 @@ interface UIState {
   setGrid: (id: string) => void
   toggleSnap: () => void
   setShortcutPreset: (p: 'ableton' | 'cubase') => void
+  setCustomKeys: (k: Record<string, string[]>) => void
   setPianoTool: (t: 'draw' | 'select' | 'erase') => void
   setPianoZoom: (z: number) => void
   toggleSidebar: () => void
@@ -62,6 +64,7 @@ export const useUIStore = create<UIState>()(
       language: 'en',
       sidebarOpen: true,
       shortcutPreset: 'ableton',
+      customKeys: {},
       pianoTool: 'draw',
       pianoZoom: 1,
       grid: '1/16',
@@ -72,6 +75,7 @@ export const useUIStore = create<UIState>()(
       chatOpen: true,
       setChatOpen: (chatOpen) => set({ chatOpen }),
       setShortcutPreset: (shortcutPreset) => set({ shortcutPreset }),
+      setCustomKeys: (customKeys) => set({ customKeys }),
       setPianoTool: (pianoTool) => set({ pianoTool }),
       setPianoZoom: (pianoZoom) => set({ pianoZoom: Math.min(4, Math.max(0.25, pianoZoom)) }),
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),

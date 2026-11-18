@@ -22,7 +22,7 @@ import { AutomationHeader, AutomationLane, FxHeader, FxLane, MiniMeter, ReturnRo
 import { ChannelTab } from './ChannelTab'
 import { tr, trf } from '../../i18n/tr'
 import {
-  AUTO_HEIGHT, BEAT_WIDTH, buildRows, TRACK_HEIGHT, HANDLE, HEADER_WIDTH, RULER_HEIGHT, rowHeight, rowTops, TAKE_HEIGHT, TEMPO_HEIGHT, TRACK_MAX_HEIGHT, TRACK_MIN_HEIGHT, trackHeight, trackPointer, openLanes, toggleAutomationLanes, type Row
+  AUTO_HEIGHT, BEAT_WIDTH, buildRows, TRACK_HEIGHT, groupBigHeight, GROUP_MAX_HEIGHT, HANDLE, HEADER_WIDTH, RULER_HEIGHT, rowHeight, rowTops, TAKE_HEIGHT, TEMPO_HEIGHT, TRACK_MAX_HEIGHT, TRACK_MIN_HEIGHT, trackHeight, trackPointer, openLanes, toggleAutomationLanes, type Row
 } from './studioLayout'
 import {
   addCycleMarkerFromLoop, addMarkerAtPlayhead, addWarpMarker, beatsLeft, consolidate, crossfade, groupSelectedTracks, loopToSelection, spbSrcOf, splitIntoStems, togglePunch, toggleLoop
@@ -337,22 +337,15 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
     setActiveView('piano-roll')
   }
 
-  // a group opens: all its tracks are shown large, with their waveforms, and scrolled into view
+  // a double-click on a group makes the group's own row large: every stem bar in it with a big waveform.
+  // Another double-click brings it back to its normal height. The group stays as it is (open or closed).
   const openGroup = (group: Track, trackId?: string, clipId?: string): void => {
-    updateTrack(group.id, { collapsed: false })
-    const kids = useProjectStore.getState().project.tracks.filter((t) => t.parentId === group.id)
-    // the tracks grow to twice the normal height (big waveforms); a second double-click brings them back to normal
-    const big = TRACK_HEIGHT * 2
-    const allBig = kids.length > 0 && kids.every((t) => (t.height ?? TRACK_HEIGHT) >= big) && !group.collapsed
-    for (const t of kids) updateTrack(t.id, { height: allBig ? undefined : big })
-    const target = trackId ?? kids[0]?.id
-    if (target) { selectTrack(target); selectClip(clipId ?? null) }
-    // the whole row (it starts at the left edge), so only the vertical position changes
-    window.setTimeout(() => {
-      const row = (id?: string): Element | null | undefined => id ? document.querySelector(`[data-lane="${id}"]`)?.parentElement : null
-      row(kids[kids.length - 1]?.id)?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
-      window.setTimeout(() => row(kids[0]?.id)?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }), 350)
-    }, 60)
+    const real = useProjectStore.getState().project.tracks.find((t) => t.id === group.id)
+    const kids = useProjectStore.getState().project.tracks.filter((t) => t.parentId === group.id).length
+    const big = groupBigHeight(kids)
+    updateTrack(group.id, { height: (real?.height ?? 0) >= big ? undefined : big })
+    if (trackId) { selectTrack(trackId); selectClip(clipId ?? null) }
+    window.setTimeout(() => document.querySelector(`[data-lane="${group.id}"]`)?.parentElement?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }), 60)
   }
 
   const laneDoubleClick = async (e: React.MouseEvent, track: Track): Promise<void> => {
@@ -547,7 +540,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
               if (e.button !== 0) return
               e.preventDefault(); e.stopPropagation()
               const y0 = e.clientY, h0 = h
-              trackPointer((ev) => updateTrack(track.id, { height: Math.round(Math.max(TRACK_MIN_HEIGHT, Math.min(TRACK_MAX_HEIGHT, h0 + ev.clientY - y0))) }))
+              trackPointer((ev) => updateTrack(track.id, { height: Math.round(Math.max(TRACK_MIN_HEIGHT, Math.min(track.type === 'group' ? GROUP_MAX_HEIGHT : TRACK_MAX_HEIGHT, h0 + ev.clientY - y0))) }))
             }}
             onDoubleClick={(e) => { e.stopPropagation(); updateTrack(track.id, { height: undefined }) }}
             style={{ position: 'absolute', left: 0, right: 0, bottom: -3, height: 7, cursor: 'ns-resize', zIndex: 6 }} />

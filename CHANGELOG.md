@@ -3,6 +3,11 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.51.5
+
+- **Studio groups:** a double-click on a group now makes the group's own row large, with every stem in it shown with a big waveform, instead of opening the tracks below it; another double-click brings it back to the normal height.
+- **Your own shortcuts:** *Settings → Shortcuts* has a new column **Yours**: press **+ Key** next to an action and then the keys. Only free keys are accepted (a taken key shows which action uses it); they work in addition to the Ableton or Cubase layout and are kept.
+
 ## 0.51.4
 
 - **Three new looks** in *Settings → Appearance*, next to Dark and Light. They change more than the colours:

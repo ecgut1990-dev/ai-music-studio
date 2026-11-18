@@ -4,8 +4,13 @@ import type { AutoParam, Project, TakeLane, Track } from '../../types'
 export const TRACK_HEIGHT = 72       // default; every track can be made higher or lower by dragging its lower edge
 export const TRACK_MIN_HEIGHT = 36
 export const TRACK_MAX_HEIGHT = 320
-export const trackHeight = (t: { height?: number }): number =>
-  Math.max(TRACK_MIN_HEIGHT, Math.min(TRACK_MAX_HEIGHT, t.height ?? TRACK_HEIGHT))
+export const GROUP_MAX_HEIGHT = 720 // a group shown large (its stems with big waveforms) may be higher than a track
+export const trackHeight = (t: { height?: number; type?: string }): number =>
+  Math.max(TRACK_MIN_HEIGHT, Math.min(t.type === 'group' ? GROUP_MAX_HEIGHT : TRACK_MAX_HEIGHT, t.height ?? TRACK_HEIGHT))
+/** the normal height of a group: about 26 px for each of its tracks */
+export const groupAutoHeight = (kids: number): number => Math.min(TRACK_MAX_HEIGHT, Math.max(TRACK_HEIGHT, 10 + kids * 26))
+/** a group shown large: about 80 px for each of its tracks */
+export const groupBigHeight = (kids: number): number => Math.min(GROUP_MAX_HEIGHT, Math.max(TRACK_HEIGHT * 2, 10 + kids * 80))
 export const AUTO_HEIGHT = 64
 export const AUTO_MIN_HEIGHT = 26     // a minimized automation lane: only its name and the curve
 export const FX_HEIGHT = 40
@@ -40,7 +45,7 @@ export function buildRows(p: Project): Row[] {
     if (parent?.collapsed) continue
     // a group is as high as its stems need (one row of about 26 px each), unless its height was set by hand
     const kids = t.type === 'group' && t.height === undefined ? p.tracks.filter((x) => x.parentId === t.id).length : 0
-    const shown = kids ? { ...t, height: Math.min(TRACK_MAX_HEIGHT, Math.max(TRACK_HEIGHT, 10 + kids * 26)) } : t
+    const shown = kids ? { ...t, height: groupAutoHeight(kids) } : t
     rows.push({ kind: 'track', track: shown, depth: parent ? 1 : 0 })
     if (t.showFx) rows.push({ kind: 'fx', track: t })
     for (const param of openLanes(t)) rows.push({ kind: 'auto', track: t, param, min: (t.autoMin ?? []).includes(param) })

@@ -106,6 +106,8 @@ Nach der Installation die App neu starten, damit sie die neuen Programme im PATH
 
 **Einstellungen → Shortcuts**: Dort wählst du per Klick die Belegung **Ableton Live 12** oder **Cubase**. Die Tabelle zeigt alle Kürzel beider DAWs nebeneinander, die gewählte ist hervorgehoben. Viele Tasten sind gleich (Leertaste, Strg+Z, Strg+D, Strg+N), andere unterscheiden sich:
 
+**Eigene Tasten:** In der Spalte **Eigene** bei einer Aktion auf **+ Taste** klicken und dann die Tasten drücken. Angenommen werden nur Tasten, die noch frei sind (weder im gewählten Layout noch bei deinen anderen eigenen Tasten). Ist eine Taste belegt, steht dort, welche Aktion sie schon hat. Eigene Tasten gelten zusätzlich zum Layout; **×** entfernt eine, **Esc** bricht ab.
+
 | Aktion | Ableton Live 12 | Cubase |
 |---|---|---|
 | Play / Pause | Leertaste | Leertaste |
@@ -202,7 +204,7 @@ Die Plugins laufen in einem eigenen kleinen Programm (Plugin-Host), das nur läu
 
 **Stem-Trenner:** **Alle Stems ins Studio** legt jeden Stem auf eine eigene Spur im Studio (in einer Gruppe, ab Takt 1, mit den Lautstärken und Stummschaltungen aus dem Stem-Mixer). **→ Studio** an einem Stem legt nur diesen ins Studio.
 
-**Gruppen im Studio:** Eine Gruppe zeigt die Clips ihrer Spuren als Balken mit Namen und Wellenform, eine Reihe pro Spur (die Gruppe ist so hoch, wie ihre Spuren es brauchen). Doppelklick auf die Gruppe (auf einen Balken oder irgendwo in ihre Zeile) klappt sie auf: Jede Spur der Gruppe wird doppelt so hoch mit großer Wellenform gezeigt. Ein weiterer Doppelklick stellt die normale Höhe wieder her.
+**Gruppen im Studio:** Eine Gruppe zeigt die Clips ihrer Spuren als Balken mit Namen und Wellenform, eine Reihe pro Spur (die Gruppe ist so hoch, wie ihre Spuren es brauchen). Doppelklick auf die Gruppe (auf einen Balken oder irgendwo in ihre Zeile) macht die Zeile der Gruppe selbst groß: Jeder Stem darin mit großer Wellenform. Ein weiterer Doppelklick stellt die normale Höhe wieder her. (▶ / ▼ klappt die Gruppe mit ihren Spuren darunter auf.)
 
 ## Studio (früher Zeitleiste), Mixer, Klaviatur-Editor, Projekte (Grundfunktionen)
 

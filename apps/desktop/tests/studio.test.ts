@@ -15,6 +15,7 @@ import { measureBalance, PROFILES, suggest, bassWidth } from '../src/renderer/sr
 import { defaultChain } from '../src/renderer/src/audio/master/chain'
 import { applyEdits, applyOp, copyPart, fadeShape } from '../src/renderer/src/audio/master/edit'
 import { VstLink, packBlock, unpackBlock } from '../src/renderer/src/audio/vst/link'
+import { buildMap, comboTaken } from '../src/renderer/src/shortcuts/registry'
 import { analyze, BiquadBank, CompressorCore, crossover, LimiterCore, MultibandCore, truePeakTaps } from '../src/renderer/src/audio/master/dsp'
 
 let failed = 0
@@ -320,6 +321,18 @@ check('search by stem name and several words', matchesQuery(stemT, 'vocals midni
   const buf = packBlock(7, 42, [new Float32Array([1, 2, 3]), new Float32Array([4, 5, 6])], true)
   const u = unpackBlock(buf)
   check('vst frame round trip', !!u && u.instance === 7 && u.seq === 42 && u.block[1][2] === 6 && new DataView(buf).getUint16(14, true) === 1)
+}
+
+// ── own shortcuts: only free keys, in addition to the layout ──
+{
+  const own = { 'track.group': ['Ctrl+Alt+G'], 'transport.stop': ['Space'] }
+  const m = buildMap('ableton', own)
+  check('own key added', m.get('ctrl+alt+g') === 'track.group')
+  check('own key cannot take a layout key', m.get('space') === 'transport.playStop')
+  check('taken: layout key', comboTaken('Space', 'ableton', {}).reason === 'used')
+  check('taken: own key', comboTaken('Ctrl+Alt+G', 'ableton', own).action === 'track.group')
+  check('taken: reserved', comboTaken('Alt+F4', 'ableton', {}).reason === 'reserved')
+  check('free key', comboTaken('Ctrl+Alt+K', 'ableton', {}).reason === '')
 }
 
 console.log(`${passed} passed, ${failed} failed`)
