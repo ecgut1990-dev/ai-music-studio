@@ -581,7 +581,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
           data-lane={track.id}
           onDoubleClick={row.kind === 'track' ? (e) => { if (e.target !== e.currentTarget) return; if (track.type === 'group') openGroup(track); else void laneDoubleClick(e, track) } : undefined}
           onPointerDown={row.kind === 'track' ? (e) => { if (e.target === e.currentTarget) { selectTrack(track.id); startFrame(e) } } : undefined}
-          style={{ flex: 1, position: 'relative', zIndex: 1, borderBottom: '1px solid var(--border)', background: isSel ? 'rgba(124,58,237,0.05)' : 'transparent' }}>
+          style={{ flex: 1, position: 'relative', zIndex: 1, borderBottom: '1px solid var(--border)', background: isSel ? 'color-mix(in srgb, var(--accent) 5%, transparent)' : 'transparent' }}>
           {lane}
         </div>
       </div>
@@ -745,16 +745,16 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
               {Array.from({ length: totalBeats + 1 }, (_, i) => (
                 <div key={i} style={{ position: 'absolute', left: i * beatWidth, top: 0, width: 1, height: '100%', background: i % 4 === 0 ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.03)' }} />
               ))}
-              {loop && <div style={{ position: 'absolute', left: loop.start * beatWidth, width: (loop.end - loop.start) * beatWidth, top: 0, height: '100%', background: loop.enabled ? 'rgba(124,58,237,0.08)' : 'rgba(148,163,184,0.05)', borderLeft: '1px solid rgba(124,58,237,0.5)', borderRight: '1px solid rgba(124,58,237,0.5)' }} />}
+              {loop && <div style={{ position: 'absolute', left: loop.start * beatWidth, width: (loop.end - loop.start) * beatWidth, top: 0, height: '100%', background: loop.enabled ? 'color-mix(in srgb, var(--accent) 8%, transparent)' : 'rgba(148,163,184,0.05)', borderLeft: '1px solid color-mix(in srgb, var(--accent) 50%, transparent)', borderRight: '1px solid color-mix(in srgb, var(--accent) 50%, transparent)' }} />}
               {(project.markers ?? []).map((m) => <div key={m.id} style={{ position: 'absolute', left: m.beat * beatWidth, top: 0, width: 1, height: '100%', background: 'rgba(234,179,8,0.35)' }} />)}
             </div>
             {frame && (
-              <div style={{ position: 'absolute', left: HEADER_WIDTH + Math.min(frame.x0, frame.x1), top: lanesTop + Math.min(frame.y0, frame.y1), width: Math.abs(frame.x1 - frame.x0), height: Math.abs(frame.y1 - frame.y0), border: '1px solid var(--accent-light)', background: 'rgba(124,58,237,0.12)', zIndex: 8, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', left: HEADER_WIDTH + Math.min(frame.x0, frame.x1), top: lanesTop + Math.min(frame.y0, frame.y1), width: Math.abs(frame.x1 - frame.x0), height: Math.abs(frame.y1 - frame.y0), border: '1px solid var(--accent-light)', background: 'color-mix(in srgb, var(--accent) 12%, transparent)', zIndex: 8, pointerEvents: 'none' }} />
             )}
             {project.tracks.length > 0 && (
               // always there under the last track: drop a clip (or an audio file) here for a new track
               <div style={{ position: 'absolute', left: 0, right: 0, top: lanesTop + lanesHeight + 4, height: 40, borderRadius: 8, display: 'flex', alignItems: 'center', paddingLeft: 16, fontSize: 12, zIndex: 9, pointerEvents: 'none',
-                border: `2px dashed ${newTrackHint ? 'var(--accent)' : 'var(--border-mid)'}`, background: newTrackHint ? 'rgba(124,58,237,0.12)' : 'transparent',
+                border: `2px dashed ${newTrackHint ? 'var(--accent)' : 'var(--border-mid)'}`, background: newTrackHint ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'transparent',
                 color: newTrackHint ? 'var(--accent-light)' : 'var(--text-muted)', fontWeight: newTrackHint ? 700 : 400 }}>
                 {newTrackHint ? `+ Release here: new ${newTrackHint === 'audio' ? 'audio' : 'MIDI'} track` : tr('+ Drag a clip or an audio file here for a new track')}
               </div>
@@ -831,7 +831,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
       {popover && <Popover spec={popover} onClose={() => setPopover(null)} />}
 
       {dropping && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(124,58,237,0.18)', border: '2px dashed var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, pointerEvents: 'none', zIndex: 20 }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'color-mix(in srgb, var(--accent) 18%, transparent)', border: '2px dashed var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, pointerEvents: 'none', zIndex: 20 }}>
           {tr('Drop audio files to add them')}
         </div>
       )}

@@ -49,7 +49,7 @@ function Knob({ name, value: setValue, min, max, step, unit, onChange, log, titl
     const t = KA0 + (i * (KA1 - KA0)) / 20
     const [x, y] = polar(29, t)
     const lit = !off && t <= ang + 0.01
-    return <circle key={i} cx={x} cy={y} r={1.8} fill={lit ? (before ? '#8b8f99' : '#9d5ff8') : '#33363d'} style={lit && !before ? { filter: 'drop-shadow(0 0 2px #9d5ff8)' } : undefined} />
+    return <circle key={i} cx={x} cy={y} r={1.8} style={{ fill: lit ? (before ? '#8b8f99' : 'var(--accent-light)') : '#33363d', filter: lit && !before ? 'drop-shadow(0 0 2px var(--accent-light))' : undefined }} />
   })
   const [x1, y1] = polar(9, ang), [x2, y2] = polar(19, ang)
   return (
@@ -86,7 +86,7 @@ function Knob({ name, value: setValue, min, max, step, unit, onChange, log, titl
         <circle cx={34} cy={36} r={22} fill="#000" opacity={0.45} />
         <circle cx={34} cy={34} r={22} fill="url(#ams-knob-metal)" stroke="#0c0d0f" strokeWidth={1.5} />
         <circle cx={34} cy={34} r={17} fill="none" stroke="#3a3d45" strokeWidth={1} />
-        <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={off ? '#6b7280' : before ? '#9ca3af' : '#c4b5fd'} strokeWidth={3} strokeLinecap="round" />
+        <line x1={x1} y1={y1} x2={x2} y2={y2} style={{ stroke: off ? '#6b7280' : before ? '#9ca3af' : 'color-mix(in srgb, var(--accent-light) 60%, white)' }} strokeWidth={3} strokeLinecap="round" />
       </svg>
       <span style={{ textAlign: 'center', lineHeight: 1.2, ...(changed ? { color: 'var(--accent-light)', fontWeight: 600 } : {}) }}>{name.trim()}{changed ? ' •' : ''}</span>
       <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--text-primary)' }}>{off ? tr('off') : `${shown}${unit ? ` ${unit}` : ''}`}</span>

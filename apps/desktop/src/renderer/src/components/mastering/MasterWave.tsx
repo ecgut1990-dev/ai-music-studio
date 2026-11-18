@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { themeColor } from '../../lib/themeColor'
 import { masterPlayer } from '../../audio/master/player'
 import { tr } from '../../i18n/tr'
 
@@ -71,7 +72,7 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
       const from = scroll, to = Math.min(total, scroll + span)
       const x = (t: number): number => ((t - from) / (to - from)) * W
       const loop = masterPlayer.loop
-      if (loop) { g.fillStyle = masterPlayer.loopOn ? 'rgba(124,58,237,0.22)' : 'rgba(255,255,255,0.07)'; g.fillRect(x(loop.start), 0, x(loop.end) - x(loop.start), H) }
+      if (loop) { g.fillStyle = masterPlayer.loopOn ? themeColor('--accent-dim', 'rgba(124,58,237,0.22)') : 'rgba(255,255,255,0.07)'; g.fillRect(x(loop.start), 0, x(loop.end) - x(loop.start), H) }
       const mid = H / 2
       const paint = (buf: AudioBuffer | null, color: string): void => {
         const p = peaks(buf, from, to, W)
@@ -80,7 +81,7 @@ export function MasterWave({ before, after, clips, show, markers = [] }: {
         for (let i = 0; i < W; i++) g.fillRect(i, mid - p[i * 2 + 1] * mid, 1, Math.max(1, (p[i * 2 + 1] - p[i * 2]) * mid))
       }
       if (show !== 'after') paint(before, show === 'both' ? 'rgba(156,163,175,0.55)' : '#9ca3af')
-      if (show !== 'before') paint(after, show === 'both' ? 'rgba(157,95,248,0.75)' : '#9d5ff8')
+      if (show !== 'before') { g.globalAlpha = show === 'both' ? 0.75 : 1; paint(after, themeColor('--accent-light', '#9d5ff8')); g.globalAlpha = 1 }
       g.fillStyle = 'rgba(255,255,255,0.12)'; g.fillRect(0, mid, W, 1)
       if (to > dur) {                                   // after the end of the song: darker, with an end line
         g.fillStyle = 'rgba(0,0,0,0.35)'; g.fillRect(x(dur), 0, W - x(dur), H)

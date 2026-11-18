@@ -106,7 +106,7 @@ export function MasterAssistant({ buffer, after, before, chain, onApply, onEdit,
   const AREA: Record<Suggestion['area'], string> = { tone: tr('Tone'), dynamics: tr('Dynamics'), stereo: 'Stereo', loudness: tr('Loudness'), edit: tr('File'), note: tr('Note') }
 
   return (
-    <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.22), rgba(124,58,237,0.06))', border: '1px solid var(--accent)', borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, transparent), color-mix(in srgb, var(--accent) 6%, transparent))', border: '1px solid var(--accent)', borderRadius: 10, padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <button className="btn btn-primary" style={{ fontSize: 14, fontWeight: 700, padding: '10px 18px' }} disabled={!!busy} onClick={() => void run()}>
           ✨ {busy ? tr(busy) : onMaster ? tr('Analyse the master again') : tr('Analyse & suggest')}

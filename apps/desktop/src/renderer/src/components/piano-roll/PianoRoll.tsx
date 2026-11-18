@@ -300,7 +300,7 @@ export function PianoRoll(): React.ReactElement {
               <div key={i} data-bg="1" style={{ position: 'absolute', left: i * beatWidth, top: 0, bottom: 0, width: 1, background: i % 4 === 0 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)' }} />
             ))}
             {clip && (
-              <div style={{ position: 'absolute', left: clipBeats * beatWidth, top: 0, bottom: 0, width: 2, background: 'rgba(124,58,237,0.6)', pointerEvents: 'none' }} title={tr('End of the clip')} />
+              <div style={{ position: 'absolute', left: clipBeats * beatWidth, top: 0, bottom: 0, width: 2, background: 'color-mix(in srgb, var(--accent) 60%, transparent)', pointerEvents: 'none' }} title={tr('End of the clip')} />
             )}
 
             {notes.map((note) => (
@@ -319,7 +319,7 @@ export function PianoRoll(): React.ReactElement {
 
             {frame && (
               <div style={{ position: 'absolute', left: Math.min(frame.x0, frame.x1), top: Math.min(frame.y0, frame.y1), width: Math.abs(frame.x1 - frame.x0), height: Math.abs(frame.y1 - frame.y0),
-                border: '1px solid var(--accent-light)', background: 'rgba(124,58,237,0.15)', pointerEvents: 'none', zIndex: 4 }} />
+                border: '1px solid var(--accent-light)', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', pointerEvents: 'none', zIndex: 4 }} />
             )}
             {clip && playheadX >= 0 && playheadX <= gridWidth && (
               <div style={{ position: 'absolute', left: playheadX, top: 0, bottom: 0, width: 2, background: 'var(--accent)', pointerEvents: 'none', zIndex: 2 }} />

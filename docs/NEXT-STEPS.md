@@ -101,5 +101,5 @@ The owner wants, next to light / dark, a choice of whole layouts (structure, typ
 they should not look like the usual "AI app" style. Mock-ups made on 2026-11-18; the owner liked:
 1 **Analog console** (warm wood, amber display, mixer strips with VU needles at the bottom), 3 **Swiss / brutal**
 (white and black, very large type, orange, transport as big blocks, navigation bar at the bottom) and 4 **Hardware rack**
-(grey device fronts with screws, green LCD, LED buttons, effect rack with knobs). Five further ideas were shown
+(grey device fronts with screws, green LCD, LED buttons, effect rack with knobs). 1, 3 and 4 are in the app since 0.51.4 (Settings → Appearance: console, swiss, rack). Five further ideas were shown
 (tape machine, modular with cables, vertical timeline, blueprint, pocket device); the owner's choice is still open.

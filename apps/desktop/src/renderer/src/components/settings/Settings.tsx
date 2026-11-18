@@ -5,7 +5,7 @@ import { exportSampleRate, setExportSampleRate } from '../../lib/sampleRate'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../../i18n'
-import { useUIStore } from '../../stores/ui.store'
+import { useUIStore, type Theme } from '../../stores/ui.store'
 import { useAIStore } from '../../stores/ai.store'
 import type { AIProvider } from '../../types'
 import { EnginesTab } from './EnginesTab'
@@ -207,9 +207,19 @@ function UpdatesTab(): React.ReactElement {
   )
 }
 
+// [theme, name, [background, panel, accent, line]]
+const THEME_LIST: Array<[Theme, string, string[]]> = [
+  ['dark', 'Dark', ['#111214', '#1a1c20', '#7c3aed', '#333']],
+  ['light', 'Light', ['#f0f1f3', '#ffffff', '#7c3aed', '#ccc']],
+  ['console', 'Analog console', ['#1d1813', '#2a231c', '#f0c674', '#6b4423']],
+  ['swiss', 'Swiss', ['#ffffff', '#ffffff', '#ff4f00', '#000000']],
+  ['rack', 'Hardware rack', ['#17181b', '#3b3e44', '#f5a623', '#9db48a']],
+]
+
 export function Settings(): React.ReactElement {
   const { t } = useTranslation()
   const { theme, setTheme, language, setLanguage } = useUIStore()
+  const THEMES = THEME_LIST.map(([th, label, sw]) => [th, tr(label), sw] as [Theme, string, string[]])
   const { provider, setProvider, claudeApiKey, setClaudeApiKey, openaiApiKey, setOpenaiApiKey, grokApiKey, setGrokApiKey, geminiApiKey, setGeminiApiKey, model, setModel, localUrl, setLocalUrl } = useAIStore()
   const [tab, setTab] = useState<SettingsTab>(() => {
     const wanted = sessionStorage.getItem('ams-settings-tab') as SettingsTab | null
@@ -300,7 +310,7 @@ export function Settings(): React.ReactElement {
                       padding: '8px 16px',
                       borderRadius: 6,
                       border: `1px solid ${provider === p ? 'var(--accent)' : 'var(--border)'}`,
-                      background: provider === p ? 'rgba(124,58,237,0.15)' : 'var(--bg-secondary)',
+                      background: provider === p ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'var(--bg-secondary)',
                       color: provider === p ? 'var(--accent-light)' : 'var(--text-secondary)',
                       cursor: 'pointer',
                       fontSize: 13,
@@ -451,22 +461,19 @@ export function Settings(): React.ReactElement {
             <div style={sectionStyle}>{t('settings.appearance')}</div>
             <div>
               <label style={labelStyle}>{t('settings.theme')}</label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {(['dark', 'light'] as const).map(th => (
-                  <button
-                    key={th}
-                    onClick={() => setTheme(th)}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 10, maxWidth: 820 }}>
+                {THEMES.map(([th, label, sw]) => (
+                  <button key={th} onClick={() => setTheme(th)}
                     style={{
-                      padding: '8px 16px',
-                      borderRadius: 6,
-                      border: `1px solid ${theme === th ? 'var(--accent)' : 'var(--border)'}`,
-                      background: theme === th ? 'rgba(124,58,237,0.15)' : 'var(--bg-secondary)',
-                      color: theme === th ? 'var(--accent-light)' : 'var(--text-secondary)',
-                      cursor: 'pointer',
-                      fontSize: 13
-                    }}
-                  >
-                    {th === 'dark' ? '🌙 ' + t('settings.dark') : '☀️ ' + t('settings.light')}
+                      padding: 0, borderRadius: 8, overflow: 'hidden', cursor: 'pointer', textAlign: 'left',
+                      border: `2px solid ${theme === th ? 'var(--accent)' : 'var(--border-mid)'}`, background: 'var(--bg-secondary)'
+                    }}>
+                    {/* a small picture of the look: background, panel, accent */}
+                    <div style={{ height: 54, background: sw[0], display: 'flex', alignItems: 'flex-end', gap: 4, padding: 6 }}>
+                      <div style={{ flex: 1, height: 26, background: sw[1], border: `1px solid ${sw[3]}` }} />
+                      <div style={{ width: 22, height: 22, borderRadius: th === 'swiss' ? 0 : 11, background: sw[2] }} />
+                    </div>
+                    <div style={{ padding: '6px 10px', fontSize: 12, color: theme === th ? 'var(--accent-light)' : 'var(--text-secondary)', fontWeight: theme === th ? 700 : 500 }}>{label}</div>
                   </button>
                 ))}
               </div>

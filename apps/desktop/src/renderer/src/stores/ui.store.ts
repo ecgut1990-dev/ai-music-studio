@@ -1,10 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+
+/** look of the app: light / dark, or one of the layouts that change more than the colours (Settings → Appearance) */
+export type Theme = 'dark' | 'light' | 'console' | 'swiss' | 'rack'
 import type { View } from '../types'
 
 interface UIState {
   activeView: View
-  theme: 'dark' | 'light'
+  theme: Theme
   sidebarWidth: number
   timelineHeight: number
   pianoRollVisible: boolean
@@ -35,7 +38,7 @@ interface UIState {
   previousView: View
   closeSettings: () => void
   setActiveView: (view: View) => void
-  setTheme: (theme: 'dark' | 'light') => void
+  setTheme: (theme: Theme) => void
   setLanguage: (lang: string) => void
   setZoom: (z: number) => void
   setScroll: (x: number, y: number) => void

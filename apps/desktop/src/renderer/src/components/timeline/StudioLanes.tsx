@@ -95,7 +95,7 @@ export function AutomationLane({ track, param, beatWidth, min = false }: { track
   return (
     <div ref={ref} onPointerDown={down}
       title={min ? tr('Minimized: open it (▸) to edit the points') : tr('Click: add a point. Drag a point to move it (Shift: only in time, Alt: off the grid). Double-click a point to delete it.')}
-      style={{ position: 'absolute', inset: 0, cursor: min ? 'default' : 'crosshair', background: 'rgba(124,58,237,0.04)' }}>
+      style={{ position: 'absolute', inset: 0, cursor: min ? 'default' : 'crosshair', background: 'color-mix(in srgb, var(--accent) 4%, transparent)' }}>
       {!pts.length && !min && <span style={{ position: 'absolute', left: 8, top: AUTO_HEIGHT / 2 - 8, fontSize: 10, color: 'var(--text-muted)', pointerEvents: 'none' }}>
         {tr('No automation yet: click to add the first point. Now:')} {param === 'pan' ? fallback.toFixed(2) : `${Math.round(fallback * 100)} %`}
       </span>}

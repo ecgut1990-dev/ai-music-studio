@@ -1239,5 +1239,10 @@
  "⭐ Do you like AI Music Studio?": "⭐ 喜欢 AI Music Studio 吗？",
  "double-click: show the tracks with their waveforms": "双击：显示带波形的音轨",
  "+ VST plugin…": "+ VST 插件…",
- "Put one of your VST plugins into the chain (Settings → Plugins searches for them)": "将你的一个 VST 插件放入链中（设置 → 插件 会搜索它们）"
+ "Put one of your VST plugins into the chain (Settings → Plugins searches for them)": "将你的一个 VST 插件放入链中（设置 → 插件 会搜索它们）",
+ "Dark": "深色",
+ "Light": "浅色",
+ "Analog console": "模拟调音台",
+ "Swiss": "瑞士风格",
+ "Hardware rack": "硬件机架"
 }

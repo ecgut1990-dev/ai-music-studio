@@ -35,7 +35,10 @@ const EXPANDED = 214
 
 export function Sidebar(): React.ReactElement {
   const { t } = useTranslation()
-  const { activeView, setActiveView, closeSettings, sidebarOpen, toggleSidebar } = useUIStore()
+  const { activeView, setActiveView, closeSettings, sidebarOpen: open, toggleSidebar, theme } = useUIStore()
+  // the Swiss layout has the menu as a bar along the bottom, always with names
+  const bar = theme === 'swiss'
+  const sidebarOpen = open || bar
 
   const button = (view: View, icon: string, text: string, size = 16) => {
     const active = activeView === view
@@ -48,8 +51,8 @@ export function Sidebar(): React.ReactElement {
         title={soon ? `${text} (coming soon)` : text}
         aria-label={text}
         style={{
-          width: '100%', height: 40, display: 'flex', alignItems: 'center',
-          justifyContent: sidebarOpen ? 'flex-start' : 'center', gap: 12,
+          width: bar ? undefined : '100%', flex: bar ? '1 1 0' : undefined, minWidth: 0, height: bar ? '100%' : 40, display: 'flex', alignItems: 'center',
+          justifyContent: bar ? 'center' : sidebarOpen ? 'flex-start' : 'center', gap: bar ? 6 : 12,
           padding: sidebarOpen ? '0 12px' : 0, borderRadius: 8, border: 'none', cursor: 'pointer',
           background: active ? 'var(--accent)' : 'transparent',
           color: active ? 'white' : 'var(--text-secondary)', fontSize: 13, fontWeight: active ? 700 : 500,
@@ -57,21 +60,21 @@ export function Sidebar(): React.ReactElement {
           opacity: soon && !active ? 0.4 : 1, filter: soon ? 'grayscale(0.8)' : undefined,
         }}
       >
-        <span style={{ width: 24, textAlign: 'center', fontSize: size, flexShrink: 0 }}>{icon}</span>
+        {!bar && <span style={{ width: 24, textAlign: 'center', fontSize: size, flexShrink: 0 }}>{icon}</span>}
         {sidebarOpen && <span className="truncate">{text}</span>}
       </button>
     )
   }
 
   return (
-    <nav
-      style={{
+    <nav className={bar ? 'app-nav app-nav-bar' : 'app-nav'}
+      style={bar ? { display: 'flex', flexDirection: 'row', height: 46, flexShrink: 0, width: '100%' } : {
         width: sidebarOpen ? EXPANDED : COLLAPSED, flexShrink: 0, transition: 'width 0.15s',
         background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)',
         display: 'flex', flexDirection: 'column', padding: '8px 8px', gap: 2, overflowY: 'auto', overflowX: 'hidden',
       }}
     >
-      <button
+      {!bar && <button
         onClick={toggleSidebar}
         title={sidebarOpen ? tr('Collapse menu') : tr('Expand menu')}
         aria-label={sidebarOpen ? tr('Collapse menu') : tr('Expand menu')}
@@ -84,13 +87,13 @@ export function Sidebar(): React.ReactElement {
       >
         {sidebarOpen && <span>{tr('Menu')}</span>}
         <span style={{ fontSize: 15 }}>{sidebarOpen ? '«' : '»'}</span>
-      </button>
+      </button>}
 
-      {NAV_ITEMS.map((item) =>
+      {NAV_ITEMS.filter((item) => !bar || !COMING_SOON.includes(item.view)).map((item) =>
         button(item.view, item.icon, ((v) => (v === item.fallback ? tr(v) : v))(t(item.labelKey, { defaultValue: item.fallback })))
       )}
 
-      <div style={{ flex: 1 }} />
+      {!bar && <div style={{ flex: 1 }} />}
 
       {button('settings', '⚙', t('app.settings', { defaultValue: 'Settings' }), 18)}
     </nav>
