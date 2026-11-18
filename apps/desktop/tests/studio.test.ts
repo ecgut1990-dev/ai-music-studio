@@ -337,6 +337,9 @@ check('search by stem name and several words', matchesQuery(stemT, 'vocals midni
   const altgr = (key: string): ReturnType<typeof eventToCombo> => eventToCombo({ key, code: 'KeyK', ctrlKey: true, altKey: true, shiftKey: false, getModifierState: (m) => m === 'AltGraph' })
   check('Ctrl+Alt+K on Windows', altgr('k') === 'Ctrl+Alt+K', String(altgr('k')))
   check('AltGr+Q (@) is typing', altgr('@') === null)
+  // Windows can send a key that is not the letter: the physical key decides
+  check('Ctrl+Alt+K with an unidentified key', eventToCombo({ key: 'Unidentified', code: 'KeyK', ctrlKey: true, altKey: true, shiftKey: false, getModifierState: (m) => m === 'AltGraph' }) === 'Ctrl+Alt+K')
+  check('Ctrl+Alt+K without AltGr', eventToCombo({ key: 'k', code: 'KeyK', ctrlKey: true, altKey: true, shiftKey: false }) === 'Ctrl+Alt+K')
 }
 
 console.log(`${passed} passed, ${failed} failed`)

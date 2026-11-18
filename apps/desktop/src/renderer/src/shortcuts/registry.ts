@@ -202,9 +202,17 @@ export interface KeyLike {
 // Turns a keyboard event into a combo string such as "Ctrl+Shift+Z", "Space", "Num*".
 export function eventToCombo(e: KeyLike): string | null {
   if (['Control', 'Shift', 'Alt', 'Meta', 'AltGraph', 'CapsLock'].includes(e.key)) return null
-  // AltGr on many layouts is reported as Ctrl+Alt: when it types a character (@, €, {, ...) it is not a shortcut.
-  // Windows also reports a real Ctrl+Alt as AltGr: Ctrl+Alt with a letter or digit (Ctrl+Alt+K) stays a shortcut.
-  if (e.getModifierState?.('AltGraph') && !(e.key.length === 1 && /[a-z0-9]/i.test(e.key))) return null
+  // Ctrl+Alt and AltGr: Windows reports a real Ctrl+Alt as AltGr, and then e.key depends on the keyboard layout
+  // (a letter, "Unidentified", or the character AltGr would type). So:
+  //  - a typed character (@, €, {, ...) is typing, not a shortcut;
+  //  - otherwise a letter or digit key is read from the physical key (e.code): Ctrl+Alt+K on every layout.
+  const altgr = !!e.getModifierState?.('AltGraph')
+  if (altgr || (e.ctrlKey && e.altKey)) {
+    if (e.key.length === 1 && !/[a-z0-9 ]/i.test(e.key)) return null
+    const fromCode = /^Key([A-Z])$/.exec(e.code)?.[1] ?? /^Digit(\d)$/.exec(e.code)?.[1]
+    if (fromCode) return ['Ctrl', 'Alt', e.shiftKey ? 'Shift' : '', fromCode].filter(Boolean).join('+')
+    if (altgr) return null
+  }
 
   let main: string
   let shiftInKey = false
