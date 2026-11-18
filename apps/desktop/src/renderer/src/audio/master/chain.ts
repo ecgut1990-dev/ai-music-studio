@@ -2,8 +2,10 @@
 // offline render used for the analysis "after" and for the export.
 import { crossover, truePeakTaps } from './dsp'
 import { loadWorklets } from './worklets'
+import { makeVstInsert, prepareMasterVst, prepareVstOfflineList, pumpOffline, releaseVstOffline, vstDelaySeconds } from '../vst/host'
+import type { InsertFx, VstRef } from '../../types'
 
-export type SlotType = 'eq' | 'comp' | 'multiband' | 'stereo' | 'dyneq' | 'saturation'
+export type SlotType = 'eq' | 'comp' | 'multiband' | 'stereo' | 'dyneq' | 'saturation' | 'vst'
 
 export interface EqParams {
   lowCut: number                                   // Hz, 0 = off
@@ -28,6 +30,7 @@ export type Slot =
   | { id: string; type: 'stereo'; on: boolean; p: StereoParams }
   | { id: string; type: 'dyneq'; on: boolean; p: DynEqParams }
   | { id: string; type: 'saturation'; on: boolean; p: SaturationParams }
+  | { id: string; type: 'vst'; on: boolean; p: { vst?: VstRef } }      // one of the user's VST plugins (docs/VST-PLAN.md)
 
 export interface Chain {
   slots: Slot[]
@@ -37,7 +40,7 @@ export interface Chain {
 
 export const SLOT_LABEL: Record<SlotType, string> = {
   eq: 'Equalizer', comp: 'Compressor (glue)', multiband: 'Multiband compressor', stereo: 'Stereo / mono bass',
-  dyneq: 'Dynamic EQ', saturation: 'Saturation / exciter',
+  dyneq: 'Dynamic EQ', saturation: 'Saturation / exciter', vst: 'VST plugin',
 }
 
 export function slotDefaults(type: SlotType, id: string): Slot {
@@ -51,6 +54,7 @@ export function slotDefaults(type: SlotType, id: string): Slot {
     case 'stereo': return { id, type, on: true, p: { width: 1, monoBelow: 120, balance: 0 } }
     case 'dyneq': return { id, type, on: true, p: { freq: 3500, q: 1.5, thresholdDb: -24, ratio: 3, rangeDb: 6, attackMs: 5, releaseMs: 120 } }
     case 'saturation': return { id, type, on: true, p: { driveDb: 6, mix: 0.3, exciteFreq: 6000, excite: 0, outDb: 0 } }
+    case 'vst': return { id, type, on: true, p: {} }
   }
 }
 
@@ -91,10 +95,15 @@ export interface ChainNodes {
 /** Builds the chain in a context; `update` changes settings live. Rebuild when slots are added, removed or moved. */
 export async function buildChain(ctx: BaseAudioContext, chain: Chain): Promise<ChainNodes> {
   await loadWorklets(ctx)
+  // VST plugins: loaded in the plugin host first (live playback; the offline render prepares its own copies)
+  const vstSlots = chain.slots.filter((x): x is Extract<Slot, { type: 'vst' }> => x.type === 'vst' && !!x.p.vst)
+  if (ctx instanceof AudioContext) await prepareMasterVst(vstSlots.map((x) => ({ id: x.id, vst: x.p.vst })), ctx.sampleRate).catch(() => {})
+  let vstLatency = 0
   const sr = ctx.sampleRate
   const input = ctx.createGain()
   const nodes: AudioNode[] = [input]
   const updaters: Array<(c: Chain) => void> = []
+  const disposers: Array<() => void> = []
   const fx = (kind: string, extra: Record<string, unknown>): AudioWorkletNode =>
     new AudioWorkletNode(ctx, 'ams-fx', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit', processorOptions: { kind, ...extra } })
   const red = { limiter: 1, comp: 0, bands: [0, 0, 0], dyneq: 0 }
@@ -144,6 +153,19 @@ export async function buildChain(ctx: BaseAudioContext, chain: Chain): Promise<C
       const n = fx('stereo', { hp: sideHp(sr, slot.p.monoBelow), params: slot.p })
       nodes.push(n); head = tail = n
       updaters.push((c) => { const s = find(c); if (s?.type === 'stereo') { n.port.postMessage({ ...s.p, hp: sideHp(sr, s.p.monoBelow) }); setOn(s.on) } })
+    } else if (slot.type === 'vst') {
+      // the plugin keeps its delay when it is switched off (the chain stays in time): the switch goes to the plugin
+      if (slot.p.vst) {
+        const fx: InsertFx = { id: slot.id, type: 'vst', on: slot.on, p: {}, vst: slot.p.vst }
+        const ins = makeVstInsert(ctx, fx)
+        nodes.push(ins.input)
+        disposers.push(ins.dispose)
+        head = ins.input; tail = ins.output
+        vstLatency += vstDelaySeconds(ctx, fx)
+        const node = ins.input as AudioWorkletNode
+        wet.gain.value = 1; dry.gain.value = 0
+        updaters.push((c) => { const s = find(c); if (s?.type === 'vst') { node.port.postMessage({ on: s.on }); wet.gain.value = 1; dry.gain.value = 0 } })
+      }
     } else if (slot.type === 'dyneq' || slot.type === 'saturation') {
       const n = fx(slot.type, { params: slot.p })
       if (slot.type === 'dyneq') n.port.onmessage = (e) => { if (e.data.reduction !== undefined) { red.dyneq = e.data.reduction; result.onReduction?.(red) } }
@@ -175,9 +197,9 @@ export async function buildChain(ctx: BaseAudioContext, chain: Chain): Promise<C
   updaters.push(setLim)
 
   result.output = out
-  result.latency = latSamples / sr
+  result.latency = latSamples / sr + vstLatency
   result.update = (c) => { for (const u of updaters) u(c) }
-  result.dispose = () => { for (const n of nodes) { try { n.disconnect() } catch { /* already */ } } }
+  result.dispose = () => { for (const d of disposers) d(); for (const n of nodes) { try { n.disconnect() } catch { /* already */ } } }
   return result
 }
 
@@ -187,15 +209,20 @@ export const chainShape = (c: Chain): string => c.slots.map((s) => `${s.type}:${
 /** Renders a buffer through the chain (offline, same code as live). Returns the processed audio, aligned. */
 export async function renderChain(buf: AudioBuffer, chain: Chain): Promise<AudioBuffer> {
   const sr = buf.sampleRate
-  const extra = Math.ceil(sr * 0.05)
+  // VST plugins: copies with the current settings for this render (and a longer tail for their delay)
+  const vstList = chain.slots.filter((x): x is Extract<Slot, { type: 'vst' }> => x.type === 'vst' && !!x.p.vst).map((x) => ({ id: x.id, vst: x.p.vst! }))
+  const extra = Math.ceil(sr * 0.05) + (vstList.length ? Math.ceil(sr * 0.5) : 0)
   const ctx = new OfflineAudioContext(2, buf.length + extra, sr)
+  const vst = await prepareVstOfflineList(ctx, vstList)
   const nodes = await buildChain(ctx, chain)
   const src = ctx.createBufferSource()
   src.buffer = buf
   src.connect(nodes.input)
   nodes.output.connect(ctx.destination)
   src.start()
-  const rendered = await ctx.startRendering()
+  if (vst) pumpOffline(ctx, (buf.length + extra) / sr)
+  let rendered: AudioBuffer
+  try { rendered = await ctx.startRendering() } finally { if (vst) await releaseVstOffline(ctx) }
   // remove the look-ahead delay so the result lines up with the original
   const lat = Math.round(nodes.latency * sr)
   const out = new AudioBuffer({ numberOfChannels: 2, length: buf.length, sampleRate: sr })

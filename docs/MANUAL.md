@@ -193,6 +193,14 @@ Das fertige LoRA erscheint automatisch in deiner Liste. Hinweis: Das Training se
 
 Die Plugins laufen in einem eigenen kleinen Programm (Plugin-Host), das nur läuft, solange ein Plugin benutzt wird. Stürzt ein Plugin ab, läuft die App weiter; beim nächsten Abspielen werden die Plugins mit ihren zuletzt gespeicherten Einstellungen neu geladen. Spuren mit Plugins bleiben im Takt (die Verzögerung durch die Plugins wird ausgeglichen). 64- und 32-Bit-Plugins funktionieren. Plugins auf dem Master, im Mastering und Instrument-Plugins kommen in den nächsten Versionen.
 
+## VST-Plugins im Mastering, Stems ins Studio (ab 0.51)
+
+**Mastering:** In der Kette listet **+ Hinzufügen…** unter *VST-Plugins* deine Plugins. Ein Plugin kann an jeder Stelle der Kette stehen (↑ ↓). **Plugin-Fenster öffnen** zeigt seine Regler, ⏻ schaltet es aus und ein (das Timing bleibt gleich). Die Einstellungen werden mit dem Song gespeichert und im Export verwendet.
+
+**Stem-Trenner:** **Alle Stems ins Studio** legt jeden Stem auf eine eigene Spur im Studio (in einer Gruppe, ab Takt 1, mit den Lautstärken und Stummschaltungen aus dem Stem-Mixer). **→ Studio** an einem Stem legt nur diesen ins Studio.
+
+**Gruppen im Studio:** Eine Gruppe zeigt die Clips ihrer Spuren als schmale Balken. Doppelklick auf einen Balken klappt die Gruppe auf und zeigt die Spur dieses Stems mit Wellenform.
+
 ## Studio (früher Zeitleiste), Mixer, Klaviatur-Editor, Projekte (Grundfunktionen)
 
 **Abspielen.** Space startet und pausiert, die Stopp-Taste springt an den Anfang. Der Abspielkopf wandert über alle Spuren und die Ansicht folgt ihm. Ein Klick in das Lineal setzt den Abspielkopf. Das Metronom (♩) klickt auf jeden Schlag, auf die Eins eines Taktes höher.

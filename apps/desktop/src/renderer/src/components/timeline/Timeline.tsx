@@ -506,7 +506,16 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
       )
       lane = isGroup
         ? project.tracks.filter((t) => t.parentId === track.id).flatMap((t) => t.clips.map((c) => (
-          <div key={c.id} style={{ position: 'absolute', left: c.startTime * beatWidth, width: Math.max(2, c.duration * beatWidth), top: 10 + (project.tracks.indexOf(t) % 6) * 8, height: 6, background: t.color, opacity: 0.6, borderRadius: 2, pointerEvents: 'none' }} />
+          // a group shows the clips of its tracks as bars; double-click one: the group opens and shows that track (with its waveform)
+          <div key={c.id} title={`${t.name} · ${tr('double-click: show this track')}`}
+            onPointerDown={(e) => e.stopPropagation()}
+            onDoubleClick={(e) => {
+              e.stopPropagation()
+              updateTrack(track.id, { collapsed: false })
+              selectTrack(t.id); selectClip(c.id)
+              window.setTimeout(() => document.querySelector(`[data-lane="${t.id}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 60)
+            }}
+            style={{ position: 'absolute', left: c.startTime * beatWidth, width: Math.max(2, c.duration * beatWidth), top: 8 + (project.tracks.filter((x) => x.parentId === track.id).indexOf(t) % 6) * 9, height: 7, background: t.color, opacity: 0.7, borderRadius: 2, cursor: 'pointer' }} />
         )))
         : renderClips(track)
     }

@@ -1,6 +1,7 @@
 import { useAudioStore } from './stores/audio.store'
 import { usePluginsStore } from './stores/plugins.store'
-import { host, host32, onVstSettingsChanged, vstInUse } from './audio/vst/host'
+import { host, host32, onVstEdited, vstInUse, vstStateOf } from './audio/vst/host'
+import { useMasteringStore } from './stores/mastering.store'
 import { CloseGuard } from './components/common/CloseGuard'
 import React, { useEffect, useState } from 'react'
 import { UpdateToast } from './components/updater/UpdateToast'
@@ -106,7 +107,22 @@ function StatusBar({ hw, base, onSetup }: {
 function usePluginWatch(): void {
   useEffect(() => {
     void usePluginsStore.getState().load()
-    const offChanged = onVstSettingsChanged(() => { if (!useProjectStore.getState().dirty) useProjectStore.setState({ dirty: true }) })
+    // a plugin's window changed its settings: a Studio plugin makes the project unsaved; a Mastering plugin's
+    // settings are kept with the song's chain at once (they are used for the export too)
+    const pending = new Map<string, number>()
+    const offChanged = onVstEdited((id, scope) => {
+      if (scope === 'studio') { if (!useProjectStore.getState().dirty) useProjectStore.setState({ dirty: true }); return }
+      window.clearTimeout(pending.get(id))
+      pending.set(id, window.setTimeout(() => {
+        void vstStateOf(id).then((state) => {
+          if (!state) return
+          const m = useMasteringStore.getState()
+          const slot = m.chain.slots.find((x) => x.id === id)
+          if (slot?.type !== 'vst' || !slot.p.vst) return
+          m.setChain({ ...m.chain, slots: m.chain.slots.map((x) => (x.id === id && x.type === 'vst' ? { ...x, p: { vst: { ...x.p.vst!, state } } } : x)) })
+        })
+      }, 800))
+    })
     const warn = (): void => {
       if (!vstInUse() && !useAudioStore.getState().isPlaying) return
       window.alert(tr('The plugin host stopped (a plugin may have crashed). Press Play again: the plugins are loaded again with their last saved settings.'))

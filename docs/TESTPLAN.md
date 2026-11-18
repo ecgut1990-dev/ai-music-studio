@@ -226,6 +226,19 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 | 9.11 | Mehrere Plugins auf einer Spur und auf verschiedenen Spuren | Alles hörbar, Reihenfolge mit ◀ ▶ änderbar; Rechner bleibt bedienbar | ✅ | | 0.50.0 |
 | 9.12 | Projekt ohne Plugins abspielen | Wie bisher; kein Unterschied (der Plugin-Host läuft dann nicht) | ✅ | | 0.50.0 |
 
+## 10. Neu in 0.51.0: Plugins im Mastering, Stems ins Studio
+
+| Nr. | Test | Erwartet | Ergebnis | Notiz | Version |
+|---|---|---|---|---|---|
+| 10.1 | Mastering: Song öffnen, **+ Hinzufügen…** → unter *VST-Plugins* ein Plugin | Plugin erscheint in der Kette, **Plugin-Fenster öffnen** zeigt seine Regler | | | |
+| 10.2 | Abspielen, Regler im Plugin drehen, ⏻ aus/an, Vorher/Nachher | Man hört das Plugin; Vorher/Nachher springt ohne Versatz | | | |
+| 10.3 | Plugin mit ↑ ↓ an eine andere Stelle der Kette schieben | Klingt weiter, keine Aussetzer | | | |
+| 10.4 | Exportieren… | Datei klingt mit dem Plugin wie beim Abspielen | | | |
+| 10.5 | Song schließen, wieder öffnen, Plugin-Fenster öffnen | Das Plugin hat die zuletzt eingestellten Werte | | | |
+| 10.6 | Stem-Trenner: Song trennen, dann **Alle Stems ins Studio** | Im Studio eine Gruppe „<Song> – Stems“ mit einer Spur pro Stem ab Takt 1, Lautstärken/Stumm wie im Stem-Mixer | | | |
+| 10.7 | Bei einem Stem **→ Studio** | Nur dieser Stem auf einer neuen Spur | | | |
+| 10.8 | Studio: bei einer Gruppe (z. B. nach *In Stems trennen*) die Gruppe zuklappen (▶), dann auf einen der farbigen Balken doppelklicken | Gruppe klappt auf, die Spur dieses Stems ist ausgewählt und mit Wellenform zu sehen | | | |
+
 ## Ergebnisse
 
 Nach dem Test: Datei mit den Einträgen an Claude geben („hier der Testplan mit Ergebnissen“). Fehler (❌) werden zuerst
