@@ -128,7 +128,11 @@ function usePluginWatch(): void {
       window.alert(tr('The plugin host stopped (a plugin may have crashed). Press Play again: the plugins are loaded again with their last saved settings.'))
     }
     const offExit = [host.onExit(warn), host32.onExit(warn)]
-    return () => { offChanged(); offExit.forEach((o) => o()) }
+    // the output device chosen in Settings → Audio is not connected: say so once, the app plays on the default device
+    let told = false
+    const noDevice = (): void => { if (told) return; told = true; window.alert(tr('The audio output device chosen in Settings → Audio is not connected. The app plays through the Windows default device for now.')) }
+    window.addEventListener('ams-audio-device-missing', noDevice)
+    return () => { offChanged(); offExit.forEach((o) => o()); window.removeEventListener('ams-audio-device-missing', noDevice) }
   }, [])
 }
 

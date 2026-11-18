@@ -15,6 +15,7 @@ import { MAX_STRETCH_SECONDS, stretchBuffer } from './stretch'
 import { beatToSec, bpmAt, barAt, isDownbeat, secToBeat } from './timemap'
 import { hasAutomation, scheduleLane } from './automation'
 import { makeEffect, makeInsert } from './fx'
+import { applyOutput, audioSettings, contextOptions, inputConstraints, onAudioSettings, stopTests } from './output'
 import { prepareVst, prepareVstOffline, projectHasVst, pumpOffline, releaseVstOffline, vstDelaySeconds } from './vst/host'
 import { loadWorklets } from './master/worklets'
 import { exportSampleRate } from '../lib/sampleRate'
@@ -485,7 +486,8 @@ const loopWraps: number[] = []        // context times at which the loop jumped 
 
 function ensureContext(): AudioContext {
   if (!ctx) {
-    ctx = new AudioContext({ latencyHint: 'interactive' })
+    ctx = new AudioContext(contextOptions())          // Settings → Audio: sample rate, buffer size
+    void applyOutput(ctx).then((ok) => { if (!ok) window.dispatchEvent(new CustomEvent('ams-audio-device-missing')) })
     master = ctx.createGain()
     master.gain.value = useAudioStore.getState().masterVolume
     masterAnalyser = ctx.createAnalyser()
@@ -501,6 +503,21 @@ function ensureContext(): AudioContext {
   }
   return ctx
 }
+
+/** the Studio's audio context (Settings → Audio: test tone, CPU load, the latency shown) */
+export function liveContext(): AudioContext { return ensureContext() }
+
+// Settings → Audio changed: a new output device is switched at once; a new sample rate or buffer size makes the
+// context again (playback stops first)
+onAudioSettings((_s, rebuild) => {
+  if (!ctx) return
+  if (!rebuild) { void applyOutput(ctx); return }
+  if (playing) stop()
+  stopTests(ctx)
+  const old = ctx
+  ctx = null; master = null; masterAnalyser = null
+  void old.close().catch(() => {})
+})
 
 /** the sample rate of live playback (plugins are loaded at this rate) */
 export function liveSampleRate(): number { return ensureContext().sampleRate }
@@ -871,9 +888,8 @@ export async function startRecording(): Promise<string | null> {
     useProjectStore.getState().selectTrack(trackId)
   }
   try {
-    recStream = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
-    })
+    if (audioSettings().inputId === 'none') { useAudioStore.setState({ isRecording: false }); return 'No input device is chosen: Settings → Audio → Audio input device.' }
+    recStream = await navigator.mediaDevices.getUserMedia({ audio: inputConstraints() })   // Settings → Audio
   } catch (e) {
     useAudioStore.setState({ isRecording: false })
     return `No microphone access: ${(e as Error).message}`
@@ -946,7 +962,8 @@ export async function stopRecording(): Promise<void> {
     const project = useProjectStore.getState().project
     const loop = activeLoop(project)
     const wraps = loopWraps.map((t) => t - recCtxStart)
-    const lead = Math.max(0, recPlayStart - recCtxStart)
+    // driver error compensation (Settings → Audio): the recording is moved this much earlier
+    const lead = Math.max(0, recPlayStart - recCtxStart + audioSettings().compensationMs / 1000)
     let pieces = recordingPieces(project, recStartBeat, buf.duration, lead, wraps, loop)
     // punch in / out: only what lies inside the loop range is kept
     const range = project.loop

@@ -1,3 +1,4 @@
+import { applyOutput } from '../../audio/output'
 import { sendToMastering } from '../../stores/mastering.store'
 import { sendToStemSplitter } from '../../stores/stemHandoff'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -76,6 +77,7 @@ export function Library(): React.ReactElement {
       if (url.current) URL.revokeObjectURL(url.current)
       url.current = URL.createObjectURL(new Blob([new Uint8Array(bytes)]))
       audio.current ??= new Audio()
+      void applyOutput(audio.current)
       audio.current.src = url.current
       audio.current.onended = () => setPlaying(null)
       await audio.current.play()

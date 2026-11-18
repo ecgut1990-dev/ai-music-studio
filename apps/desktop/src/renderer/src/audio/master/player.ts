@@ -1,5 +1,6 @@
 // Mastering playback: plays the loaded file through the chain, switches between before and after (A/B at matched
 // loudness), loops a region and feeds the live meters (loudness meter worklet, spectrum, goniometer).
+import { applyOutput, onAudioSettings } from '../output'
 import { buildChain, chainShape, type Chain, type ChainNodes } from './chain'
 import { kWeighting, truePeakTaps, type MeterReport } from './dsp'
 import { loadWorklets } from './worklets'
@@ -41,6 +42,7 @@ class MasterPlayer {
   async ensure(): Promise<AudioContext> {
     if (!this.ctx) {
       this.ctx = new AudioContext({ latencyHint: 'playback' })
+      void applyOutput(this.ctx)                                     // Settings → Audio: output device
       await loadWorklets(this.ctx)
       const c = this.ctx
       this.dryGain = c.createGain(); this.wetGain = c.createGain(); this.dryDelay = c.createDelay(1)
@@ -192,3 +194,6 @@ class MasterPlayer {
 
 export const masterPlayer = new MasterPlayer()
 ;(globalThis as unknown as { __amsMaster?: MasterPlayer }).__amsMaster = masterPlayer   // for tests and diagnosis
+
+// a new output device in Settings → Audio: the Mastering player follows at once
+onAudioSettings(() => { void applyOutput(masterPlayer.ctx) })

@@ -1,3 +1,4 @@
+import { applyOutput } from '../../audio/output'
 import { sendToMastering } from '../../stores/mastering.store'
 import React, { useEffect, useRef, useState } from 'react'
 import { nanoid } from 'nanoid'
@@ -75,6 +76,7 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
     setLoading(true); setError(null)
     try {
       const c = (ctx.current ??= new AudioContext())
+      void applyOutput(c)                                          // Settings → Audio: output device
       for (const n of names) {
         if (buffers.current[n]) continue
         const bytes = await window.api.fs.readFile(stems[n])
