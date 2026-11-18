@@ -31,24 +31,8 @@ AI Music Studio is free and stays free, made in my spare time. If it saves you t
 
 ### New in 0.51
 
-- **VST plugins in Mastering** (anywhere in the chain, saved with the song, in the export), **Stem Splitter → Studio** (all stems on their own tracks in one group), a double-click on a stem bar of a Studio group shows that track, and a new **Settings → Audio** page (output and input device, sample rate, buffer and latency, test tone).
-
-### Earlier: 0.50
-
-- **0.50.1:** the effects (built-in and VST) are also in the Studio's *Channel* panel on the right: add, open, switch on / off, reorder.
-
-- **VST plugins (VST3 and VST2):** your own effects in the Studio. *Settings → Plugins* finds them (64-bit and 32-bit plugins), **+ Effect…** on a track adds them and opens their window; their settings are saved with the project and the export includes them. Plugins run in a separate plugin host, so a crashing plugin does not take the app down. Master, Mastering and instrument plugins follow.
-
-### Earlier: 0.40
-
-- **The app speaks your language:** every screen (Studio, Mastering, Library, Create music, Stem Splitter, Settings, dialogs and messages) is now translated into **German, French, Spanish, Italian, Portuguese and Chinese**. Switch in *Settings → General → Language*. Japanese and Korean show the menu in their language and the rest in English for now.
-- **Save before closing:** closing the app with unsaved changes asks whether to save the project first (Save / Don't save / Cancel).
-- **No longer labelled beta** (0.40.1): the app and its documentation no longer call it a test version.
-- **Library:** uses the whole width when the AI assistant is closed, and shows the full name of every song; the buttons sit in their own row.
-
-**Mastering (0.30 – 0.31):** a full mastering workspace with an **AI assistant** that measures the song and suggests EQ, compression and loudness for 10 genres (each with its reason), **editing** (cut, copy, paste, fades, normalise, markers, undo), a big **master gain fader**, dynamic EQ, saturation / exciter, before / after at the same loudness, and export in 8 formats.
-
-Every change of every version: [CHANGELOG.md](CHANGELOG.md) and the [release notes](https://github.com/pierrecinema/ai-music-studio/releases).
+- **VST plugins in Mastering** (own **+ VST plugin…** menu, anywhere in the chain, saved with the song, in the export), **Stem Splitter → Studio** (all stems on their own tracks in one group), a double-click on a Studio group shows all its tracks at normal height with their waveforms, and a new **Settings → Audio** page (output and input device, sample rate, buffer and latency, test tone).
+- Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
 

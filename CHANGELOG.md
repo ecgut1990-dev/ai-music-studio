@@ -3,6 +3,11 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.51.1
+
+- **Mastering:** the VST plugins have their own menu **+ VST plugin…** next to **+ Add…**, so they are easy to find.
+- **Studio groups:** the bars of a group fill its lane (one row per track), and a double-click anywhere on the group's lane opens it with every track at normal height and its waveform, then scrolls them into view.
+
 ## 0.51.0
 
 - **VST plugins in Mastering:** **+ Add…** in the mastering chain now lists your VST plugins (VST3 / VST2, 64- and 32-bit) next to the built-in modules. The plugin sits anywhere in the chain, its window opens with **Open the plugin window**, ⏻ switches it on and off (the timing stays the same), and its settings are kept with the song and used in the export.

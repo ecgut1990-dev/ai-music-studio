@@ -32,7 +32,7 @@ Drag in the waveform to mark a region, then in the **Edit** bar:
 - The original file is never changed: the steps are applied when you export. They are kept while the app runs.
 
 ## VST plugins in the chain
-**+ Add…** lists your VST plugins (from [[Settings]] → Plugins) under the built-in modules. A plugin can sit anywhere in the chain (↑ ↓); **Open the plugin window** shows its own controls, ⏻ switches it on and off without changing the timing. Its settings are kept with the song and used in the export.
+**+ VST plugin…** (next to **+ Add…**) lists your VST plugins (from [[Settings]] → Plugins). A plugin can sit anywhere in the chain (↑ ↓); **Open the plugin window** shows its own controls, ⏻ switches it on and off without changing the timing. Its settings are kept with the song and used in the export.
 
 ## Assistant
 

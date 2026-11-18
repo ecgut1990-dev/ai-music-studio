@@ -1122,7 +1122,6 @@
  "checking…": "检查中…",
  "choose a folder": "选择文件夹",
  "clips selected": "个片段已选中",
- "double-click: show this track": "双击：显示此轨道",
  "double-click: tempo change": "双击：速度变化",
  "e.g. 12345": "例如 12345",
  "e.g. DEABC2600001": "例如 DEABC2600001",
@@ -1237,5 +1236,8 @@
  "❚❚ Pause": "❚❚ 暂停",
  "❤ Support the project": "❤ 支持这个项目",
  "⟲ Loop": "⟲ 循环",
- "⭐ Do you like AI Music Studio?": "⭐ 喜欢 AI Music Studio 吗？"
+ "⭐ Do you like AI Music Studio?": "⭐ 喜欢 AI Music Studio 吗？",
+ "double-click: show the tracks with their waveforms": "双击：显示带波形的音轨",
+ "+ VST plugin…": "+ VST 插件…",
+ "Put one of your VST plugins into the chain (Settings → Plugins searches for them)": "将你的一个 VST 插件放入链中（设置 → 插件 会搜索它们）"
 }

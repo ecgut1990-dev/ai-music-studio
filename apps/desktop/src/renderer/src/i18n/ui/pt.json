@@ -1122,7 +1122,6 @@
  "checking…": "verificando…",
  "choose a folder": "escolha uma pasta",
  "clips selected": "clipes selecionados",
- "double-click: show this track": "clique duplo: mostrar esta faixa",
  "double-click: tempo change": "clique duplo: mudança de andamento",
  "e.g. 12345": "p. ex. 12345",
  "e.g. DEABC2600001": "p. ex. DEABC2600001",
@@ -1237,5 +1236,8 @@
  "❚❚ Pause": "❚❚ Pausa",
  "❤ Support the project": "❤ Apoie o projeto",
  "⟲ Loop": "⟲ Loop",
- "⭐ Do you like AI Music Studio?": "⭐ Gosta do AI Music Studio?"
+ "⭐ Do you like AI Music Studio?": "⭐ Gosta do AI Music Studio?",
+ "double-click: show the tracks with their waveforms": "Clique duplo: mostrar as faixas com a forma de onda",
+ "+ VST plugin…": "+ Plugin VST…",
+ "Put one of your VST plugins into the chain (Settings → Plugins searches for them)": "Colocar um dos seus plugins VST na cadeia (Definições → Plugins procura-os)"
 }
