@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { themeColor } from '../../lib/themeColor'
 import { masterPlayer } from '../../audio/master/player'
 import type { Analysis } from '../../audio/master/dsp'
 import { tr, trf } from '../../i18n/tr'
@@ -172,7 +173,7 @@ const drawSpectrum = (g: CanvasRenderingContext2D, W: number, H: number): void =
   }
   if (side === 'after') {
     draw(masterPlayer.preAnalyser, specBufs.pre, 'rgba(156,163,175,0.25)', true)
-    draw(masterPlayer.postAnalyser!, specBufs.post, '#9d5ff8', false)
+    draw(masterPlayer.postAnalyser!, specBufs.post, themeColor('--accent-light', '#9d5ff8'), false)
   } else {
     draw(masterPlayer.postAnalyser!, specBufs.post, 'rgba(157,95,248,0.18)', true)
     draw(masterPlayer.preAnalyser, specBufs.pre, '#d1d5db', false)
@@ -201,7 +202,7 @@ function History({ before, after, target, active }: { before: Analysis | null; a
       a.history.forEach((v, i) => { const x = (i / (a.history.length - 1)) * W; if (i === 0) g.moveTo(x, y(v)); else g.lineTo(x, y(v)) })
       g.stroke()
     }
-    if (active === 'after') { line(before, 'rgba(156,163,175,0.4)', 1); line(after, '#9d5ff8', 2.2) }
+    if (active === 'after') { line(before, 'rgba(156,163,175,0.4)', 1); line(after, themeColor('--accent-light', '#9d5ff8'), 2.2) }
     else { line(after, 'rgba(157,95,248,0.35)', 1); line(before, '#e5e7eb', 2.2) }
   }, [before, after, target, active])
   return <canvas ref={ref} style={{ width: '100%', display: 'block' }} />

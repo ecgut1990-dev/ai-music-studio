@@ -231,7 +231,7 @@ export function Mastering(): React.ReactElement {
       onDragLeave={(e) => { if (e.currentTarget === e.target) setDropping(false) }}
       onDrop={onDrop}>
       {dropping && (
-        <div style={{ position: 'absolute', inset: 8, border: '2px dashed var(--accent)', borderRadius: 12, background: 'rgba(124,58,237,0.12)', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', inset: 8, border: '2px dashed var(--accent)', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 12%, transparent)', zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, pointerEvents: 'none' }}>
           {tr('Release to open in Mastering')}
         </div>
       )}

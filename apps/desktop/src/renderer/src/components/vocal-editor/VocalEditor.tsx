@@ -83,7 +83,7 @@ export function VocalEditor(): React.ReactElement {
                 padding: '10px 12px',
                 borderBottom: '1px solid var(--border)',
                 cursor: 'pointer',
-                background: selectedVoice.id === voice.id ? 'rgba(124,58,237,0.15)' : 'transparent',
+                background: selectedVoice.id === voice.id ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
                 borderLeft: selectedVoice.id === voice.id ? '3px solid var(--accent)' : '3px solid transparent'
               }}
             >

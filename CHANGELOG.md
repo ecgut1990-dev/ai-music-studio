@@ -3,6 +3,14 @@
 What changed in each version of AI Music Studio. The release workflow puts the section of the released version
 on its GitHub release page, so every version needs a `## <version>` section here before it is released.
 
+## 0.51.4
+
+- **Three new looks** in *Settings → Appearance*, next to Dark and Light. They change more than the colours:
+  - **Analog console:** warm wood at the sides, amber and brown, round transport keys and a glowing amber position display.
+  - **Swiss:** white and black, heavy type, no rounded corners, orange as the only colour, and the menu as a bar along the bottom of the window.
+  - **Hardware rack:** grey device fronts with screws, a green LCD for position and tempo, keys with a light, amber.
+- The waveform, spectrum and EQ curve in Mastering, the mastering knobs and the highlights all over the app take the colour of the chosen look.
+
 ## 0.51.3
 
 - **Mastering: round knobs.** Every control of the chain (EQ, compressor, multiband, dynamic EQ, saturation, stereo) and of the loudness limiter is now a round knob with a ring of lights, like on a mastering unit, instead of a slider. Drag up or down to turn it (hold **Shift** for fine steps), or use the mouse wheel or the arrow keys; a **double-click** sets it back to its starting value.

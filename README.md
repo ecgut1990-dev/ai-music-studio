@@ -31,7 +31,7 @@ AI Music Studio is free and stays free, made in my spare time. If it saves you t
 
 ### New in 0.51
 
-- **VST plugins in Mastering** (own **+ VST plugin…** menu, anywhere in the chain, saved with the song, in the export), **Stem Splitter → Studio** (all stems on their own tracks in one group), Studio groups show every stem with its name and waveform, and a double-click opens the group with all tracks large, round hardware-style knobs in Mastering, and a new **Settings → Audio** page (output and input device, sample rate, buffer and latency, test tone).
+- **VST plugins in Mastering** (own **+ VST plugin…** menu, anywhere in the chain, saved with the song, in the export), **Stem Splitter → Studio** (all stems on their own tracks in one group), Studio groups show every stem with its name and waveform, and a double-click opens the group with all tracks large, round hardware-style knobs in Mastering, three new looks (**Analog console**, **Swiss**, **Hardware rack**) in Settings → Appearance, and a new **Settings → Audio** page (output and input device, sample rate, buffer and latency, test tone).
 - Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
@@ -93,6 +93,19 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 <img src="docs/screenshots/mastering-assistant.png" alt="Mastering assistant" width="100%">
 **Mastering assistant** – measures tone balance per octave, dynamics, stereo and loudness against the genre and suggests settings, each with its reason; apply all with one click and compare.
 
+### Looks
+
+*Settings → Appearance* has five looks: Dark (above), Light and three that change more than the colours.
+
+<img src="docs/screenshots/layout-console.png" alt="Look: Analog console" width="100%">
+**Analog console** – warm wood at the sides, amber and brown, round transport keys and a glowing position display.
+
+<img src="docs/screenshots/layout-swiss.png" alt="Look: Swiss" width="100%">
+**Swiss** – white and black, heavy type, no rounded corners, orange as the only colour, the menu as a bar along the bottom.
+
+<img src="docs/screenshots/layout-rack.png" alt="Look: Hardware rack" width="100%">
+**Hardware rack** – grey device fronts with screws, a green LCD for position and tempo, keys with a light, amber.
+
 | | |
 |---|---|
 | <img src="docs/screenshots/piano-roll.png" alt="Piano Roll" width="100%"><br>**Piano Roll** – draw, move and quantize MIDI notes | <img src="docs/screenshots/mixer.png" alt="Mixer" width="100%"><br>**Mixer** – faders, pan, mute/solo, level meters, master |
@@ -103,7 +116,7 @@ A full arrangement studio in the app, with the shortcuts of **Ableton Live 12** 
 | <img src="docs/screenshots/settings-hardware.png" alt="Settings → Hardware" width="100%"><br>**Settings → Hardware** – what this PC can run, and how fast | <img src="docs/screenshots/settings-models.png" alt="Settings → Models" width="100%"><br>**Settings → Models** – downloaded models, sizes and the models folder |
 | <img src="docs/screenshots/settings-shortcuts.png" alt="Settings → Shortcuts" width="100%"><br>**Settings → Shortcuts** – Ableton Live 12 or Cubase key layout | <img src="docs/screenshots/settings-ai.png" alt="Settings → AI" width="100%"><br>**Settings → AI** – Claude, ChatGPT, Gemini, Grok, Ollama or a local server for the AI chat |
 | <img src="docs/screenshots/settings-general.png" alt="Settings → General" width="100%"><br>**Settings → General** – language (VST plugins: Settings → Plugins) | <img src="docs/screenshots/settings-audio.png" alt="Settings → Audio" width="100%"><br>**Settings → Audio** – export sample rate (44.1 kHz for platforms) and buffer size |
-| <img src="docs/screenshots/settings-appearance.png" alt="Settings → Appearance" width="100%"><br>**Settings → Appearance** – dark or light theme | <img src="docs/screenshots/settings-updates.png" alt="Settings → Updates" width="100%"><br>**Settings → Updates** – automatic updates from GitHub releases |
+| <img src="docs/screenshots/settings-appearance.png" alt="Settings → Appearance" width="100%"><br>**Settings → Appearance** – Dark, Light, Analog console, Swiss or Hardware rack | <img src="docs/screenshots/settings-updates.png" alt="Settings → Updates" width="100%"><br>**Settings → Updates** – automatic updates from GitHub releases |
 
 **Found a problem?** ([guide, German](docs/TESTING.md)) Reports are very welcome, especially from PCs with **NVIDIA cards**: open *Feedback → Record a detailed log*, reproduce the problem, then attach the saved log to a GitHub issue. Nothing is sent automatically.
 

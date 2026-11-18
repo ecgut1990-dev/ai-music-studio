@@ -12,6 +12,6 @@ Open with the gear at the bottom of the left menu (Ableton layout: Ctrl+,). Clos
 | **Models** | Downloaded models with size and state; **Change folder…** (move the models to another drive), **Delete to free space**, **Free up space** (download caches), LoRAs |
 | **Shortcuts** | Key layout **Ableton Live 12** or **Cubase**, with the full list: [[Keyboard Shortcuts]] |
 | **Audio** | Like the audio preferences of other DAWs. *Audio device:* driver type (Windows; ASIO from 0.61), **audio input device** (recording, or *No input*), **audio output device** (used everywhere in the app; *Refresh* after plugging something in). *Sample rate:* playback rate (automatic or 44.1–96 kHz) and the **export sample rate**. *Latency:* **buffer size** with the real input, output and overall latency, **driver error compensation** (ms, moves recordings earlier). *Test:* **test tone** on / off with volume and frequency (to hear whether the right card plays) and **simulated CPU load** (turn it up while a song plays: if it crackles early, use a larger buffer) |
-| **Appearance** | Dark or light theme |
+| **Appearance** | The look of the app: **Dark**, **Light**, **Analog console** (wood, amber, glowing display), **Swiss** (white and black, big type, menu as a bar at the bottom) or **Hardware rack** (grey device fronts, green LCD, amber) |
 | **Updates** | Current version, **Check for updates**, install with one click |
 | **About** | Version, project page on GitHub, report a problem, *Donate with PayPal* |

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import { themeColor } from '../../lib/themeColor'
 import type { EqParams } from '../../audio/master/chain'
 import { masterPlayer } from '../../audio/master/player'
 
@@ -69,7 +70,7 @@ export function EqCurve({ p }: { p: EqParams }): React.ReactElement {
         const c = curve.current
         g.beginPath()
         for (let i = 0; i < N; i++) { const x = (i / (N - 1)) * W, y = dy(Math.max(-15, Math.min(15, c[i]))); if (i) g.lineTo(x, y); else g.moveTo(x, y) }
-        g.strokeStyle = '#9d5ff8'; g.lineWidth = 2; g.stroke()
+        g.strokeStyle = themeColor('--accent-light', '#9d5ff8'); g.lineWidth = 2; g.stroke()
       }
       raf = requestAnimationFrame(draw)
     }

@@ -1239,5 +1239,10 @@
  "⭐ Do you like AI Music Studio?": "⭐ ¿Te gusta AI Music Studio?",
  "double-click: show the tracks with their waveforms": "Doble clic: mostrar las pistas con su forma de onda",
  "+ VST plugin…": "+ Plugin VST…",
- "Put one of your VST plugins into the chain (Settings → Plugins searches for them)": "Poner uno de tus plugins VST en la cadena (Ajustes → Plugins los busca)"
+ "Put one of your VST plugins into the chain (Settings → Plugins searches for them)": "Poner uno de tus plugins VST en la cadena (Ajustes → Plugins los busca)",
+ "Dark": "Oscuro",
+ "Light": "Claro",
+ "Analog console": "Consola analógica",
+ "Swiss": "Suizo",
+ "Hardware rack": "Rack de hardware"
 }
