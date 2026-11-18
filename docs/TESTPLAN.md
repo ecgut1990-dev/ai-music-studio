@@ -213,9 +213,9 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 |---|---|---|---|---|---|
 | 9.1 | Nach dem Update die App starten, dann Einstellungen → **Plugins** | Die Suche ist beim ersten Start von selbst gelaufen (oder läuft noch: Fortschritt „x von y“). Deine Plugins stehen in der Liste mit Hersteller, Typ, Format | ✅ | | 0.50.0 |
 | 9.2 | **Search for plugins** drücken | Suche läuft mit Fortschritt; danach „Letzte Suche: … · n Plugins“. Nicht nutzbare Dateien (z. B. beim Prüfen abgestürzt) stehen unten aufklappbar; Spalte „Bits“ zeigt 64 oder 32 | ✅ | | 0.50.0 |
-| 9.2b | Ein **32-Bit-Plugin** (z. B. aus *C:\\Programme (x86)\\VSTPlugins*) auf eine Spur legen, Fenster öffnen, abspielen | Es steht im Menü mit „32-bit“, öffnet sein Fenster und klingt wie ein 64-Bit-Plugin | | | |
-| 9.2c | Einstellungen → Plugins → **Ordner hinzufügen…** mit einem eigenen Plugin-Ordner, dann suchen | Die Plugins aus dem Ordner erscheinen in der Liste | | | |
-| 9.3 | Bei einem Plugin das Häkchen entfernen | Es erscheint nicht mehr im Studio unter „+ Effekt…“ | | | |
+| 9.2b | Ein **32-Bit-Plugin** (z. B. aus *C:\\Programme (x86)\\VSTPlugins*) auf eine Spur legen, Fenster öffnen, abspielen | Es steht im Menü mit „32-bit“, öffnet sein Fenster und klingt wie ein 64-Bit-Plugin | ✅ | | 0.51.0 |
+| 9.2c | Einstellungen → Plugins → **Ordner hinzufügen…** mit einem eigenen Plugin-Ordner, dann suchen | Die Plugins aus dem Ordner erscheinen in der Liste | ✅ | | 0.51.0 |
+| 9.3 | Bei einem Plugin das Häkchen entfernen | Es erscheint nicht mehr im Studio unter „+ Effekt…“ | ✅ | | 0.51.0 |
 | 9.4 | Studio: Spur mit Song auswählen, rechts **Kanal** → unter *Effekte* **+ Effekt…** → unter *VST-Plugins* ein Plugin wählen (geht auch über das kleine **FX** an der Spur) | Plugin erscheint in der Effekt-Zeile, sein Fenster öffnet sich und bleibt über der App | ✅ | | 0.50.0 |
 | 9.5 | Abspielen, im Plugin-Fenster Regler drehen (z. B. Hall stark) | Man hört das Plugin sofort; keine Aussetzer oder Knackser | ✅ | | 0.50.0 |
 | 9.6 | ⏻ am Plugin aus und wieder an, während der Song läuft | Ohne / mit Plugin; die Spur bleibt im Takt mit den anderen Spuren | ✅ | | 0.50.0 |
@@ -230,19 +230,21 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 
 | Nr. | Test | Erwartet | Ergebnis | Notiz | Version |
 |---|---|---|---|---|---|
-| 10.1 | Mastering: Song öffnen, **+ Hinzufügen…** → unter *VST-Plugins* ein Plugin | Plugin erscheint in der Kette, **Plugin-Fenster öffnen** zeigt seine Regler | | | |
-| 10.2 | Abspielen, Regler im Plugin drehen, ⏻ aus/an, Vorher/Nachher | Man hört das Plugin; Vorher/Nachher springt ohne Versatz | | | |
-| 10.3 | Plugin mit ↑ ↓ an eine andere Stelle der Kette schieben | Klingt weiter, keine Aussetzer | | | |
-| 10.4 | Exportieren… | Datei klingt mit dem Plugin wie beim Abspielen | | | |
-| 10.5 | Song schließen, wieder öffnen, Plugin-Fenster öffnen | Das Plugin hat die zuletzt eingestellten Werte | | | |
-| 10.6 | Stem-Trenner: Song trennen, dann **Alle Stems ins Studio** | Im Studio eine Gruppe „<Song> – Stems“ mit einer Spur pro Stem ab Takt 1, Lautstärken/Stumm wie im Stem-Mixer | | | |
-| 10.7 | Bei einem Stem **→ Studio** | Nur dieser Stem auf einer neuen Spur | | | |
-| 10.8 | Studio: bei einer Gruppe (z. B. nach *In Stems trennen*) die Gruppe zuklappen (▶), dann auf einen der farbigen Balken doppelklicken | Gruppe klappt auf, die Spur dieses Stems ist ausgewählt und mit Wellenform zu sehen | | | |
+| 10.1 | Mastering: Song öffnen, **+ Hinzufügen…** → unter *VST-Plugins* ein Plugin | Plugin erscheint in der Kette, **Plugin-Fenster öffnen** zeigt seine Regler | ✅ | VST-Plugins schwer zu finden → eigenes Menü „+ VST-Plugin…“ (0.51.1) | 0.51.0 |
+| 10.2 | Abspielen, Regler im Plugin drehen, ⏻ aus/an, Vorher/Nachher | Man hört das Plugin; Vorher/Nachher springt ohne Versatz | ✅ |  | 0.51.0 |
+| 10.3 | Plugin mit ↑ ↓ an eine andere Stelle der Kette schieben | Klingt weiter, keine Aussetzer | ✅ |  | 0.51.0 |
+| 10.4 | Exportieren… | Datei klingt mit dem Plugin wie beim Abspielen | ✅ |  | 0.51.0 |
+| 10.5 | Song schließen, wieder öffnen, Plugin-Fenster öffnen | Das Plugin hat die zuletzt eingestellten Werte | ✅ |  | 0.51.0 |
+| 10.6 | Stem-Trenner: Song trennen, dann **Alle Stems ins Studio** | Im Studio eine Gruppe „<Song> – Stems“ mit einer Spur pro Stem ab Takt 1, Lautstärken/Stumm wie im Stem-Mixer | ✅ |  | 0.51.0 |
+| 10.7 | Bei einem Stem **→ Studio** | Nur dieser Stem auf einer neuen Spur | ✅ |  | 0.51.0 |
+| 10.8 | Studio: bei einer Gruppe (z. B. nach *In Stems trennen*) die Gruppe zuklappen (▶), dann auf einen der farbigen Balken doppelklicken | Gruppe klappt auf, die Spur dieses Stems ist ausgewählt und mit Wellenform zu sehen | ❌ | Stems sollen nach Doppelklick normal hoch mit Wellenform erscheinen → 0.51.1 | 0.51.0 |
 | 10.9 | Einstellungen → **Audio**: Ausgangsgerät wählen (z. B. Kopfhörer statt Lautsprecher), **Testton** an | Der Ton kommt aus dem gewählten Gerät; Lautstärke- und Frequenzregler ändern ihn sofort | | | |
-| 10.10 | Song im Studio und im Mastering abspielen, Bibliothek-Vorhören | Alles kommt aus dem gewählten Gerät | | | |
-| 10.11 | **Puffergröße** ändern (z. B. 256, 1024) | Ausgangs- und Gesamt-Latenz ändern sich; Wiedergabe läuft danach normal | | | |
-| 10.12 | Song abspielen, **Simulierte CPU-Belastung** langsam hochdrehen | Ab einem Wert knackt es; mit größerem Puffer erst später | | | |
-| 10.13 | Eingangsgerät wählen, im Studio aufnehmen | Aufnahme kommt vom gewählten Mikrofon/Eingang; mit Treiberfehler-Kompensation verschiebt sich die Aufnahme | | | |
+| 10.10 | Song im Studio und im Mastering abspielen, Bibliothek-Vorhören | Alles kommt aus dem gewählten Gerät | ✅ |  | 0.51.0 |
+| 10.11 | **Puffergröße** ändern (z. B. 256, 1024) | Ausgangs- und Gesamt-Latenz ändern sich; Wiedergabe läuft danach normal | ✅ |  | 0.51.0 |
+| 10.12 | Song abspielen, **Simulierte CPU-Belastung** langsam hochdrehen | Ab einem Wert knackt es; mit größerem Puffer erst später | ✅ |  | 0.51.0 |
+| 10.13 | Eingangsgerät wählen, im Studio aufnehmen | Aufnahme kommt vom gewählten Mikrofon/Eingang; mit Treiberfehler-Kompensation verschiebt sich die Aufnahme | ✅ |  | 0.51.0 |
+| 10.1b | Mastering: Menü **+ VST-Plugin…** neben **+ Hinzufügen…** | Listet alle Plugins; eins wählen setzt es in die Kette | | | |
+| 10.8b | Studio: Gruppe zuklappen (▶), irgendwo in die Zeile der Gruppe doppelklicken (auf einen Balken oder daneben) | Gruppe klappt auf, jede Stem-Spur normal hoch mit Wellenform, die Ansicht scrollt dorthin | | | |
 
 ## Ergebnisse
 

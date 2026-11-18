@@ -263,19 +263,16 @@ export function MasterRack({ chain, onChange, target, onTarget, onReachTarget, r
         <button className="btn btn-ghost" style={small} disabled={!presetName.trim()} onClick={() => { savePreset(presetName.trim()); setPresetName('') }}>{tr('Save')}</button>
         {presets[presetName.trim()] && <button className="btn btn-ghost" style={small} onClick={() => deletePreset(presetName.trim())}>{tr('Delete')}</button>}
         <span style={{ flex: 1 }} />
-        <select value="" onChange={(e) => {
-          const v = e.target.value
-          if (v.startsWith('vst:')) addPlugin(v.slice(4)); else if (v) add(v as SlotType)
-          e.target.value = ''
-        }} style={{ fontSize: 11 }}>
+        <select value="" onChange={(e) => { const v = e.target.value; if (v) add(v as SlotType); e.target.value = '' }} style={{ fontSize: 11 }}>
           <option value="">{tr('+ Add…')}</option>
-          <optgroup label={tr('Built in')}>
-            {(Object.keys(SLOT_LABEL) as SlotType[]).filter((k) => k !== 'vst').map((k) => <option key={k} value={k}>{tr(SLOT_LABEL[k])}</option>)}
-          </optgroup>
-          <optgroup label={tr('VST plugins')}>
-            {plugins.map((p) => <option key={p.id} value={`vst:${p.id}`}>{p.name}{p.vendor ? ` (${p.vendor})` : ''} · {p.format}{p.arch === 'x86' ? ' · 32-bit' : ''}</option>)}
-            {!plugins.length && <option value="" disabled>{tr('None yet: Settings → Plugins')}</option>}
-          </optgroup>
+          {(Object.keys(SLOT_LABEL) as SlotType[]).filter((k) => k !== 'vst').map((k) => <option key={k} value={k}>{tr(SLOT_LABEL[k])}</option>)}
+        </select>
+        {/* the plugins have their own menu, so they are easy to find */}
+        <select value="" title={tr('Put one of your VST plugins into the chain (Settings → Plugins searches for them)')}
+          onChange={(e) => { const v = e.target.value; if (v) addPlugin(v); e.target.value = '' }} style={{ fontSize: 11 }}>
+          <option value="">{tr('+ VST plugin…')}</option>
+          {plugins.map((p) => <option key={p.id} value={p.id}>{p.name}{p.vendor ? ` (${p.vendor})` : ''} · {p.format}{p.arch === 'x86' ? ' · 32-bit' : ''}</option>)}
+          {!plugins.length && <option value="" disabled>{tr('None yet: Settings → Plugins')}</option>}
         </select>
       </div>
 

@@ -22,7 +22,7 @@ import { AutomationHeader, AutomationLane, FxHeader, FxLane, MiniMeter, ReturnRo
 import { ChannelTab } from './ChannelTab'
 import { tr, trf } from '../../i18n/tr'
 import {
-  AUTO_HEIGHT, BEAT_WIDTH, buildRows, HANDLE, HEADER_WIDTH, RULER_HEIGHT, rowHeight, rowTops, TAKE_HEIGHT, TEMPO_HEIGHT, TRACK_MAX_HEIGHT, TRACK_MIN_HEIGHT, trackHeight, trackPointer, openLanes, toggleAutomationLanes, type Row
+  AUTO_HEIGHT, BEAT_WIDTH, buildRows, TRACK_HEIGHT, HANDLE, HEADER_WIDTH, RULER_HEIGHT, rowHeight, rowTops, TAKE_HEIGHT, TEMPO_HEIGHT, TRACK_MAX_HEIGHT, TRACK_MIN_HEIGHT, trackHeight, trackPointer, openLanes, toggleAutomationLanes, type Row
 } from './studioLayout'
 import {
   addCycleMarkerFromLoop, addMarkerAtPlayhead, addWarpMarker, beatsLeft, consolidate, crossfade, groupSelectedTracks, loopToSelection, spbSrcOf, splitIntoStems, togglePunch, toggleLoop
@@ -337,6 +337,21 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
     setActiveView('piano-roll')
   }
 
+  // a group opens: all its tracks are shown at (at least) the normal height, with their waveforms, and scrolled into view
+  const openGroup = (group: Track, trackId?: string, clipId?: string): void => {
+    updateTrack(group.id, { collapsed: false })
+    const kids = useProjectStore.getState().project.tracks.filter((t) => t.parentId === group.id)
+    for (const t of kids) if (t.height !== undefined && t.height < TRACK_HEIGHT) updateTrack(t.id, { height: undefined })
+    const target = trackId ?? kids[0]?.id
+    if (target) { selectTrack(target); selectClip(clipId ?? null) }
+    // the whole row (it starts at the left edge), so only the vertical position changes
+    window.setTimeout(() => {
+      const row = (id?: string): Element | null | undefined => id ? document.querySelector(`[data-lane="${id}"]`)?.parentElement : null
+      row(kids[kids.length - 1]?.id)?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+      window.setTimeout(() => row(kids[0]?.id)?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }), 350)
+    }, 60)
+  }
+
   const laneDoubleClick = async (e: React.MouseEvent, track: Track): Promise<void> => {
     const beat = snap(beatAt(e.clientX), false)
     seek(Math.max(0, snapBeat(beatAt(e.clientX), e.altKey)))       // double-click anywhere: the playhead jumps there
@@ -504,18 +519,16 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
           <div style={{ marginTop: 3 }}><MiniMeter id={track.id} /></div>
         </>
       )
+      const kids = isGroup ? project.tracks.filter((t) => t.parentId === track.id) : []
+      // bars fill the height of the group lane: one row per track of the group
+      const barH = kids.length ? Math.max(4, Math.floor((h - 10) / kids.length) - 2) : 0
       lane = isGroup
-        ? project.tracks.filter((t) => t.parentId === track.id).flatMap((t) => t.clips.map((c) => (
-          // a group shows the clips of its tracks as bars; double-click one: the group opens and shows that track (with its waveform)
-          <div key={c.id} title={`${t.name} · ${tr('double-click: show this track')}`}
+        ? kids.flatMap((t, k) => t.clips.map((c) => (
+          // a group shows the clips of its tracks as bars; double-click: the group opens with all its tracks at normal height
+          <div key={c.id} title={`${t.name} · ${tr('double-click: show the tracks with their waveforms')}`}
             onPointerDown={(e) => e.stopPropagation()}
-            onDoubleClick={(e) => {
-              e.stopPropagation()
-              updateTrack(track.id, { collapsed: false })
-              selectTrack(t.id); selectClip(c.id)
-              window.setTimeout(() => document.querySelector(`[data-lane="${t.id}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 60)
-            }}
-            style={{ position: 'absolute', left: c.startTime * beatWidth, width: Math.max(2, c.duration * beatWidth), top: 8 + (project.tracks.filter((x) => x.parentId === track.id).indexOf(t) % 6) * 9, height: 7, background: t.color, opacity: 0.7, borderRadius: 2, cursor: 'pointer' }} />
+            onDoubleClick={(e) => { e.stopPropagation(); openGroup(track, t.id, c.id) }}
+            style={{ position: 'absolute', left: c.startTime * beatWidth, width: Math.max(2, c.duration * beatWidth), top: 5 + k * (barH + 2), height: barH, background: t.color, opacity: 0.75, borderRadius: 2, cursor: 'pointer' }} />
         )))
         : renderClips(track)
     }
@@ -560,7 +573,7 @@ export function Timeline({ fill = false }: { fill?: boolean }): React.ReactEleme
         </div>
         <div
           data-lane={track.id}
-          onDoubleClick={row.kind === 'track' ? (e) => { if (e.target === e.currentTarget) void laneDoubleClick(e, track) } : undefined}
+          onDoubleClick={row.kind === 'track' ? (e) => { if (e.target !== e.currentTarget) return; if (track.type === 'group') openGroup(track); else void laneDoubleClick(e, track) } : undefined}
           onPointerDown={row.kind === 'track' ? (e) => { if (e.target === e.currentTarget) { selectTrack(track.id); startFrame(e) } } : undefined}
           style={{ flex: 1, position: 'relative', zIndex: 1, borderBottom: '1px solid var(--border)', background: isSel ? 'rgba(124,58,237,0.05)' : 'transparent' }}>
           {lane}
