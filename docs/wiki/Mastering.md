@@ -31,6 +31,9 @@ Drag in the waveform to mark a region, then in the **Edit** bar:
 - **↶ / ↷** (Ctrl+Z / Ctrl+Y) undo and redo; **n steps ▸** lists them. **+ Marker** at the play position (names can be edited, click the time to jump there).
 - The original file is never changed: the steps are applied when you export. They are kept while the app runs.
 
+## VST plugins in the chain
+**+ Add…** lists your VST plugins (from [[Settings]] → Plugins) under the built-in modules. A plugin can sit anywhere in the chain (↑ ↓); **Open the plugin window** shows its own controls, ⏻ switches it on and off without changing the timing. Its settings are kept with the song and used in the export.
+
 ## Assistant
 
 ![The assistant: measurements against the genre and its suggestions](https://raw.githubusercontent.com/pierrecinema/ai-music-studio/main/docs/screenshots/mastering-assistant.png)

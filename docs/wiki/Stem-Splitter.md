@@ -27,3 +27,6 @@ After splitting: **▶ Play** all stems together, waveform with seeking, per ste
 - **Export Stems…:** every stem as its own file (WAV, AIFF, FLAC, MP3) for any DAW.
 
 In the [[Studio]], right-click a song clip → **Split into stems (Demucs)** splits it right there; the stems arrive as new tracks.
+
+## Into the Studio
+**All stems into the Studio** puts every stem on its own audio track in the [[Studio]], in one group named after the song, from bar 1, with the levels and mutes of the stem mixer. **→ Studio** on a stem puts only that stem on a new track.

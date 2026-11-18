@@ -227,8 +227,8 @@ const clients = [host, host32]
 const clientFor = (ref?: { arch?: string }): HostClient => (ref?.arch === 'x86' ? host32 : host)
 
 // ── plugin instances of the project (live playback) ────────────────────────────
-interface Live { instance: number; latency: number; ref: VstRef; sampleRate: number; client: HostClient }
-const live = new Map<string, Live>()           // insert id -> loaded instance
+interface Live { instance: number; latency: number; ref: VstRef; sampleRate: number; client: HostClient; scope: 'studio' | 'master' }
+const live = new Map<string, Live>()           // insert / slot id -> loaded instance
 const loading = new Map<string, Promise<Live | null>>()
 const failures = new Map<string, string>()     // insert id -> why it could not be loaded
 const listeners = new Set<() => void>()
@@ -272,6 +272,7 @@ export async function prepareVst(project: Project, sampleRate: number): Promise<
   const wanted = new Map<string, InsertFx>()
   for (const t of project.tracks) for (const fx of t.fx ?? []) if (fx.type === 'vst' && fx.vst) wanted.set(fx.id, fx)
   for (const [id, l] of live) {
+    if (l.scope !== 'studio') continue
     if (!wanted.has(id) || l.sampleRate !== sampleRate || l.ref.pluginId !== wanted.get(id)!.vst!.pluginId) {
       live.delete(id)
       l.client.call('unload', { instance: l.instance }).catch(() => {})
@@ -283,7 +284,7 @@ export async function prepareVst(project: Project, sampleRate: number): Promise<
     let p = loading.get(fx.id)
     if (!p) {
       p = loadInstance(fx.vst!, sampleRate)
-        .then((r) => { const l = { ...r, ref: fx.vst!, sampleRate }; live.set(fx.id, l); failures.delete(fx.id); return l })
+        .then((r) => { const l: Live = { ...r, ref: fx.vst!, sampleRate, scope: 'studio' }; live.set(fx.id, l); failures.delete(fx.id); return l })
         .catch((e: Error) => { failures.set(fx.id, e.message); return null })
         .finally(() => { loading.delete(fx.id); changed() })
       loading.set(fx.id, p)
@@ -292,11 +293,51 @@ export async function prepareVst(project: Project, sampleRate: number): Promise<
   }))
 }
 
+// ── plugins in the Mastering chain (their own scope: the Studio does not unload them) ─────────────────────────
+const masterIds = new Set<string>()
+
+/** loads the plugins of the mastering chain for live playback at `sampleRate`; unloads chain plugins no longer in it */
+export async function prepareMasterVst(slots: Array<{ id: string; vst?: VstRef }>, sampleRate: number): Promise<void> {
+  const wanted = new Map(slots.filter((x) => x.vst).map((x) => [x.id, x.vst!]))
+  masterIds.clear(); for (const id of wanted.keys()) masterIds.add(id)
+  for (const [id, l] of live) {
+    if (l.scope !== 'master') continue
+    if (!wanted.has(id) || l.sampleRate !== sampleRate || l.ref.pluginId !== wanted.get(id)!.pluginId) {
+      live.delete(id); l.client.call('unload', { instance: l.instance }).catch(() => {})
+    }
+  }
+  await Promise.all([...wanted].map(async ([id, ref]) => {
+    if (live.has(id)) return
+    try {
+      const r = await loadInstance(ref, sampleRate)
+      live.set(id, { ...r, ref, sampleRate, scope: 'master' }); failures.delete(id)
+    } catch (e) { failures.set(id, (e as Error).message) }
+  }))
+  changed()
+  if (!wanted.size) releaseIdle()
+}
+
+/** the current settings of one loaded plugin (base64), or undefined */
+export async function vstStateOf(id: string): Promise<string | undefined> {
+  const l = live.get(id)
+  if (!l) return undefined
+  try { return (await l.client.call<{ state: string }>('getState', { instance: l.instance })).state } catch { return undefined }
+}
+
+/** a plugin's settings were changed in its window: the id of its insert / slot */
+export function onVstEdited(fn: (id: string, scope: 'studio' | 'master') => void): () => void {
+  const offs = clients.map((c) => c.onEvent((m) => {
+    if (m.event !== 'changed') return
+    for (const [id, l] of live) if (l.client === c && l.instance === m.instance) fn(id, l.scope)
+  }))
+  return () => offs.forEach((o) => o())
+}
+
 /** the current settings of every loaded plugin into the project's inserts (before saving) */
 export async function collectVstStates(project: Project): Promise<Project> {
   if (live.size === 0) return project
   const states = new Map<string, string>()
-  await Promise.all([...live].map(async ([id, l]) => {
+  await Promise.all([...live].filter(([, l]) => l.scope === 'studio').map(async ([id, l]) => {
     try { states.set(id, (await l.client.call<{ state: string }>('getState', { instance: l.instance })).state) } catch { /* keep the old state */ }
   }))
   if (!states.size) return project
@@ -316,7 +357,7 @@ export async function showVstEditor(fx: InsertFx, sampleRate: number, trackName:
   let l = live.get(fx.id)
   if (!l) {
     const r = await loadInstance(fx.vst, sampleRate)
-    l = { ...r, ref: fx.vst, sampleRate }
+    l = { ...r, ref: fx.vst, sampleRate, scope: masterIds.has(fx.id) ? 'master' : 'studio' }
     live.set(fx.id, l)
     changed()
   }
@@ -329,10 +370,18 @@ const offlineClients = new Set<HostClient>()
 
 export async function prepareVstOffline(ctx: BaseAudioContext, project: Project): Promise<boolean> {
   const fxs = project.tracks.flatMap((t) => (t.fx ?? []).filter((f) => f.type === 'vst' && f.vst && f.on))
-  if (!fxs.length) return false
+  return prepareVstOfflineList(ctx, fxs.map((f) => ({ id: f.id, vst: f.vst! })))
+}
+
+/** separate instances for offline rendering, with the settings the plugins have right now (also unsaved ones) */
+export async function prepareVstOfflineList(ctx: BaseAudioContext, list: Array<{ id: string; vst: VstRef }>): Promise<boolean> {
+  if (!list.length) return false
   const m = new Map<string, { instance: number; latency: number; client: HostClient }>()
-  for (const fx of fxs) {
-    try { const r = await loadInstance(fx.vst!, ctx.sampleRate); m.set(fx.id, r); offlineClients.add(r.client) }
+  for (const fx of list) {
+    try {
+      const state = (await vstStateOf(fx.id)) ?? fx.vst.state
+      const r = await loadInstance({ ...fx.vst, state }, ctx.sampleRate); m.set(fx.id, r); offlineClients.add(r.client)
+    }
     catch (e) { failures.set(fx.id, (e as Error).message) }
   }
   offline.set(ctx, m)

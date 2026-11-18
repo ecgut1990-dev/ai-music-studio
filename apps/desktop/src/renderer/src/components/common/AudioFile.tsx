@@ -1,3 +1,4 @@
+import { applyOutput } from '../../audio/output'
 import React, { useEffect, useState } from 'react'
 import { tr } from '../../i18n/tr'
 
@@ -22,7 +23,7 @@ export function AudioFile({ path, label }: { path: string; label?: string }): Re
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
       {label && <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{label}</span>}
-      {url && <audio controls src={url} style={{ height: 32 }} />}
+      {url && <audio controls src={url} style={{ height: 32 }} ref={(el) => { void applyOutput(el) }} />}
       {err && <span style={{ color: 'var(--red)', fontSize: 11 }}>{err}</span>}
       <button className="btn btn-ghost" style={{ fontSize: 10 }} onClick={() => window.api.shell.openPath(path)}>
         {tr('Open file')}

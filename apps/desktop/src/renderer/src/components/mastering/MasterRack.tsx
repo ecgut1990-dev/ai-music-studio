@@ -1,3 +1,7 @@
+import { usePluginsStore } from '../../stores/plugins.store'
+import { onVstChange, showVstEditor, vstFailure } from '../../audio/vst/host'
+import { masterPlayer } from '../../audio/master/player'
+import type { VstRef } from '../../types'
 import React, { useState } from 'react'
 import { SLOT_LABEL, TARGETS, defaultChain, slotDefaults, type BandParams, type Chain, type Slot, type SlotType } from '../../audio/master/chain'
 import { useMasteringStore } from '../../stores/mastering.store'
@@ -35,6 +39,30 @@ function Knob({ name, value: setValue, min, max, step, unit, onChange, log, titl
         onChange={(e) => { const v = fromPos(Number(e.target.value)); onChange(log ? Math.round(v) : Math.round(v / step) * step) }} />
       <span style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{off ? tr('off') : `${shown}${unit ? ` ${unit}` : ''}`}</span>
     </label>
+  )
+}
+
+// a VST plugin in the chain: its settings are in its own window
+function VstSlotBody({ slot }: { slot: Extract<Slot, { type: 'vst' }> }): React.ReactElement {
+  const [, tick] = React.useState(0)
+  const [busy, setBusy] = React.useState(false)
+  React.useEffect(() => onVstChange(() => tick((n) => n + 1)), [])
+  const ref = slot.p.vst
+  if (!ref) return <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tr('No plugin chosen.')}</span>
+  const failure = vstFailure(slot.id)
+  const open = async (): Promise<void> => {
+    setBusy(true)
+    try { await showVstEditor({ id: slot.id, type: 'vst', on: slot.on, p: {}, vst: ref }, masterPlayer.ctx?.sampleRate ?? 48000, tr('Mastering')) }
+    catch (e) { window.alert(trf('The plugin could not be opened: {m}', { m: (e as Error).message })) }
+    setBusy(false)
+  }
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 11, flexWrap: 'wrap' }}>
+      <span style={{ color: 'var(--text-secondary)' }}>{ref.vendor ? `${ref.vendor} · ` : ''}{ref.format}{ref.arch === 'x86' ? ' · 32-bit' : ''}</span>
+      <button className="btn btn-ghost" style={{ fontSize: 11 }} disabled={busy} onClick={() => void open()}>{busy ? tr('Loading…') : tr('Open the plugin window')}</button>
+      {failure && <span style={{ color: 'var(--red)' }} title={failure}>⚠ {tr('not loaded: plays without it')}</span>}
+      <span style={{ color: 'var(--text-muted)', width: '100%' }}>{tr('Its settings are in its own window. They are kept with this song and used in the export.')}</span>
+    </div>
   )
 }
 
@@ -142,6 +170,7 @@ function SlotBody({ slot, set }: { slot: Slot; set: (s: Slot) => void }): React.
       </div>
     )
   }
+  if (slot.type === 'vst') return <VstSlotBody slot={slot} />
   const p = slot.p
   const u = (k: keyof typeof p, v: number): void => set({ ...slot, p: { ...p, [k]: v } })
   return (
@@ -198,6 +227,17 @@ export function MasterRack({ chain, onChange, target, onTarget, onReachTarget, r
     onChange({ ...chain, slots: [...chain.slots, slotDefaults(type, id)] })
     setOpen((o) => ({ ...o, [id]: true }))
   }
+  const plugins = usePluginsStore((st) => st.plugins.filter((p) => !p.isInstrument && !st.off.includes(p.id)))
+  const pluginsLoaded = usePluginsStore((st) => st.loaded)
+  React.useEffect(() => { if (!pluginsLoaded) void usePluginsStore.getState().load() }, [pluginsLoaded])
+  const addPlugin = (pid: string): void => {
+    const p = plugins.find((x) => x.id === pid)
+    if (!p) return
+    const id = `vst${Date.now().toString(36)}`
+    const vst: VstRef = { pluginId: p.id, name: p.name, vendor: p.vendor, format: p.format, xml: p.xml, arch: p.arch }
+    onChange({ ...chain, slots: [...chain.slots, { id, type: 'vst', on: true, p: { vst } }] })
+    setOpen((o) => ({ ...o, [id]: true }))
+  }
   const t = TARGETS.find((x) => x.id === target) ?? TARGETS[0]
 
   return (
@@ -223,9 +263,19 @@ export function MasterRack({ chain, onChange, target, onTarget, onReachTarget, r
         <button className="btn btn-ghost" style={small} disabled={!presetName.trim()} onClick={() => { savePreset(presetName.trim()); setPresetName('') }}>{tr('Save')}</button>
         {presets[presetName.trim()] && <button className="btn btn-ghost" style={small} onClick={() => deletePreset(presetName.trim())}>{tr('Delete')}</button>}
         <span style={{ flex: 1 }} />
-        <select value="" onChange={(e) => { if (e.target.value) add(e.target.value as SlotType) }} style={{ fontSize: 11 }}>
+        <select value="" onChange={(e) => {
+          const v = e.target.value
+          if (v.startsWith('vst:')) addPlugin(v.slice(4)); else if (v) add(v as SlotType)
+          e.target.value = ''
+        }} style={{ fontSize: 11 }}>
           <option value="">{tr('+ Add…')}</option>
-          {(Object.keys(SLOT_LABEL) as SlotType[]).map((k) => <option key={k} value={k}>{tr(SLOT_LABEL[k])}</option>)}
+          <optgroup label={tr('Built in')}>
+            {(Object.keys(SLOT_LABEL) as SlotType[]).filter((k) => k !== 'vst').map((k) => <option key={k} value={k}>{tr(SLOT_LABEL[k])}</option>)}
+          </optgroup>
+          <optgroup label={tr('VST plugins')}>
+            {plugins.map((p) => <option key={p.id} value={`vst:${p.id}`}>{p.name}{p.vendor ? ` (${p.vendor})` : ''} · {p.format}{p.arch === 'x86' ? ' · 32-bit' : ''}</option>)}
+            {!plugins.length && <option value="" disabled>{tr('None yet: Settings → Plugins')}</option>}
+          </optgroup>
         </select>
       </div>
 
@@ -235,11 +285,11 @@ export function MasterRack({ chain, onChange, target, onTarget, onReachTarget, r
             <button className="btn btn-ghost" disabled={before} style={{ ...small, color: s.on && !before ? 'var(--green)' : 'var(--text-muted)' }} title={s.on ? tr('On: click to bypass') : tr('Bypassed: click to switch on')}
               onClick={() => setSlot(i, { ...s, on: !s.on } as Slot)}>⏻</button>
             <span style={{ fontSize: 12, fontWeight: 600, cursor: 'pointer', flex: 1 }} onClick={() => setOpen((o) => ({ ...o, [s.id]: !o[s.id] }))}>
-              {open[s.id] ? '▾' : '▸'} {i + 1}. {tr(SLOT_LABEL[s.type])}
+              {open[s.id] ? '▾' : '▸'} {i + 1}. {s.type === 'vst' ? s.p.vst?.name ?? tr('VST plugin') : tr(SLOT_LABEL[s.type])}
             </span>
             <button className="btn btn-ghost" style={small} disabled={i === 0} title={tr('Earlier in the chain')} onClick={() => move(i, -1)}>↑</button>
             <button className="btn btn-ghost" style={small} disabled={i === chain.slots.length - 1} title={tr('Later in the chain')} onClick={() => move(i, 1)}>↓</button>
-            <button className="btn btn-ghost" style={small} title={tr('Reset')} onClick={() => setSlot(i, { ...slotDefaults(s.type, s.id), on: s.on } as Slot)}>↺</button>
+            {s.type !== 'vst' && <button className="btn btn-ghost" style={small} title={tr('Reset')} onClick={() => setSlot(i, { ...slotDefaults(s.type, s.id), on: s.on } as Slot)}>↺</button>}
             <button className="btn btn-ghost" style={small} title={tr('Remove')} onClick={() => onChange({ ...chain, slots: chain.slots.filter((_, j) => j !== i) })}>×</button>
           </div>
           {open[s.id] && <div style={{ marginTop: 8 }}><SlotBody slot={s} set={(n) => setSlot(i, n)} /></div>}

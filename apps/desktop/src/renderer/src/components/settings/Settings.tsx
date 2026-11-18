@@ -1,3 +1,4 @@
+import { AudioTab } from './AudioTab'
 import { PluginsTab } from './PluginsTab'
 import logo from '../../assets/logo.png'
 import { exportSampleRate, setExportSampleRate } from '../../lib/sampleRate'
@@ -443,29 +444,7 @@ export function Settings(): React.ReactElement {
           </div>
         )}
 
-        {tab === 'audio' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={sectionStyle}>{t('settings.audio')}</div>
-            <div>
-              <label style={labelStyle}>{t('settings.sampleRate')}</label>
-              <select style={inputStyle} defaultValue={String(exportSampleRate())} onChange={(e) => setExportSampleRate(Number(e.target.value))}>
-                <option value="44100">{tr('44,100 Hz (streaming platforms, CD: recommended)')}</option>
-                <option value="48000">{tr('48,000 Hz (video)')}</option>
-                <option value="88200">{tr('88,200 Hz')}</option>
-                <option value="96000">{tr('96,000 Hz')}</option>
-              </select>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{tr('Every export uses this rate (File → Export audio, Export… in the Library and the Stem Splitter). AI models often make 48 kHz; the files are converted.')}</div>
-            </div>
-            <div>
-              <label style={labelStyle}>{t('settings.bufferSize')}</label>
-              <select style={inputStyle} defaultValue="512">
-                {[64, 128, 256, 512, 1024, 2048].map(b => (
-                  <option key={b} value={b}>{b} {tr('samples')}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
+        {tab === 'audio' && <AudioTab />}
 
         {tab === 'appearance' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

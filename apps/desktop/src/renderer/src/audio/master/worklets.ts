@@ -100,6 +100,24 @@ class AmsVst extends AudioWorkletProcessor {
   }
 }
 registerProcessor('ams-vst', AmsVst)
+
+// Settings → Audio, "Simulated CPU load": spends the given share of every block doing nothing useful, to find a
+// buffer size that does not crackle
+class AmsCpu extends AudioWorkletProcessor {
+  constructor() {
+    super()
+    this.percent = 0
+    this.alive = true
+    this.port.onmessage = (e) => { this.percent = e.data.percent || 0; if (e.data.stop) this.alive = false }
+  }
+  process(inputs, outputs) {
+    const frames = outputs[0] && outputs[0][0] ? outputs[0][0].length : 128
+    const budget = (frames / sampleRate) * 1000 * this.percent / 100
+    if (budget > 0) { const end = Date.now() + budget; let x = 0; while (Date.now() < end) x += Math.sqrt(x + 1) }
+    return this.alive
+  }
+}
+registerProcessor('ams-cpu', AmsCpu)
 `,
   ].join('\n')
 }

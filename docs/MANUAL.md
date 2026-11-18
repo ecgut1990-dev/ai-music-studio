@@ -72,6 +72,7 @@ Nach der Installation die App neu starten, damit sie die neuen Programme im PATH
 ### Schritt 5: Weiteres
 
 - **Einstellungen → Plugins** (ab 0.50): VST3- und VST2-Plugins mit 64 und 32 Bit (ein 32-Bit-Plugin läuft in einem eigenen 32-Bit-Plugin-Host; welches ein Plugin braucht, erkennt die App selbst). Die üblichen Ordner werden immer durchsucht, auch die unter *Programme (x86)*; eigene Ordner kommen mit *Add folder…* dazu. **Search for plugins** sucht (beim ersten Start einmal von selbst). In der Liste bestimmt das Häkchen, welche Plugins in der App erscheinen. Jedes Plugin wird einzeln geprüft; stürzt eines dabei ab, wird es übersprungen und unten aufgeführt.
+- **Einstellungen → Audio** (ab 0.51): wie in anderen DAWs. *Audio-Gerät:* Treiber (Windows, ASIO ab 0.61), Eingangsgerät für Aufnahmen, Ausgangsgerät (gilt überall in der App, *Neu suchen* nach dem Einstecken). *Abtastrate* der Wiedergabe und des Exports. *Latenz:* Puffergröße mit echter Ein-, Ausgangs- und Gesamt-Latenz, Treiberfehler-Kompensation (verschiebt Aufnahmen früher). *Test:* Testton an/aus mit Lautstärke und Frequenz, simulierte CPU-Belastung.
 - **Einstellungen → Allgemein**: Sprache. Ab 0.40 ist die ganze App übersetzt: Deutsch, Englisch, Französisch, Spanisch, Italienisch, Portugiesisch und Chinesisch. Bei Japanisch und Koreanisch ist vorerst nur das Menü übersetzt, der Rest bleibt Englisch.
 - **Einstellungen → Darstellung**: dunkles oder helles Design.
 
@@ -192,6 +193,14 @@ Das fertige LoRA erscheint automatisch in deiner Liste. Hinweis: Das Training se
 **FX** an der Spur öffnet die Effekt-Zeile. Die Effekte stehen außerdem rechts im **Kanal**-Bereich (Knopf *Kanal*) unter *Effekte*: dort mit **+ Effekt…** hinzufügen, **Öffnen** (Plugin-Fenster), Ein/Aus, Reihenfolge, Löschen. Unter **+ Effect…** stehen nach den eingebauten Effekten deine VST-Plugins (die in *Einstellungen → Plugins* angehakten). Beim Hinzufügen öffnet sich das Fenster des Plugins; **Open** öffnet es wieder. Es bleibt über der App. Ein/Aus, Reihenfolge und Entfernen gehen wie bei den eingebauten Effekten. Die Einstellungen im Plugin-Fenster werden mit dem Projekt gespeichert (die App fragt beim Schließen nach, wenn du dort etwas geändert hast), und der Export enthält das Plugin.
 
 Die Plugins laufen in einem eigenen kleinen Programm (Plugin-Host), das nur läuft, solange ein Plugin benutzt wird. Stürzt ein Plugin ab, läuft die App weiter; beim nächsten Abspielen werden die Plugins mit ihren zuletzt gespeicherten Einstellungen neu geladen. Spuren mit Plugins bleiben im Takt (die Verzögerung durch die Plugins wird ausgeglichen). 64- und 32-Bit-Plugins funktionieren. Plugins auf dem Master, im Mastering und Instrument-Plugins kommen in den nächsten Versionen.
+
+## VST-Plugins im Mastering, Stems ins Studio (ab 0.51)
+
+**Mastering:** In der Kette listet **+ Hinzufügen…** unter *VST-Plugins* deine Plugins. Ein Plugin kann an jeder Stelle der Kette stehen (↑ ↓). **Plugin-Fenster öffnen** zeigt seine Regler, ⏻ schaltet es aus und ein (das Timing bleibt gleich). Die Einstellungen werden mit dem Song gespeichert und im Export verwendet.
+
+**Stem-Trenner:** **Alle Stems ins Studio** legt jeden Stem auf eine eigene Spur im Studio (in einer Gruppe, ab Takt 1, mit den Lautstärken und Stummschaltungen aus dem Stem-Mixer). **→ Studio** an einem Stem legt nur diesen ins Studio.
+
+**Gruppen im Studio:** Eine Gruppe zeigt die Clips ihrer Spuren als schmale Balken. Doppelklick auf einen Balken klappt die Gruppe auf und zeigt die Spur dieses Stems mit Wellenform.
 
 ## Studio (früher Zeitleiste), Mixer, Klaviatur-Editor, Projekte (Grundfunktionen)
 

@@ -1,3 +1,4 @@
+import { applyOutput } from '../../audio/output'
 import { sendToMastering } from '../../stores/mastering.store'
 import React, { useEffect, useRef, useState } from 'react'
 import { nanoid } from 'nanoid'
@@ -6,7 +7,7 @@ import { useProjectStore } from '../../stores/project.store'
 import { useUIStore } from '../../stores/ui.store'
 import { ExportDialog } from '../common/ExportDialog'
 import { WaveformSeek } from '../common/WaveformSeek'
-import { tr } from '../../i18n/tr'
+import { tr, trf } from '../../i18n/tr'
 
 // The stems of one split, played together: Solo, Mute and volume per stem, a remix of the audible stems
 // (karaoke without vocals, a version without drums, ...) and Audio → MIDI of one stem into the Piano Roll.
@@ -32,6 +33,7 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)   // 'remix' or the stem being turned into MIDI
   const [notice, setNotice] = useState<string | null>(null)
+  const [noticeView, setNoticeView] = useState<'piano-roll' | 'timeline'>('piano-roll')   // where the notice's button leads
   const [exporting, setExporting] = useState<{ path: string; name: string } | null>(null)
 
   const ctx = useRef<AudioContext | null>(null)
@@ -74,6 +76,7 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
     setLoading(true); setError(null)
     try {
       const c = (ctx.current ??= new AudioContext())
+      void applyOutput(c)                                          // Settings → Audio: output device
       for (const n of names) {
         if (buffers.current[n]) continue
         const bytes = await window.api.fs.readFile(stems[n])
@@ -168,9 +171,36 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
       store.addClip(track.id, { startTime: 0, duration: Math.ceil(end / 4) * 4 || 4, notes, name: `${labels[n] ?? n} (MIDI)` })
       const clip = useProjectStore.getState().project.tracks.find((t) => t.id === track.id)!.clips[0]
       store.selectTrack(track.id); store.selectClip(clip.id)
+      setNoticeView('piano-roll')
       setNotice(`${notes.length} notes from ${labels[n] ?? n} are on a new MIDI track${r.warnings.length ? ` (${r.warnings.join(' ')})` : ''}.`)
     } catch (e) { setError(`Audio → MIDI failed: ${(e as Error).message}`) }
     setBusy(null)
+  }
+
+  // every stem on its own audio track in the Studio, in a group named after the song, at bar 1; muted stems come along
+  // muted, the volumes as set here
+  const toStudio = async (only?: string): Promise<void> => {
+    setError(null); setNotice(null)
+    if (!(await load())) return
+    const store = useProjectStore.getState()
+    const bpm = store.project.bpm || 120
+    const ids: string[] = []
+    for (const n of only ? [only] : names) {
+      const secs = buffers.current[n]?.duration ?? length
+      store.addTrack('audio')
+      const track = useProjectStore.getState().project.tracks.at(-1)!
+      const st = strips[n]
+      store.updateTrack(track.id, { name: `${title} – ${labels[n] ?? n}`, color: colors[n] ?? track.color, volume: Math.min(1, 0.8 * st.volume), muted: !only && !audible(n) })
+      store.addClip(track.id, { startTime: 0, duration: (secs * bpm) / 60, audioFile: stems[n], name: `${title} – ${labels[n] ?? n}` })
+      ids.push(track.id)
+    }
+    if (ids.length > 1) {
+      useProjectStore.getState().groupTracks(ids)
+      const g = useProjectStore.getState().selectedTrackId
+      if (g) useProjectStore.getState().updateTrack(g, { name: `${title} – ${tr('stems')}` })
+    }
+    setNotice(only ? trf('{name} is on a new track in the Studio, at bar 1.', { name: labels[only] ?? only }) : trf('{n} stems are on new tracks in the Studio (in one group), at bar 1.', { n: ids.length }))
+    setNoticeView('timeline')
   }
 
   const mmss = (s: number): string => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
@@ -214,6 +244,7 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
                   {busy === n ? tr('Converting…') : tr('→ MIDI')}
                 </button>
               )}
+              <button className="btn btn-ghost" style={{ fontSize: 11 }} title={tr('Put this stem on a new track in the Studio')} onClick={() => void toStudio(n)}>{tr('→ Studio')}</button>
               <button className="btn btn-ghost" style={{ fontSize: 11 }} title={tr('Open this stem in Mastering (e.g. the instrumental)')}
                 onClick={() => sendToMastering(stems[n], `${title} – ${labels[n] ?? n}`)}>{tr('Mastering')}</button>
             </div>
@@ -222,6 +253,9 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
       </div>
 
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <button className="btn btn-primary" disabled={busy !== null || loading} title={tr('Every stem on its own track in the Studio (in one group), with the levels and mutes set here')} onClick={() => void toStudio()}>
+          {tr('All stems into the Studio')}
+        </button>
         <button className="btn btn-primary" disabled={busy !== null || names.every((n) => !audible(n))} onClick={() => void exportRemix()}>
           {busy === 'remix' ? tr('Mixing…') : tr('Export remix…')}
         </button>
@@ -234,7 +268,7 @@ export function StemMixer({ stems, colors, labels, title }: Props): React.ReactE
       {notice && (
         <div style={{ color: 'var(--green)', fontSize: 12 }}>
           {notice} <button className="btn btn-ghost" style={{ fontSize: 10, padding: '1px 8px' }}
-            onClick={() => useUIStore.getState().setActiveView('piano-roll')}>{tr('Open Piano Roll')}</button>
+            onClick={() => useUIStore.getState().setActiveView(noticeView)}>{noticeView === 'timeline' ? tr('Show Studio') : tr('Open Piano Roll')}</button>
         </div>
       )}
       {exporting && (
