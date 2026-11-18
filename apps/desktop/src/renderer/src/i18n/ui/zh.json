@@ -1251,5 +1251,6 @@
  "Press the keys for this action; only keys that are still free are accepted (Esc: cancel)": "按下此操作的按键；只接受尚未使用的按键（Esc：取消）",
  "Press a key…": "请按键…",
  "+ Key": "+ 按键",
- "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "自定义按键：在“自定义”列点击 + 按键，然后按下某个操作的按键。只接受尚未使用的按键；它们与上方的布局同时生效。"
+ "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "自定义按键：在“自定义”列点击 + 按键，然后按下某个操作的按键。只接受尚未使用的按键；它们与上方的布局同时生效。",
+ "Show the stems large / normal (or double-click the group)": "放大 / 恢复显示分轨（或双击该组）"
 }

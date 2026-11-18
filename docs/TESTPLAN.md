@@ -248,7 +248,8 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 | 10.1c | Mastering: links steht **VST** vor dem Menü **+ VST-Plugin…**, rechts davon **+ Hinzufügen…** | Plugins sofort zu finden | ✅ | | 0.51.2 |
 | 10.8c | Studio: Gruppe (z. B. nach *In Stems trennen*) zugeklappt ansehen | Gruppe ist höher, jeder Stem-Balken zeigt Namen und Wellenform; Doppelklick öffnet die Gruppe | ⚠️ | Anzeige gut, aber Doppelklick macht die Spuren nicht größer → 0.51.3 | 0.51.2 |
 | 10.8d | Studio: Doppelklick auf eine Gruppe (Balken oder Zeile), dann noch einmal | Gruppe klappt auf, alle Stem-Spuren doppelt so hoch mit großer Wellenform; zweiter Doppelklick: wieder normale Höhe | ❌ | Statt neuer Zeilen soll die Gruppenzeile selbst größer werden → 0.51.5 | 0.51.4 |
-| 10.8e | Studio: Doppelklick auf eine Gruppe (zugeklappt), dann noch einmal | Die Zeile der Gruppe selbst wird groß, jeder Stem mit großer Wellenform (keine neuen Zeilen); zweiter Doppelklick: wieder normal | | | |
+| 10.8e | Studio: Doppelklick auf eine Gruppe (zugeklappt), dann noch einmal | Die Zeile der Gruppe selbst wird groß, jeder Stem mit großer Wellenform (keine neuen Zeilen); zweiter Doppelklick: wieder normal | ⚠️ | Groß geht, wieder klein nicht → 0.51.6 | 0.51.5 |
+| 10.8f | Studio: Doppelklick auf eine Gruppe, dann noch einmal an derselben Stelle; danach die Taste **⇕** im Gruppenkopf | Groß, dann wieder normal; ⇕ schaltet ebenso um | | | |
 | 10.14 | Mastering: Module 1–6 und Lautheit öffnen | Überall runde Drehknöpfe mit Lichtkranz statt Schiebereglern | ✅ | | 0.51.3 |
 | 10.15 | Knopf nach oben/unten ziehen, mit Shift ziehen, Mausrad, Doppelklick | Wert ändert sich (mit Shift fein), man hört es sofort; Doppelklick setzt den Startwert | ✅ | | 0.51.3 |
 | 10.16 | Vorher/Nachher umschalten | Bei *Vorher* stehen die Knöpfe grau auf dem Startwert und lassen sich nicht drehen | ✅ | | 0.51.3 |
@@ -256,8 +257,9 @@ Vorbereitung: VST3- oder VST2-Effekte auf dem PC, am besten ein 64-Bit- und ein 
 | 10.18 | → **Swiss** | Weiß/Schwarz, eckig, Orange; das Menü ist eine Leiste unten mit Namen; KI-Assistent bleibt rechts | ✅ | | 0.51.4 |
 | 10.19 | → **Hardware-Rack** | Graue Gerätefronten mit Schrauben, grünes LCD für Position und Tempo, Bernstein | ✅ | | 0.51.4 |
 | 10.20 | In jedem Look: Studio, Mastering (Wellenform, Knöpfe), Mixer, Bibliothek, Einstellungen ansehen; App neu starten | Alles lesbar, Farben passen zum Look; nach dem Neustart ist der gewählte Look noch da | ✅ | | 0.51.4 |
-| 10.21 | Einstellungen → **Shortcuts**: bei „Audiospur hinzufügen“ in der Spalte **Eigene** auf **+ Taste**, dann Leertaste drücken | Abgelehnt: „Space ist schon belegt: Abspielen / Pause“ | | | |
-| 10.22 | Noch einmal **+ Taste**, dann z. B. Strg+Alt+K; ins Studio wechseln und Strg+Alt+K drücken | Taste erscheint in der Spalte; im Studio kommt eine neue Audiospur dazu; nach Neustart der App noch da; × entfernt sie | | | |
+| 10.21 | Einstellungen → **Shortcuts**: bei „Audiospur hinzufügen“ in der Spalte **Eigene** auf **+ Taste**, dann Leertaste drücken | Abgelehnt: „Space ist schon belegt: Abspielen / Pause“ | ✅ | | 0.51.5 |
+| 10.22 | Noch einmal **+ Taste**, dann z. B. Strg+Alt+K; ins Studio wechseln und Strg+Alt+K drücken | Taste erscheint in der Spalte; im Studio kommt eine neue Audiospur dazu; nach Neustart der App noch da; × entfernt sie | ❌ | Strg+Alt+K: nichts passiert (Windows meldet Strg+Alt als AltGr) → 0.51.6 | 0.51.5 |
+| 10.22b | Shortcuts → bei „Audiospur hinzufügen“ **+ Taste**, Strg+Alt+K drücken; im Studio Strg+Alt+K; App neu starten | Taste erscheint in „Eigene“; im Studio kommt eine Audiospur dazu; nach dem Neustart noch da | | | |
 
 ## Ergebnisse
 

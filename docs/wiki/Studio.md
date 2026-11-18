@@ -63,4 +63,4 @@ Right-click → *Edit warp markers*: double-click the waveform to set a marker, 
 ## Studio and Mixer height
 Drag the divider between the Studio and the [[Mixer]] to any height; double-click resets it.
 
-**Groups:** a group track shows the clips of its tracks as bars with their name and waveform, one row per track (the group is as high as its tracks need). Double-click the group's lane (a bar or anywhere on it): the group's own row becomes large, every stem in it with a big waveform; another double-click brings it back to its normal height (▶ / ▼ opens the group with its tracks below) (handy after *Split into stems*).
+**Groups:** a group track shows the clips of its tracks as bars with their name and waveform, one row per track (the group is as high as its tracks need). Double-click the group's lane (a bar or anywhere on it): the group's own row becomes large, every stem in it with a big waveform; another double-click, or the **⇕** button in the group's header, brings it back to its normal height (▶ / ▼ opens the group with its tracks below) (handy after *Split into stems*).

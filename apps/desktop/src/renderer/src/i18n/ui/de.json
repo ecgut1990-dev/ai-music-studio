@@ -1297,5 +1297,6 @@
  "Press the keys for this action; only keys that are still free are accepted (Esc: cancel)": "Die Tasten für diese Aktion drücken; nur noch freie Tasten werden angenommen (Esc: abbrechen)",
  "Press a key…": "Taste drücken…",
  "+ Key": "+ Taste",
- "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "Eigene Tasten: in der Spalte „Eigene“ auf + Taste klicken und die Tasten für eine Aktion drücken. Nur Tasten, die noch nicht belegt sind, werden angenommen; sie gelten zusätzlich zum Layout oben."
+ "Your own keys: in the column “Yours”, + Key and then press the keys for an action. Only keys that are not used yet are accepted; they work in addition to the layout above.": "Eigene Tasten: in der Spalte „Eigene“ auf + Taste klicken und die Tasten für eine Aktion drücken. Nur Tasten, die noch nicht belegt sind, werden angenommen; sie gelten zusätzlich zum Layout oben.",
+ "Show the stems large / normal (or double-click the group)": "Stems groß / normal zeigen (oder Doppelklick auf die Gruppe)"
 }
